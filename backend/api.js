@@ -1,9 +1,13 @@
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
+// import cors from 'cors'
+// import cookieParser from 'cookie-parser'
+// import jwt from 'jsonwebtoken'
+// import bcrypt from 'bcrypt'
 
 const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const app = express();
 const PORT = 8000;
