@@ -1,8 +1,12 @@
 {
   "name": "welcome-wingman",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "eslint.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,9 +16,9 @@
   "dependencies": {
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^11.12.1",
-    "styled-components": "^11.12.1",
-    "axios": "^11.12.1"
+    "react-router-dom": "^7.18.1",
+    "styled-components": "^6.4.3",
+    "axios": "^1.7.9"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
