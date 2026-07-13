@@ -6,15 +6,15 @@
 module.exports = {
 
   development: {
-    client:'pg',
-    user:'postgres',
-    password:'docker',
+    client: 'pg',
+    user: 'postgres',
+    password: 'docker',
     connection: {
-      host:'127.0.0.1',
-      port:'5432',
-      user:'postgres',
-      password:'docker',
-      database:'WingmanDatabase'
+      host: '127.0.0.1',
+      port: '5432',
+      user: 'postgres',
+      password: 'docker',
+      database: 'WingmanDatabase'
     },
     migrations: {
       directory: './migrations'
