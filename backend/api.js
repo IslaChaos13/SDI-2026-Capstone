@@ -1,9 +1,18 @@
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+
 const express = require('express');
 
 const app = express();
 const PORT = 8000;
 const knex = require('knex')(require('./knexfile.js')['development']);
 
+
+app.use(cookieParser())
+// change the port here once the front end is up
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 app.use(express.json());
 
 app.get('/db_status', async (req, res) => {
@@ -78,6 +87,56 @@ app.get('/user_tasks', async (req, res) => {
          message: 'Failed to fetch data'
       })
    }
+})
+
+// Post routes
+app.post('/login', async (req, res) => {
+   const { email, password } = req.body
+
+   const user = await db('users').where({ email }).first()
+
+   if (!user) return res.status(401).json({ error: 'User not found!' })
+
+   const validPassword = await bcrypt.compare(password, user.password)
+
+   if (!validPassword) return res.status(401).json({ error: 'Incorrect password!' })
+
+   const token = jwt.sign(
+      { user_id: user.id, is_admin: user.is_admin },
+      'your_jwt_secret',
+      { expiresIn: '24h' }
+   )
+
+   res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000
+   })
+
+   res.json({ message: 'Log in successful!' })
+})
+
+app.post('/register', async (req, res) => {
+   const { first_name, last_name, email, password, birth_date } = req.body
+
+   const existing = await db('users').where({ email }).first()
+   if (existing) return res.status(400).json({ error: `You've already got an account!` })
+
+   const hashedPassword = await bcrypt.hash(password, 10)
+
+   const [user] = await db('users').insert({
+      is_admin: false,
+      rank,
+      first_name,
+      last_name,
+      email,
+      phone,
+      address,
+      avatar,
+      password: hashedPassword,
+   }).returning('*')
+
+   res.json({ message: 'Thanks for signing up! Log in with your email' })
 })
 
 app.listen(PORT, () => {
