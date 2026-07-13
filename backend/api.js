@@ -64,6 +64,22 @@ app.get('/directory', async (req, res) => {
    }
 })
 
+app.get('/user_tasks', async (req, res) => {
+   try {
+      const [user_tasks] = await Promise.all([
+         knex('user_tasks').select('*')
+      ])
+
+      res.status(200).json({
+         user_tasks: user_tasks
+      })
+   } catch (err) {
+      res.status(500).json({
+         message: 'Failed to fetch data'
+      })
+   }
+})
+
 app.listen(PORT, () => {
    console.log(`Server running at http://localhost:${PORT}`);
 });
