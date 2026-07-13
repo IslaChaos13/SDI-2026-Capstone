@@ -21,7 +21,7 @@ const airmanTasks = [
   {
     id_directory: 3,
     title: "Update SOES (SGLI)",
-    action_item: "Update and verify information for life insurance.",
+    action_item: "Update and verify information for life insurance through milconnect website.",
     due_date: "2026-07-20",
     is_complete: false,
   },
@@ -48,8 +48,8 @@ const airmanTasks = [
   },
     {
     id_directory: 7,
-    title: "Meet With Division Chief",
-    action_item: "Contact the division office and schedule an introductory meeting with the division chief.",
+    title: "Division Chief Meet & Greet",
+    action_item: "Contact the division office and schedule a meeting with the division chief.",
     due_date: "2026-07-20",
     is_complete: false,
   },
@@ -71,7 +71,7 @@ const airmanTasks = [
     id_directory: 10,
     title: "Complete OPSEC Awareness Training",
     action_item:
-      "Complete the required OPSEC awareness training and provide the completion certificate to the appropriate office.",
+      "Complete the required OPSEC awareness training online, send the certificate to your unit security manager.",
     due_date: "2026-07-27",
     is_complete: false,
   },
