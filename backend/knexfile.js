@@ -14,7 +14,7 @@ module.exports = {
       port:'5432',
       user:'postgres',
       password:'docker',
-      database:'Functions'
+      database:'WingmanDatabase'
     },
     migrations: {
       directory: './migrations'

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "resetServer": "knex migrate:rollback && knex migrate:latest && knex seed:run && node api.js",
+    "runServer": "node api.js"
   },
   "keywords": [],
   "author": "",
