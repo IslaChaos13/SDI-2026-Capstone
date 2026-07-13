@@ -10,8 +10,8 @@ From the root directory: <br>
 3. Find the API container. It should look something like this:<br>
 CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS                      PORTS                                         NAMES <br>
 f419667fca27   sdi-2026-capstone-api   "docker-entrypoint.s…"   7 minutes ago   Up 7 minutes                0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   sdi-2026-capstone-api-1
-4. Initiate a terminal inside the container. `docker exec -it f41 bash` Replace f41 with whatever your container is.
-5. Once inside the container, run `npm run resetServer` to seed the database!
+4. Your stuff should be up and running.
+5. cd into the `/backend` directory and run `npm run resetServer`. You should see migrations run successfully.
 6. Happy coding!
 
 # This might be old now, your mileage will vary
