@@ -86,14 +86,8 @@ const airmanTasks = [
 ];
 
 
-exports.seed = async function(knex) {
-  // Deletes ALL existing entries
-  await knex('tasks').del()
-  await knex('tasks').insert([
-    {id: 1, colName: 'rowValue1'},
-    {id: 2, colName: 'rowValue2'},
-    {id: 3, colName: 'rowValue3'}
-  ]);
+exports.seed = async function (knex) {
+  await knex("tasks").del();
+  await knex("tasks").insert(airmanTasks);
 };
-
 
