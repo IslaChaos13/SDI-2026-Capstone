@@ -17,7 +17,7 @@ function FacilityMap({scrollWheelZoom}) {
   )
 }
 
-function App() {
+function BaseDirectory() {
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -53,9 +53,11 @@ function App() {
   )
 }
 
-export default App
+export default BaseDirectory
 
 
 
 //need coordinates to put in markers on map.
 //work on styling
+//see if team wants to style together? or solo?
+//where is everyone at
