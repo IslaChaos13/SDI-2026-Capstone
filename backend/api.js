@@ -45,21 +45,21 @@ app.get('/users', async (req, res) => {
    }
 });
 
+//changed below /tasks/
 app.get('/tasks', async (req, res) => {
    try {
-      const [tasks] = await Promise.all([
-         knex('users').select('*')
-      ])
+      const tasks = await knex('tasks').select('*');
 
       res.status(200).json({
          tasks: tasks
-      })
+      });
    } catch (err) {
+      console.error(err);
       res.status(500).json({
          message: 'Failed to fetch data'
-      })
+      });
    }
-})
+});
 
 app.get('/directory', async (req, res) => {
    try {
