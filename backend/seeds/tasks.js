@@ -21,7 +21,7 @@ const airmanTasks = [
   {
     id_directory: 3,
     title: "Update SOES (SGLI)",
-    action_item: "Update and verify information for life insurance through milconnect website.",
+    action_item: "Update and verify information for life insurance through the milconnect website.",
     due_date: "2026-07-20",
     is_complete: false,
   },
@@ -71,7 +71,7 @@ const airmanTasks = [
     id_directory: 10,
     title: "Complete OPSEC Awareness Training",
     action_item:
-      "Complete the required OPSEC awareness training online, send the certificate to your unit security manager.",
+      "Complete the required OPSEC awareness training online and send the certificate to your unit security manager.",
     due_date: "2026-07-27",
     is_complete: false,
   },
