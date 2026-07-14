@@ -33,6 +33,41 @@ export default function Checklist() {
 			.catch((err) => console.error(err));
 	}, []);
 
+	const toggleTaskComplete = async (taskId, currentStatus) => {
+		const newStatus = !currentStatus;
+
+		setTasks((prev) =>
+			prev.map((t) => (t.id === taskId ? { ...t, is_complete: newSTatus } : t)),
+		);
+
+		setTaskItem((prev) =>
+			prev && prev.id === taskId ? { ...prev, is_complete: newStatus } : prev,
+		);
+
+		try {
+			const res = await fetch(`${API}/tasks/${taskId}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ is_complete: newStatus }),
+			});
+
+			if (!res.ok) throw new Error("Failed to update task");
+		} catch (err) {
+			console.error(err);
+			// Roll back on failure
+			setTasks((prev) =>
+				prev.map((t) =>
+					t.id === taskId ? { ...t, is_complete: currentStatus } : t,
+				),
+			);
+			setTaskItem((prev) =>
+				prev && prev.id === taskId
+					? { ...prev, is_complete: currentStatus }
+					: prev,
+			);
+		}
+	};
+
 	const selectedUserObj = selectedUser
 		? users.find((u) => u.id === selectedUser)
 		: null;
@@ -51,9 +86,15 @@ export default function Checklist() {
 		? tasks.filter((task) => assignedTaskTitles.includes(task.title))
 		: tasks;
 
+	const formatDate = (isoString) =>
+		new Date(isoString).toLocaleDateString("en-US", {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		});
+
 	return (
 		<>
-
 			<div className="page">
 				<div className="page-header" style={{ marginBottom: 0 }}>
 					<h1>My Checklist</h1>
@@ -101,8 +142,8 @@ export default function Checklist() {
 							<span className={task.is_complete ? "complete" : "incomplete"}>
 								{task.is_complete ? "Complete" : "Incomplete"}
 							</span>
-							<p>{task.action_item}</p>
-							<p>{task.due_date}</p>
+							<p>{task.title}</p>
+							<p>{formatDate(task.due_date)}</p>
 						</li>
 					))}
 					{visibleTasks.length === 0 && (
@@ -113,15 +154,27 @@ export default function Checklist() {
 				{taskItem && (
 					<div className="modal-overlay" onClick={() => setTaskItem(null)}>
 						<div className="modal" onClick={(e) => e.stopPropagation()}>
-							<h2>{taskItem.action_item}</h2>
-							<p>Due: {taskItem.due_date}</p>
+							<h2>{taskItem.title}</h2>
+							<p>Due: {formatDate(taskItem.due_date)}</p>
 							<p>Details: {taskItem.action_item}</p>
+
+							<div className="modal-notes-group">
+								<label htmlFor="tasks-notes" classname="modal-notes-label">
+									Notes
+								</label>
+								<textarea
+									id="task-notes"
+									className="input"
+									placehodler="Add any notes about this task..."
+									rows={3}
+								/>
+							</div>
+
 							<button onClick={() => setTaskItem(null)}>Close</button>
 						</div>
 					</div>
 				)}
 			</div>
-
 		</>
 	);
 }
