@@ -4,6 +4,7 @@
  */
 exports.up = function (knex) {
     return knex.schema.createTable('user_tasks', table => {
+        table.increments('id')
         table.integer('user_id').references('id').inTable('users')
         table.integer('task_id').references('id').inTable('tasks')
     })
