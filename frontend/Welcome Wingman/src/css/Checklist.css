@@ -7,7 +7,6 @@
 	--muted-blue: #b8c7d9;
 }
 
-
 /* Assignment Section */
 
 .assignment-panel {
@@ -19,12 +18,10 @@
 	border: 1px solid var(--af-blue);
 }
 
-
 .assignment-panel h2,
 .assignment-panel h3 {
 	color: var(--neon-cyan);
 }
-
 
 .assignment-panel select {
 	background: var(--deep-navy);
@@ -36,12 +33,10 @@
 	cursor: pointer;
 }
 
-
 .assignment-panel input[type="checkbox"] {
 	accent-color: var(--neon-cyan);
 	margin-right: 10px;
 }
-
 
 .assignment-panel button {
 	background: var(--af-blue);
@@ -54,12 +49,9 @@
 	margin-top: 15px;
 }
 
-
 .assignment-panel button:hover {
 	background: var(--neon-cyan);
 }
-
-
 
 /* Checklist Header */
 
@@ -77,8 +69,6 @@
 	border-bottom: 2px solid var(--neon-cyan);
 }
 
-
-
 /* Checklist Rows */
 
 .Checklist-Container {
@@ -86,7 +76,6 @@
 	padding: 0;
 	margin: 0;
 }
-
 
 .checklist-item {
 	display: grid;
@@ -106,15 +95,12 @@
 
 	cursor: pointer;
 
-	transition: background .2s ease;
+	transition: background 0.2s ease;
 }
-
 
 .checklist-item:hover {
-	background: rgba(77,168,218,.15);
+	background: rgba(77, 168, 218, 0.15);
 }
-
-
 
 /* Checkbox */
 
@@ -125,15 +111,12 @@
 	cursor: pointer;
 }
 
-
-
 /* Assigned User */
 
 .assigned-user {
 	color: var(--neon-cyan);
 	font-weight: bold;
 }
-
 
 /* Status */
 
@@ -142,13 +125,10 @@
 	font-weight: bold;
 }
 
-
 .incomplete {
 	color: #ffcc00;
 	font-weight: bold;
 }
-
-
 
 /* Modal */
 
@@ -170,7 +150,6 @@
 	z-index: 1000;
 }
 
-
 .modal {
 	background: var(--dark-steel-bl);
 
@@ -190,19 +169,16 @@
 
 	position: relative;
 
-	box-shadow: 0 10px 30px rgba(0,0,0,.5);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 
 	border: 1px solid var(--af-blue);
 }
-
 
 .modal h2 {
 	color: var(--neon-cyan);
 }
 
-
 .modal button {
-
 	background: var(--af-blue);
 
 	color: var(--deep-navy);
@@ -218,40 +194,26 @@
 	cursor: pointer;
 
 	margin-top: 20px;
-
 }
-
 
 .modal button:hover {
-
 	background: var(--neon-cyan);
-
 }
-
-
 
 /* Responsive */
 
-@media(max-width: 900px) {
-
+@media (max-width: 900px) {
 	.checklist-header {
 		display: none;
 	}
 
-
 	.checklist-item {
-
 		grid-template-columns: 40px 1fr;
 
 		gap: 10px;
-
 	}
-
 
 	.checklist-item span {
-
 		grid-column: 2;
-
 	}
-
 }
