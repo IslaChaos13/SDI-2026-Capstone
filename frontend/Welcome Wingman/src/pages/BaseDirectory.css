@@ -1,0 +1,119 @@
+.directory-hero-search {
+  margin-bottom: var(--space-xl);
+}
+
+.directory-hero-search .search-bar {
+  padding: 0 var(--space-lg);
+}
+
+.directory-hero-search .search-bar input {
+  padding: 16px 0;
+  font-size: 16px;
+}
+
+.directory-row {
+  display: grid;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1000px) {
+  .directory-row.split {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.directory-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.directory-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.directory-card h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.directory-contact-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.directory-card-footer {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-2xl) 0 var(--space-lg);
+}
+
+.section-divider hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.section-divider span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.emergency-card {
+  border-color: rgba(255, 107, 107, 0.4);
+  background: rgba(255, 107, 107, 0.06);
+}
+
+.emergency-card h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.emergency-card .emergency-number {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.frequent-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.frequent-chip {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.frequent-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
