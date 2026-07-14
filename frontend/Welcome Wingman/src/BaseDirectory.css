@@ -81,6 +81,7 @@ body {
     flex-direction: column;
     align-items: center;
     box-shadow: 0 4px 12px rgba(0,212,255,0.15);
+    background-color: #112240;
 }
 
 .link-img {
@@ -113,7 +114,7 @@ body {
     margin-top: 0;
     color: #F5F7FA;
     padding: 24px 0 16px;
-    
+
 }
 
 /* Primary Theme: Deep Navy (#0A192F)
