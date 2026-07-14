@@ -9,8 +9,8 @@ exports.up = function(knex) {
     table.string('link')
     table.string('phone')
     table.string('address')
-    table.decimal('latitude', 10, 8);
-    table.decimal('longitude', 11, 8);
+    table.decimal('latitude', 18, 15);
+    table.decimal('longitude', 17, 14);
   })
 };
 
