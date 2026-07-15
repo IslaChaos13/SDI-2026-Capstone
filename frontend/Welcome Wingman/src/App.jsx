@@ -1,14 +1,22 @@
-import { useState } from 'react'
-import Checklist from './pages/Checklist'
-import './App.css'
+import Logon from "./Pages/Logon"
+import Navbar from "./components/Navbar"
+import { Routes, Route } from "react-router-dom"
 
 function App() {
 
-
   return (
     <>
-  <Checklist />
-</>
+      <div>
+        <Navbar />
+
+        <Routes>
+
+          <Route path="/login" element={<Logon />} />
+
+        </Routes>
+
+      </div>
+    </>
   )
 }
 

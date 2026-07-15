@@ -48,7 +48,9 @@ app.get('/users', async (req, res) => {
 //changed below /tasks/
 app.get('/tasks', async (req, res) => {
    try {
-      const tasks = await knex('tasks').select('*');
+      const [tasks] = await Promise.all([
+         knex('users').select('*')
+      ])
 
       res.status(200).json({
          tasks: tasks
