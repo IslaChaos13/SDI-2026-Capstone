@@ -1,7 +1,7 @@
 # SDI-2026-Capstone
 
 ## DOCKER COMMANDS
-# NEW UPDATE
+# INITIAL SETUP
 The backend team is awesome and Dockerized the database. This means that if you do a `git pull` you should get a `docker-compose.yml` and a `Dockerfile` in the backend directory.
 
 From the root directory: <br>
@@ -14,7 +14,7 @@ f419667fca27   sdi-2026-capstone-api   "docker-entrypoint.s…"   7 minutes ago 
 5. cd into the `/backend` directory and run `npm run resetServer`. You should see migrations run successfully.
 6. Happy coding!
 
-# Updating the container after an update
+# UPDATING THE CONTAINER
 1. `git pull` to get the latest changes
 2. `docker-compose down` to tear down the old container
 3. `docker-compose build --no-cache api` to rebuild with changes implemented
