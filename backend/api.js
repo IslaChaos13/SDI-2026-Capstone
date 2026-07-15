@@ -145,7 +145,7 @@ app.post('/register', async (req, res) => {
    res.json({ message: 'Thanks for signing up! Log in with your email' })
 })
 
-//how are we incorporating login with this?
+
 app.post('/user_tasks', async (req, res) => {
       const { id, note } = req.body
 
@@ -154,8 +154,7 @@ app.post('/user_tasks', async (req, res) => {
       }
 
       const [updatedUserTask] = await knex('user_tasks').where({
-            user_id,
-            task_id
+         id
       })
       .update({
          note: note || null
