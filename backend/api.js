@@ -123,7 +123,7 @@ app.post('/login', async (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-   const { first_name, last_name, email, password, birth_date } = req.body
+   const { first_name, last_name, email, password } = req.body
 
    const existing = await db('users').where({ email }).first()
    if (existing) return res.status(400).json({ error: `You've already got an account!` })

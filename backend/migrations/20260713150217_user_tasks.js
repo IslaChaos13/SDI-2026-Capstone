@@ -7,6 +7,7 @@ exports.up = function (knex) {
         table.increments('id')
         table.integer('user_id').references('id').inTable('users')
         table.integer('task_id').references('id').inTable('tasks')
+        table.string('note')
     })
 };
 
