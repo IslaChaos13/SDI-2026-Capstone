@@ -7,6 +7,10 @@ exports.up = function (knex) {
         table.increments('id')
         table.integer('user_id').references('id').inTable('users')
         table.integer('task_id').references('id').inTable('tasks')
+        table.string('priority')
+        table.date('due_date')
+        table.bool('is_complete')
+        table.string('note')
     })
 };
 

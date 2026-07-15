@@ -9,8 +9,6 @@ exports.up = function (knex) {
         table.integer('id_directory')
         table.string('title')
         table.string('action_item')
-        table.date('due_date')
-        table.bool('is_complete')
     })
 };
 

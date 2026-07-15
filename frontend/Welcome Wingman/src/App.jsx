@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import Logon from './pages/Logon'
@@ -31,14 +32,24 @@ const router = createBrowserRouter([
 
   // },
 ]);
+=======
+import { useState } from 'react'
+import Checklist from './pages/Checklist'
+import './App.css'
+>>>>>>> main
 
 function App() {
 
 
   return (
     <>
+<<<<<<< HEAD
      <RouterProvider router = {router}/>
     </>
+=======
+  <Checklist />
+</>
+>>>>>>> main
   )
 }
 

@@ -25,10 +25,41 @@ export default function MyChecklist() {
 	const [users, setUsers] = useState([]);
 	const [userTasks, setUserTasks] = useState([]);
 	const [taskItem, setTaskItem] = useState(null);
+
   const [notes, setNotes] = useState("")
 
 	const [currentUserId, setCurrentUserId] = useState("");
 	const [filter, setFilter] = useState("all");
+  //----------------Save Notes ---------------
+
+  const saveNotes = async () => {
+  try {
+    const response = await fetch(`${API}/notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        task_id: taskItem.id,
+        notes: notes,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save notes");
+    }
+
+    const data = await response.json();
+    console.log("Saved:", data);
+
+    setTaskItem(null);
+    setNotes("");
+
+  } catch (error) {
+    console.error("Error saving notes:", error);
+  }
+};
+
 
 	// ---------------- Fetch ----------------
 
@@ -230,10 +261,10 @@ export default function MyChecklist() {
 
 									/>
 								</div>
-                < button onClick={() => {
-  setTaskItem(task);
-  setNotes(task.notes || "");
-}}
+                <button button onClick={() => {
+                    setTaskItem(task);
+                    setNotes(task.notes || "");
+                    }}>Save </button>
 
 								<button onClick={() => setTaskItem(null)}>Close</button>
 							</div>

@@ -14,6 +14,7 @@ function createEntries(rows){
 
     data.push({
       is_admin: false,
+      is_manager: faker.datatype.boolean(),
       rank: `E-${faker.number.int({ min: 1, max: 9 })}`,
       first_name: firstName,
       last_name: lastName,
@@ -29,10 +30,11 @@ function createEntries(rows){
 }
 
 exports.seed = async function(knex) {
-  await knex('users').del()
+  //await knex('users').del()
   await knex('users').insert(createEntries(10));
   await knex('users').insert({
     is_admin: true,
+    is_manager: true,
     rank: 'E-5',
     first_name: 'John',
     last_name: 'Admin',
