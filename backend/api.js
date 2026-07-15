@@ -80,14 +80,16 @@ app.get('/directory', async (req, res) => {
 })
 
 app.get('/user_tasks', async (req, res) => {
+
    try {
       const [user_tasks] = await Promise.all([
-         knex('user_tasks').select('*')
+         knex('user_tasks')
+            .join('users', 'users.id', 'user_tasks.user_id')
+            .join('tasks', 'tasks.id', 'user_tasks.task_id')
+            .select('users.rank', 'users.first_name', 'users.last_name', 'tasks.title', 'tasks.action_item', 'tasks.due_date', 'tasks.is_complete')
       ])
 
-      res.status(200).json({
-         user_tasks: user_tasks
-      })
+      res.json(user_tasks)
    } catch (err) {
       res.status(500).json({
          message: 'Failed to fetch data'

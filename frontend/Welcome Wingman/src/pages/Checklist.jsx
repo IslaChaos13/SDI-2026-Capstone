@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
 import "../css/Checklist.css";
-
 export default function Checklist() {
 	const API = "http://localhost:8000";
-
 	const [tasks, setTasks] = useState([]);
 	const [users, setUsers] = useState([]);
 	const [userTasks, setUserTasks] = useState([]);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [taskItem, setTaskItem] = useState(null);
-
 	// --- Original fetch
 	useEffect(() => {
 		fetch(`${API}/tasks`)
@@ -19,59 +16,20 @@ export default function Checklist() {
 				setTasks(json.tasks);
 			})
 			.catch((err) => console.error(err));
-
 		fetch(`${API}/user_tasks`)
 			.then((res) => res.json())
 			.then((json) => {
 				setUserTasks(json ?? []);
 			})
 			.catch((err) => console.error(err));
-
 		fetch(`${API}/users`)
 			.then((res) => res.json())
 			.then((json) => setUsers(json.users))
 			.catch((err) => console.error(err));
 	}, []);
-
-	const toggleTaskComplete = async (taskId, currentStatus) => {
-		const newStatus = !currentStatus;
-
-		setTasks((prev) =>
-			prev.map((t) => (t.id === taskId ? { ...t, is_complete: newSTatus } : t)),
-		);
-
-		setTaskItem((prev) =>
-			prev && prev.id === taskId ? { ...prev, is_complete: newStatus } : prev,
-		);
-
-		try {
-			const res = await fetch(`${API}/tasks/${taskId}`, {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ is_complete: newStatus }),
-			});
-
-			if (!res.ok) throw new Error("Failed to update task");
-		} catch (err) {
-			console.error(err);
-			// Roll back on failure
-			setTasks((prev) =>
-				prev.map((t) =>
-					t.id === taskId ? { ...t, is_complete: currentStatus } : t,
-				),
-			);
-			setTaskItem((prev) =>
-				prev && prev.id === taskId
-					? { ...prev, is_complete: currentStatus }
-					: prev,
-			);
-		}
-	};
-
 	const selectedUserObj = selectedUser
 		? users.find((u) => u.id === selectedUser)
 		: null;
-
 	const assignedTaskTitles = selectedUserObj
 		? userTasks
 				.filter(
@@ -81,18 +39,15 @@ export default function Checklist() {
 				)
 				.map((ut) => ut.title)
 		: null;
-
 	const visibleTasks = selectedUserObj
 		? tasks.filter((task) => assignedTaskTitles.includes(task.title))
 		: tasks;
-
 	const formatDate = (isoString) =>
 		new Date(isoString).toLocaleDateString("en-US", {
 			month: "long",
 			day: "numeric",
 			year: "numeric",
 		});
-
 	return (
 		<>
 			<div className="page">
@@ -100,14 +55,12 @@ export default function Checklist() {
 					<h1>My Checklist</h1>
 					<p>Track your in-processing tasks from start to finish.</p>
 				</div>
-
 				<div className="card checklist-progress-card">
 					<div className="progress-label">
 						<span className="percent">65%</span>
 						<span> 7 of 11 tasks complete</span>
 					</div>
 				</div>
-
 				<div className="user-select-container">
 					<label htmlFor="user-select">View tasks for:</label>
 					<select
@@ -125,13 +78,11 @@ export default function Checklist() {
 						))}
 					</select>
 				</div>
-
 				<div className="checklist-header">
 					<h3>Status</h3>
 					<h3>Action Item</h3>
 					<h3>Due Date</h3>
 				</div>
-
 				<ul className="checklist-container">
 					{visibleTasks.map((task) => (
 						<li
@@ -142,7 +93,7 @@ export default function Checklist() {
 							<span className={task.is_complete ? "complete" : "incomplete"}>
 								{task.is_complete ? "Complete" : "Incomplete"}
 							</span>
-							<p>{task.title}</p>
+							<p>{task.action_item}</p>
 							<p>{formatDate(task.due_date)}</p>
 						</li>
 					))}
@@ -150,14 +101,12 @@ export default function Checklist() {
 						<li className="checklist-empty">No tasks assigned to this user.</li>
 					)}
 				</ul>
-
 				{taskItem && (
 					<div className="modal-overlay" onClick={() => setTaskItem(null)}>
 						<div className="modal" onClick={(e) => e.stopPropagation()}>
-							<h2>{taskItem.title}</h2>
+							<h2>{taskItem.action_item}</h2>
 							<p>Due: {formatDate(taskItem.due_date)}</p>
 							<p>Details: {taskItem.action_item}</p>
-
 							<div className="modal-notes-group">
 								<label htmlFor="tasks-notes" classname="modal-notes-label">
 									Notes
