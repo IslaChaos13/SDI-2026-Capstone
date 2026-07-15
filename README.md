@@ -14,6 +14,13 @@ f419667fca27   sdi-2026-capstone-api   "docker-entrypoint.s…"   7 minutes ago 
 5. cd into the `/backend` directory and run `npm run resetServer`. You should see migrations run successfully.
 6. Happy coding!
 
+# Updating the container after an update
+1. `git pull` to get the latest changes
+2. `docker-compose down` to tear down the old container
+3. `docker-compose build --no-cache api` to rebuild with changes implemented
+4. `docker-compose up -d` to bring up the container
+5. `cd backend` and then run `npm run resetServer`
+
 # This might be old now, your mileage will vary
 
 ### CREATE CONTAINER ACCORDING TO OUR 'knexfile.js' SETTINGS, ONLY RUN ONCE!!
