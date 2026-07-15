@@ -146,11 +146,11 @@ app.post('/register', async (req, res) => {
 })
 
 //how are we incorporating login with this?
-app.post('/user_tasks/note', async (req, res) => {
-      const { user_id, task_id, note } = req.body
+app.post('/user_tasks', async (req, res) => {
+      const { id, note } = req.body
 
-      if (!user_id || !task_id) {
-         return res.status(400).json({error: `You need to input user ID and task ID!`})
+      if (!id) {
+         return res.status(400).json({error: `You need to input user ID`})
       }
 
       const [updatedUserTask] = await knex('user_tasks').where({
