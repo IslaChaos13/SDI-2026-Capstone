@@ -99,7 +99,7 @@ app.get('/user_tasks', async (req, res) => {
 app.post('/login', async (req, res) => {
    const { email, password } = req.body
 
-   const user = await db('users').where({ email }).first()
+   const user = await knex('users').where({ email }).first()
 
    if (!user) return res.status(401).json({ error: 'User not found!' })
 
@@ -125,12 +125,12 @@ app.post('/login', async (req, res) => {
 app.post('/register', async (req, res) => {
    const { first_name, last_name, email, password } = req.body
 
-   const existing = await db('users').where({ email }).first()
+   const existing = await knex('users').where({ email }).first()
    if (existing) return res.status(400).json({ error: `You've already got an account!` })
 
    const hashedPassword = await bcrypt.hash(password, 10)
 
-   const [user] = await db('users').insert({
+   const [user] = await knex('users').insert({
       is_admin: false,
       is_manager: false,
       rank,
@@ -148,36 +148,36 @@ app.post('/register', async (req, res) => {
 
 
 app.post('/user_tasks', async (req, res) => {
-      const { id, user_id, task_id, priority, due_date, note } = req.body
+   const { id, user_id, task_id, priority, due_date, note } = req.body
 
-      if (id) {
-         const [updatedUserTask] = await knex('user_tasks').where({
-            id
-         })
+   if (id) {
+      const [updatedUserTask] = await knex('user_tasks').where({
+         id
+      })
          .update({
             note: note || null
          }).returning('*')
 
-         if (!updatedUserTask) {
-            return res.status(404).json({error: `Incorrect ID!`})
-         }
-
-         res.json({ message: "Note updated!"})
-
-      } else if (user_id && task_id && due_date) {
-         const [user] = await db('users').insert({
-            user_id,
-            task_id,
-            priority: priority || 'Medium',
-            due_date,
-            note: note || null
-
-         }).returning('*')
-
-         res.json({ message: "Task created."})
+      if (!updatedUserTask) {
+         return res.status(404).json({ error: `Incorrect ID!` })
       }
 
-      return res.status(400).json({error: `Something went wrong :(`})
+      res.json({ message: "Note updated!" })
+
+   } else if (user_id && task_id && due_date) {
+      const [user] = await knex('users').insert({
+         user_id,
+         task_id,
+         priority: priority || 'Medium',
+         due_date,
+         note: note || null
+
+      }).returning('*')
+
+      res.json({ message: "Task created." })
+   }
+
+   return res.status(400).json({ error: `Something went wrong :(` })
 })
 
 
