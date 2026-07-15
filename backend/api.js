@@ -165,7 +165,7 @@ app.post('/user_tasks', async (req, res) => {
       res.json({ message: "Note updated!" })
 
    } else if (user_id && task_id && due_date) {
-      const [user] = await knex('users').insert({
+      const [user] = await knex('user_tasks').insert({
          user_id,
          task_id,
          priority: priority || 'Medium',
