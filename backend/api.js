@@ -146,6 +146,17 @@ app.post('/register', async (req, res) => {
    res.json({ message: 'Thanks for signing up! Log in with your email' })
 })
 
+app.post('/tasks', async (req, res) => {
+   const { id_directory, title, action_item } = req.body
+
+   const [newTask] = await knex('tasks').insert({
+      id_directory,
+      title,
+      action_item
+   }).returning('*')
+
+   res.json({ message: 'New task created' })
+})
 
 app.post('/user_tasks', async (req, res) => {
    const { id, user_id, task_id, priority, due_date, note } = req.body

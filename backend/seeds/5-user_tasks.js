@@ -15,6 +15,7 @@ async function createSeed(knex) {
       userTaskSeed.push({
         user_id: user.id,
         task_id: task.id,
+        priority: ["Low", "Medium", "High"][Math.floor(Math.random() * 3)],
         due_date: getRandomDate(new Date(2026,7,1), new Date(2030,11,31)),
         is_complete: false,
         note: null
