@@ -158,6 +158,21 @@ app.post('/tasks', async (req, res) => {
    res.json({ message: 'New task created' })
 })
 
+app.post('/directory', async (req, res) => {
+   const { title, link, phone, address, latitude, longitude } = req.body
+
+   const [newDirectory] = await knex('directory').insert({
+      title,
+      link,
+      phone,
+      address,
+      latitude,
+      longitude
+   }).returning('*')
+
+   res.json({ message: 'New Directory Entry created' })
+})
+
 app.post('/user_tasks', async (req, res) => {
    const { id, user_id, task_id, priority, due_date, note } = req.body
 
