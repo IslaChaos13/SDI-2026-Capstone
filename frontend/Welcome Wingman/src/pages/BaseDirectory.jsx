@@ -1,9 +1,55 @@
+import { useState, useEffect } from 'react'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import './BaseDirectory.css'
 
+const mapCenter = [32.50283298104374, -93.66312248601946]
+
+function FacilityMap({ scrollWheelZoom, facilities }) {
+
+  return (
+    <MapContainer center={mapCenter} zoom={13} scrollWheelZoom={scrollWheelZoom}>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; OpenStreetMap contributors'
+        />
+      {facilities.map((facility) => (
+        <Marker key={facility.id} position={[Number(facility.latitude), Number(facility.longitude)]}>
+          <Popup>
+            <strong>{facility.title}</strong><br />
+            {facility.address}<br />
+            {facility.phone}<br />
+            <a href={facility.link} target="_blank" rel="noopener noreferrer">Visit site</a>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  )
+}
+
 // Static mockup only — no data, no logic, no routing.
 function BaseDirectory() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [facilities, setFacilities] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+
+    useEffect(() => {
+    fetch('http://localhost:8000/directory')
+      .then(res => res.json())
+      .then(data => setFacilities(data.directory || []))
+      .catch(err => console.error('Failed to load facilities:', err))
+  }, [])
+
+  function handleSearch() {
+  let results = facilities.filter(f =>
+                f.title.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+  setSearchResults(results)
+}
+
   return (
     <Layout>
       <div className="page">
@@ -15,8 +61,22 @@ function BaseDirectory() {
         <div className="card directory-hero-search">
           <div className="search-bar">
             <span className="search-icon">⌕</span>
-            <input type="text" placeholder="Search offices, phone, or address..." readOnly />
+            <input type="text" placeholder="Search offices..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button onClick={handleSearch}>Search</button>
           </div>
+          {searchResults.length > 0 && (
+            <div className='search-results'>
+              {searchResults.map(facility => (
+                <div className='fac-item' key={facility.id}>
+                  <p>{facility.title} Phone: {facility.phone} <br/> Address: {facility.address}s</p>
+                  </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <h2 className="section-label">Offices</h2>
@@ -78,11 +138,9 @@ function BaseDirectory() {
             <div className="card-header">
               <h2>Location Map</h2>
             </div>
-            <div className="map-placeholder">
-              <span className="map-pin" style={{ top: '30%', left: '40%' }}>📍</span>
-              <span className="map-pin" style={{ top: '55%', left: '62%' }}>📍</span>
-              <span className="map-pin" style={{ top: '68%', left: '30%' }}>📍</span>
-              <span className="map-label">Map integration coming soon</span>
+            <div className="map-preview-wrapper" onClick={() => setIsOpen(true)}>
+              <FacilityMap scrollWheelZoom={false} facilities={facilities} />
+              <div className="expand-map">Click to Expand</div>
             </div>
           </div>
 
@@ -99,6 +157,13 @@ function BaseDirectory() {
             </div>
           </div>
         </div>
+
+        {isOpen && (
+          <div className="map-modal">
+            <button className="close-btn" onClick={() => setIsOpen(false)}>x</button>
+            <FacilityMap scrollWheelZoom={true} facilities={facilities} />
+          </div>
+        )}
 
         <h2 className="section-label">Emergency Contacts</h2>
         <div className="grid grid-3" style={{ marginBottom: 'var(--space-xl)' }}>
@@ -163,7 +228,7 @@ function BaseDirectory() {
                   <td>Military and Family Readiness</td>
                   <td>Bldg 801</td>
                   <td>318-456-8400</td>
-                  <td>Mon–Fri, 0800–1630</td>
+                  <td>Mon–Fri, 0800-1630</td>
                   <td>mfr@barksdale.af.mil</td>
                 </tr>
               </tbody>
