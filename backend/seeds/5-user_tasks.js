@@ -14,7 +14,10 @@ async function createSeed(knex) {
     for (const task of userTasks) {
       userTaskSeed.push({
         user_id: user.id,
-        task_id: task.id
+        task_id: task.id,
+        due_date: getRandomDate(new Date(2026,7,1), new Date(2030,11,31)),
+        is_complete: false,
+        note: null
       })
     }
   }
@@ -27,6 +30,14 @@ function getRandomElements (elements){
   const shuffledElements = [...elements].sort(() => Math.random() - 0.5);
 
   return shuffledElements.slice(0, numElements);
+}
+
+function getRandomDate(start, end) {
+  const startTime = start.getTime();
+  const endTime = end.getTime();
+
+  const randomTime = startTime + Math.random() * (endTime - startTime);
+  return new Date(randomTime);
 }
 
 exports.seed = async function(knex) {
