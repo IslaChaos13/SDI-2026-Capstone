@@ -49,7 +49,7 @@ app.get('/users', async (req, res) => {
 app.get('/tasks', async (req, res) => {
    try {
       const [tasks] = await Promise.all([
-         knex('users').select('*')
+         knex('tasks').select('*')
       ])
 
       res.status(200).json({
