@@ -145,6 +145,33 @@ app.post('/register', async (req, res) => {
    res.json({ message: 'Thanks for signing up! Log in with your email' })
 })
 
+//how are we incorporating login with this?
+app.post('/user_tasks/note', async (req, res) => {
+      const { user_id, task_id, note } = req.body
+
+      if (!user_id || !task_id) {
+         return res.status(400).json({error: `You need to input user ID and task ID!`})
+      }
+
+      const [updatedUserTask] = await knex('user_tasks').where({
+            user_id,
+            task_id
+      })
+      .update({
+         note: note || null
+      }).returning('*')
+
+      if (!updatedUserTask) {
+         return res.status(404).json({error: `Incorrect user ID and/or task ID!`})
+      }
+      
+      res.json({ message: "Note updated!"})
+})
+
+
+
+
+
 app.listen(PORT, () => {
    console.log(`Server running at http://localhost:${PORT}`);
 });
