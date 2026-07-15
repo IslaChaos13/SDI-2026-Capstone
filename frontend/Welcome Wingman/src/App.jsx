@@ -1,5 +1,5 @@
 import Logon from "./Pages/Logon"
-import Navbar from "./componets/Navbar"
+import Navbar from "./components/Navbar"
 import { Routes, Route } from "react-router-dom"
 
 function App() {
