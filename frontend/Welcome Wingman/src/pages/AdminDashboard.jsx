@@ -1,6 +1,5 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
-import './Dashboard.css'
 import '../styles/AdminDashboard.css'
 
 function AdminDashboard() {
