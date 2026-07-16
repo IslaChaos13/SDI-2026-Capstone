@@ -224,6 +224,18 @@ app.post('/user_tasks', async (req, res) => {
    return res.status(400).json({ error: `Something went wrong :(` })
 })
 
+app.delete('/tasks/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('user_tasks').where({ task_id: req.params.id }).del()
+      await knex('tasks').where({ id: req.params.id }).del()
+      res.json({ message: 'task deleted!' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
 
 
 app.listen(PORT, () => {
