@@ -6,7 +6,7 @@ import medical from './assets/medical_services_150dp_FFFFFF_FILL0_wght400_GRAD0_
 import security from './assets/crisis_alert_150dp_FFFFFF_FILL0_wght400_GRAD0_opsz48.svg'
 import { MapContainer, TileLayer} from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
-import './BaseDirectory.css'
+import '../styles/BaseDirectory.css'
 
 function FacilityMap({scrollWheelZoom}) {
   return (

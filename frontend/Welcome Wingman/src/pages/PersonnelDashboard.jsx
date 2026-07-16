@@ -3,7 +3,7 @@ import '../styles/theme.css'
 import './Dashboard.css'
 import './MyChecklist.css'
 import './Profile.css'
-import './PersonnelDashboard.css'
+import '../styles/PersonnelDashboard.css'
 
 function PersonnelDashboard() {
   return (

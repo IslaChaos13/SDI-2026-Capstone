@@ -3,7 +3,7 @@ import { CheckCircle2, Circle, ListChecks } from "lucide-react";
 
 import Layout from "../components/Layout";
 import "../css/theme.css";
-import "./MyChecklist.css";
+import "../styles/MyChecklist.css"
 
 // ---------------- Permissions ----------------
 
