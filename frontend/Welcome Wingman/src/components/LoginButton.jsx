@@ -4,8 +4,7 @@ function LoginButton(){
 console.log('We here!')
 let navigate = useNavigate()
 
-    return
-    (
+    return(
         <button>Click Me</button>
     )
 }
