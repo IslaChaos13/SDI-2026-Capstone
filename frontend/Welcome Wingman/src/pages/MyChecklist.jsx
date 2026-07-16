@@ -44,6 +44,7 @@ export default function MyChecklist() {
 				body: JSON.stringify({
 					id: taskItem.id,
 					note: notes,
+					is_complete: taskItem.is_complete,
 				}),
 			});
 
@@ -98,7 +99,7 @@ export default function MyChecklist() {
 	// ---------------- Visible Tasks ----------------
 
 	const visibleTasks = useMemo(() => {
-		if (!currentUserId) return [];
+		if (!currentUserId || !currentUser) return [];
 
 		let results = userTasks
 			// ---- * Below Filter is filtering by name * ----- ///
@@ -106,11 +107,12 @@ export default function MyChecklist() {
 				(ut) =>
 					ut.first_name === currentUser.first_name &&
 					ut.last_name === currentUser.last_name,
-			);
+			)
 		//Below is code for when filtering by userId
 		// .filter((ut) => ut.user_id === currentUserId)
-		// .map((ut) => {
-		// 	const task = tasks.find((t) => t.id === ut.task_id);
+		.map((ut) => {
+			const task = tasks.find((t) => t.id === ut.task_id);
+			return { ...ut, ...task, note: ut.note }
 
 		//   console.log("User task:", ut),
 		//   console.log("Matched task:", task)
@@ -119,8 +121,8 @@ export default function MyChecklist() {
 		// 		...ut,
 		// 		...task,
 		// 	};
-		// })
-		// .filter((task) => task.id);
+		})
+		.filter((task) => task.id)
 
 		console.log("Visible tasks:", results);
 
@@ -171,6 +173,7 @@ export default function MyChecklist() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 id: updated.id,
+				note: updated.notes,
                 is_complete: updated.is_complete,
             }),
         });
@@ -300,28 +303,13 @@ export default function MyChecklist() {
 						))}
 					</ul>
 
-					{taskItem && (
+						{taskItem && (
 						<div className="modal-overlay" onClick={() => setTaskItem(null)}>
 							<div className="modal" onClick={(e) => e.stopPropagation()}>
-								<button
-									className="modal-toggle-btn"
-									onClick={() => toggleTask(taskItem.id)}
-								>
-									{taskItem.is_complete ? (
-										<>
-											<CheckCircle2 size={10} /> Incomplete
-										</>
-									) : (
-										<>
-											<Circle size={20} /> Complete
-										</>
-									)}
-								</button>
 								<h2>{taskItem.title}</h2>
 								<p>Details: {taskItem.action_item}</p>
 								<p>Due Date: {formatDate(taskItem.due_date)}</p>
-								<p>Point of Contact: </p>{" "}
-								{/*Need a reference from task to the task manager*/}
+
 								<div className="modal-notes-group">
 									<label htmlFor="tasks-notes" className="modal-notes-label">
 										Notes
@@ -335,13 +323,35 @@ export default function MyChecklist() {
 										onChange={(e) => setNotes(e.target.value)}
 									/>
 								</div>
-								<button onClick={() => saveNotes()}>Save </button>
+								<button onClick={() => saveNotes()}>Save</button>
+							<button
+										onClick={(e) => {
+											e.stopPropagation();
+											toggleTask(taskItem.id);
+										}}
+
+										style={{
+											color: taskItem.is_complete ? "#ffffff" : "#333333",
+											backgroundColor: taskItem.is_complete ? "#22c55e" : "#e5e7eb",
+										}}
+									>
+									{taskItem.is_complete ? (
+	<>
+		<CheckCircle2 size={10} /> <span>Completed</span>
+	</>
+) : (
+	<>
+		<Circle size={10} /> <span>Incomplete</span>
+	</>
+)}
+									</button>
 								<button onClick={() => setTaskItem(null)}>Close</button>
 							</div>
 						</div>
 					)}
 				</div>
 			</div>
+
 		</Layout>
 	);
 }
