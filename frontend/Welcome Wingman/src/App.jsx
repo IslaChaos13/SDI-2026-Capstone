@@ -1,7 +1,8 @@
-import TaskManagement from "./pages/TaskManagement";
+import AdminDashboard from './pages/AdminDashboard.jsx'
+import BaseDirectory from './pages/BaseDirectory.jsx'
 
 function App() {
-  return <TaskManagement />;
+  return <BaseDirectory />
 }
 
 export default App
