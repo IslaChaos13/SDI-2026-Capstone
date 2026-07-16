@@ -97,7 +97,7 @@ app.get('/user_tasks', async (req, res) => {
 app.post('/login', async (req, res) => {
    const { email, password } = req.body
 
-   const user = await db('users').where({ email }).first()
+   const user = await knex('users').where({ email }).first()
 
    if (!user) return res.status(401).json({ error: 'User not found!' })
 
