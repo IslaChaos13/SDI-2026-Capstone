@@ -2,9 +2,10 @@ import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/Dashboard.css'
 
-function Dashboard() {
+function Dashboard({LoggedIn}) {
   return (
-    <Layout>
+    <Layout LoggedIn={LoggedIn}>
+         <h1>{LoggedIn}</h1>
       <div className="page dashboard-page">
         <div className="dashboard-bg">
           <div className="dashboard-bg-grid"></div>

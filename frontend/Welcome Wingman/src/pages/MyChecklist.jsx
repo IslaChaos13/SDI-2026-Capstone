@@ -1,20 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { CheckCircle2, Circle, ListChecks } from "lucide-react";
 
+import UserIcon from '../components/UserIcon'
+import LoginButton from '../components/LoginButton'
 import Layout from "../components/Layout";
 import "../css/theme.css";
 import "../styles/MyChecklist.css"
 
 // ---------------- Permissions ----------------
 
-const PERMISSIONS = {
-	admin: ["manage_users", "assign_tasks", "manage_tasks", "view_own_tasks"],
-	task_manager: ["manage_tasks", "assign_tasks", "view_own_tasks"],
-	user: ["view_own_tasks"],
-};
+// const PERMISSIONS = {
+// 	admin: ["manage_users", "assign_tasks", "manage_tasks", "view_own_tasks"],
+// 	task_manager: ["manage_tasks", "assign_tasks", "view_own_tasks"],
+// 	user: ["view_own_tasks"],
+// };
 
-const hasPermission = (user, permission) =>
-	user?.roles?.some((role) => PERMISSIONS[role]?.includes(permission));
+// const hasPermission = (user, permission) =>
+// 	user?.roles?.some((role) => PERMISSIONS[role]?.includes(permission));
 
 // ---------------- Component ----------------
 
@@ -91,6 +93,7 @@ export default function MyChecklist() {
 
 	// ---------------- Current User ----------------
 
+	// TODO CHANGE //
 	const currentUser = users.find((u) => u.id === currentUserId);
 
 	const isAdmin = hasPermission(currentUser, "manage_users");

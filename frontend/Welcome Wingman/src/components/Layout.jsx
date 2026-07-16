@@ -3,10 +3,10 @@ import './Layout.css'
 import Header from './Header.jsx'
 import Sidebar from './Sidebar.jsx'
 
-function Layout({ children }) {
+function Layout({LoggedIn, children }) {
   return (
     <div className="app-shell">
-      <Header />
+      <Header LoggedIn={LoggedIn} />
       <div className="app-body">
         <Sidebar />
         <main className="app-main">{children}</main>
