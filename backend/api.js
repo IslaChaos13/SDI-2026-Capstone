@@ -174,21 +174,38 @@ app.post('/directory', async (req, res) => {
 })
 
 app.post('/user_tasks', async (req, res) => {
-   const { id, user_id, task_id, priority, due_date, note } = req.body
+   const { id, user_id, task_id, priority, due_date, is_complete, note } = req.body
 
    if (id) {
-      const [updatedUserTask] = await knex('user_tasks').where({
-         id
-      })
-         .update({
-            note: note || null
-         }).returning('*')
+      if (note) {
+         const [updatedUserTask] = await knex('user_tasks').where({
+            id
+         })
+            .update({
+               note: note
+            }).returning('*')
 
-      if (!updatedUserTask) {
-         return res.status(404).json({ error: `Incorrect ID!` })
+         if (!updatedUserTask) {
+            return res.status(404).json({ error: `Incorrect ID!` })
+         }
+
+         res.json({ message: "Note updated!" })
       }
 
-      res.json({ message: "Note updated!" })
+      if (is_complete) {
+         const [completeUserTask] = await knex('user_tasks').where({
+            id
+         })
+            .update({
+               is_complete: is_complete
+            }).returning('*')
+
+         if (!completeUserTask) {
+            return res.status(404).json({ error: `Incorrect ID!` })
+         }
+
+         res.json({ message: "Successfully marked as completed" })
+      }
 
    } else if (user_id && task_id && due_date) {
       const [userTask] = await knex('user_tasks').insert({
