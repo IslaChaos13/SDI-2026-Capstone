@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../css/Logon.css'
 
+
 function Logon() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
+    const { login } = useAuth() /* TJF */
 
     const handleLogin = () => {
         fetch('http://localhost:8000/login', {
@@ -20,6 +22,7 @@ function Logon() {
             if (data.error) {
                 setError(data.error)
             } else {
+                login(data.user ?? data) /* TJF */
                 navigate('/')
             }
         })
@@ -44,6 +47,7 @@ function Logon() {
                 />
                 {error && <p className='LogonError'>{error}</p>}
                 <button onClick={handleLogin}>Enter</button>
+
             </div>
         </div>
     )

@@ -1,9 +1,14 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import Logon from './pages/Logon'
+import AdminDashboard from './pages/AdminDashboard'
+// import BaseDirectory from './pages/BaseDirectory'
+// import Logon from './pages/Logon'
 import Dashboard from './pages/Dashboard'
 import MyChecklist from './pages/MyChecklist'
+import PersonnelDashboard from './pages/PersonnelDashboard'
 import Profile from './pages/Profile'
+
+
 // import BaseDirectory from './pages/BaseDirectory'
 
 
@@ -11,10 +16,10 @@ import Profile from './pages/Profile'
 import "./css/App.css"
 
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <MyChecklist />,
-  },
+  // {
+  //   path: '/logon',
+  //   element: <Logon />,
+  // },
   {
     path: '/mychecklist',
     element: <MyChecklist />
@@ -22,14 +27,25 @@ const router = createBrowserRouter([
   {
     path: '/profile',
     element: <Profile />
+  },
+  {
+    path:'/admin',
+    element: <AdminDashboard />
+  },
+  // {
+  //   path: '/directory',
+  //   element: <BaseDirectory />
+  // },
+   {
+    path: '/personneldashboard',
+    element: <PersonnelDashboard />
+  },
+  {
+    path: '/dashboard',
+    element: <Dashboard />
   }
-  // {
-  //   path: '/dashboard',
-  //   element: <Dashboard />,
-  // },
-  // {
 
-  // },
+
 ]);
 
 function App() {
@@ -37,7 +53,10 @@ function App() {
 
   return (
     <>
+
      <RouterProvider router = {router}/>
+
+
     </>
   )
 }
