@@ -4,6 +4,7 @@
  */
 
 const { faker } = require('@faker-js/faker')
+const bcrypt = require('bcrypt')
 
 function createEntries(rows){
   let data = []
@@ -11,6 +12,7 @@ function createEntries(rows){
   for (let i = 1; i <= rows; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
+    const hashedPassword = await bcrypt.hash(faker.internet.password(), 10);
 
     data.push({
       is_admin: false,
@@ -22,7 +24,7 @@ function createEntries(rows){
       phone: faker.phone.number(),
       address: faker.location.streetAddress(),
       avatar: faker.image.avatar(),
-      password: faker.internet.password(),
+      password: hashedPassword,
     })
   }
 
@@ -42,6 +44,6 @@ exports.seed = async function(knex) {
     phone: '000 000 0000',
     address: 'Admin Street, Admin City',
     avatar: 'Adminvatar',
-    password: 'Admin Password'
+    password: await bcrypt.hash('Admin Password', 10)
   })
 };

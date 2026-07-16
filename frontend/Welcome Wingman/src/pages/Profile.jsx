@@ -1,6 +1,6 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
-import './Profile.css'
+import '../styles/Profile.css'
 
 // Static mockup only — no data, no logic, no routing.
 function Profile() {

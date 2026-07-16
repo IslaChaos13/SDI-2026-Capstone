@@ -1,9 +1,9 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
-import './Dashboard.css'
-import './MyChecklist.css'
-import './Profile.css'
-import './PersonnelDashboard.css'
+import '../styles/Dashboard.css'
+import '../styles/PersonnelDashboard.css'
+import '../styles/Profile.css'
+import '../styles/PersonnelDashboard.css'
 
 function PersonnelDashboard() {
   return (
