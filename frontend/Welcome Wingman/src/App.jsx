@@ -1,4 +1,4 @@
-import Logon from "./Pages/Logon"
+import Logon from './Pages/Logon'
 import AdminDashboard from "./Pages/AdminDashboard"
 import MyChecklist from "./Pages/MyChecklist"
 import Profile from "./Pages/Profile"
@@ -13,7 +13,7 @@ function App() {
   return (
     <>
       <div>
-        <Navbar />
+
 
         <Routes>
 

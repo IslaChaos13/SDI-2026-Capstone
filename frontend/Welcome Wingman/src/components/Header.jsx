@@ -1,24 +1,36 @@
 import '../styles/theme.css'
 import './Header.css'
+import {useParams} from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 function Header() {
+const API = "http://localhost:8000";
+const { userID } = useParams();
+const [user, setUser] = useState(null)
 
-  const user = {
-    rank: 'Capt',
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'John.Doe@test.com',
-    phone: '671-333-4567',
-    address: '255 Loy Via',
-    avatar: null
-  }
+const today = new Date ().toLocaleDateString('en-US', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}) /*TJF*/
 
-  const today = new Date ().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }) /*TJF*/
+useEffect(() => {
+    fetch(`${API}/users`)
+      .then((r) => r.json())
+      .then((userData) => {
+        console.log("USERS:", userData);
+
+        const users = userData.users || [];
+        const matched = users.find((u) => String(u.id) === String(userID));
+
+        setUser(matched || users[0] || null);
+      })
+      .catch(console.error);
+  }, [userID]);
+
+  if(!user) {return null;}
+
 
   return (
     <header className="app-header">
@@ -50,7 +62,7 @@ function Header() {
       <div className="header-user">
         <div className="avatar avatar-sm">U</div>
         <div className="header-user-info">
-          <div className="user-name"><div className="user-name">{user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : 'Guest'}</div></div> {/*TJF*/}
+          <div className="user-name"><div className="user-name">{user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : 'Guest'}</div></div> {/*TJF*/}
           <div className="user-rank">{user.rank ?? ''}</div> {/*TJF*/}
         </div>
       </div>

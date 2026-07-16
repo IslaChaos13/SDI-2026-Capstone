@@ -49,6 +49,8 @@ function BaseDirectory() {
   }
 
   return (
+    <Layout>
+
     <div className='page'>
       <h1 className='title'>Base Directory</h1>
 
@@ -61,7 +63,7 @@ function BaseDirectory() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          />
+            />
           <button onClick={handleSearch}>Search</button>
         </div>
         {searchResults.length > 0 && (
@@ -197,6 +199,7 @@ function BaseDirectory() {
         </div>
       </div>
     </div>
+      </Layout>
   )
 }
 

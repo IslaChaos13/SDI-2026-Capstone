@@ -8,7 +8,7 @@ function Logon() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
-    const { login } = useAuth() /* TJF */
+    // const { login } = useAuth() /* TJF */
 
     const handleLogin = () => {
         fetch('http://localhost:8000/login', {
@@ -22,7 +22,7 @@ function Logon() {
             if (data.error) {
                 setError(data.error)
             } else {
-                login(data.user ?? data) /* TJF */
+                // login(data.user ?? data) /* TJF */
                 navigate('/')
             }
         })

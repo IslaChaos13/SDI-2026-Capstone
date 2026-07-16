@@ -1,10 +1,11 @@
-import {useNavigate } from 'react-router-dom'
+import {useNavigate, useParams } from 'react-router-dom'
 
 import '../styles/theme.css'
 import './Sidebar.css'
 
 function Sidebar() {
   const navigate = useNavigate();
+  const { userID } = useParams();
 
   return (
     <aside className="app-sidebar">
@@ -14,7 +15,7 @@ function Sidebar() {
       </div>
       <div className="nav-item">
         <span className="nav-icon">✅</span>
-        <span className="nav-label" onClick={() => navigate('/mychecklist')}>My Checklist</span>
+        <span className="nav-label" onClick={() => navigate(`${userId}/checklist`)}>My Checklist</span>
       </div>
       <div className="nav-item">
         <span className="nav-icon">📇</span>
