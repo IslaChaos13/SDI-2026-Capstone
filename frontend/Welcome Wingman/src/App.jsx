@@ -1,5 +1,5 @@
 import AdminDashboard from './pages/AdminDashboard.jsx'
-import BaseDirectory from './Pages/BaseDirectory.jsx'
+import BaseDirectory from './pages/BaseDirectory.jsx'
 
 function App() {
   return <BaseDirectory/>

@@ -11,6 +11,41 @@
   font-size: 16px;
 }
 
+.search-results {
+  margin-top: var(--space-sm);
+  border-top: 1px solid var(--border);
+}
+
+.fac-item {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.fac-item:last-child {
+  border-bottom: none;
+}
+
+.fac-item:hover {
+  background: var(--bg);
+}
+
+.fac-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fac-detail {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.search-btn {
+  background-color: var(--primary);
+}
+
 .directory-row {
   display: grid;
   gap: var(--space-lg);

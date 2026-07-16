@@ -35,6 +35,7 @@ function BaseDirectory() {
   const [facilities, setFacilities] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
+  const [hasSearched, setHasSearched] = useState(false)
 
     useEffect(() => {
     fetch('http://localhost:8000/directory')
@@ -48,6 +49,13 @@ function BaseDirectory() {
                 f.title.toLowerCase().includes(searchTerm.toLowerCase())
   )
   setSearchResults(results)
+  setHasSearched(true)
+}
+
+function clearSearch() {
+  setSearchTerm('')
+  setSearchResults([])
+  setHasSearched(false)
 }
 
   return (
@@ -64,18 +72,26 @@ function BaseDirectory() {
             <input type="text" placeholder="Search offices..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <button onClick={handleSearch}>Search</button>
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}/>
+            <button className='btn btn-primary btn-sm' onClick={handleSearch}>Search</button>
           </div>
-          {searchResults.length > 0 && (
-            <div className='search-results'>
-              {searchResults.map(facility => (
+          {hasSearched && (
+              <div className='search-results'>
+                {searchResults.length == 0 ? (
+                  <h4>No Results Found</h4>
+                  ) : (
+            <>
+            <button className='btn btn-primary btn-sm' onClick={clearSearch}>x Clear</button>
+                {searchResults.map(facility => (
                 <div className='fac-item' key={facility.id}>
-                  <p>{facility.title} Phone: {facility.phone} <br/> Address: {facility.address}s</p>
+                  <h4 className='fac-title'>{facility.title}</h4>
+                    <div className='fac-detail'>Phone: {facility.phone}</div>
+                    <div className='fac-detail'>Address: {facility.address}</div>
                   </div>
               ))}
-            </div>
+            </>
+          )}
+          </div>
           )}
         </div>
 
@@ -149,11 +165,16 @@ function BaseDirectory() {
               <h2>Frequently Contacted</h2>
             </div>
             <div className="frequent-chip-row">
-              <span className="frequent-chip">Welcome Center</span>
-              <span className="frequent-chip">DEERS &amp; IDs</span>
-              <span className="frequent-chip">Finance</span>
-              <span className="frequent-chip">Family Readiness</span>
-              <span className="frequent-chip">Security Forces</span>
+              <a href="https://www.barksdale.af.mil/Information/Gate-Hours/" target="=_blank" rel="noopener noreferrer" className="frequent-chip">
+              Welcome Center</a>
+              <a href="https://barksdalelife.com/military-personnel-flight/" target="=_blank" rel="noopener noreferrer" className="frequent-chip">
+              DEERS &amp; IDs</a>
+              <a href="https://www.barksdale.af.mil/Units/2CPTS/" target="=_blank" rel="noopener noreferrer" className="frequent-chip">
+              Finance</a>
+              <a href="https://barksdalelife.com/military-and-family-readiness/?_gl=1*1vx21ft*_up*MQ..*_ga*MTI2Mjk3MjMzOC4xNzgzOTU3OTIy*_ga_MR0WKQ05YN*czE3ODM5NTc5MjEkbzEkZzAkdDE3ODM5NTc5MjEkajYwJGwwJGgw" target="=_blank" rel="noopener noreferrer" className="frequent-chip">
+              Family Readiness</a>
+              <a href="https://www.basedirectory.com/barksdale-afb-directory/security-police" target="=_blank" rel="noopener noreferrer" className="frequent-chip">
+              Security Forces</a>
             </div>
           </div>
         </div>
