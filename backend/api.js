@@ -224,6 +224,8 @@ app.post('/user_tasks', async (req, res) => {
    return res.status(400).json({ error: `Something went wrong :(` })
 })
 
+
+//delete routes
 app.delete('/tasks/:id', async (req, res) => {
    console.log('params:', req.params)
    try {
