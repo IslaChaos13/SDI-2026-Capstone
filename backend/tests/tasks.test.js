@@ -67,9 +67,20 @@ describe('POST /login', () => {
    })
 })
 
-// describe('POST /register', () => {
-//   test('accepts and adds new users into users table', async () => {
-//     const response = await request('http://localhost:8000')
-//       })
-//   })
-// })
+describe('POST /register', () => {
+   test('rejects an email that already exists', async () => {
+      const response = await request('http://localhost:8000')
+         .post('/register')
+         .send({
+            first_name: 'John',
+            last_name: 'Admin',
+            email: 'ImAdmin@admin.com',
+            password: 'Admin Password'
+         })
+
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe(
+         `You've already got an account!`
+      )
+   })
+})
