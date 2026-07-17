@@ -10,13 +10,15 @@ import Navbar from "./components/Navbar"
 import { Routes, Route } from "react-router-dom"
 import {useState} from 'react'
 import TaskManagement from './Pages/TaskManagement'
+import UserContext from './context/UserContext'
 
 function App() {
 
   const [LoggedIn, setLoggedIn] = useState(null)
+  const value = {LoggedIn, setLoggedIn}
 
   return (
-    <>
+    <UserContext.Provider value={value}>
       <div>
 
 
@@ -34,7 +36,7 @@ function App() {
         </Routes>
 
       </div>
-    </>
+    </UserContext.Provider>
   )
 }
 export default App

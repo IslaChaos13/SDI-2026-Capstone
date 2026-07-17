@@ -2,12 +2,15 @@ import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/Profile.css'
 import {useParams} from 'react-router-dom'
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useContext} from 'react'
+import UserContext from '../context/UserContext'
 
 
 
-// Static mockup only — no data, no logic, no routing.
-function Profile({ LoggedIn }) {
+function Profile() {
+
+  const {LoggedIn, setLoggedIn} = useContext(UserContext)
+
   const API = "http://localhost:8000";
   const [user, setUser] = useState(null)
   const { userID } = useParams()
