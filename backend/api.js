@@ -118,7 +118,9 @@ app.post('/login', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000
    })
 
-   res.json({ message: 'Log in successful!' })
+   const { password: _, ...safeUser } = user
+
+   res.json({ message: 'Log in successful!', user: safeUser })
 })
 
 app.post('/register', async (req, res) => {
