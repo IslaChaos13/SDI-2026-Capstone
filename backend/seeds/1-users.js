@@ -40,10 +40,10 @@ exports.seed = async function (knex) {
     rank: 'E-5',
     first_name: 'John',
     last_name: 'Admin',
-    email: 'ImAdmin@admin.com',
+    email: 'admin@admin.com',
     phone: '000 000 0000',
     address: 'Admin Street, Admin City',
     avatar: 'Adminvatar',
-    password: await bcrypt.hash('Admin Password', 10)
+    password: await bcrypt.hash('password', 10)
   })
 };
