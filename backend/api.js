@@ -78,7 +78,6 @@ app.get('/directory', async (req, res) => {
 })
 
 app.get('/user_tasks', async (req, res) => {
-
    try {
       const [user_tasks] = await Promise.all([
          knex('user_tasks')
@@ -225,7 +224,7 @@ app.post('/user_tasks', async (req, res) => {
 })
 
 
-//delete routes
+//Delete routes
 app.delete('/tasks/:id', async (req, res) => {
    console.log('params:', req.params)
    try {
@@ -241,8 +240,43 @@ app.delete('/tasks/:id', async (req, res) => {
 app.delete('/user_tasks/:id', async (req, res) => {
    console.log('params:', req.params)
    try {
-      await knex('user_tasks').where({ task_id: req.params.id }).del()
+      await knex('user_tasks').where({ id: req.params.id }).del()
       res.json({ message: 'user_task deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/users/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('user_tasks').where({ user_id: req.params.id }).del()
+      await knex('users').where({ id: req.params.id }).del()
+      res.json({ message: 'user deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/directory/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('directory_poc').where({ id_users: req.params.id }).del()
+      await knex('directory').where({ id: req.params.id }).del()
+      res.json({ message: 'directory deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/directory_poc/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('directory_poc').where({ id: req.params.id }).del()
+      res.json({ message: 'directory_poc deleted' })
    } catch (err) {
       console.error(err)
       res.status(500).json({ message: 'failed to delete' })
