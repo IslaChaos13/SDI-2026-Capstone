@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
-import './Dashboard.css'
-import './AdminDashboard.css'
-import './TaskManagement.css'
+// import './Dashboard.css'
+// import './AdminDashboard.css'
+import '../css/TaskManagement.css'
 
 function TaskManagement() {
   const [mode, setMode] = useState('existing')

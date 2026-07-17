@@ -9,7 +9,7 @@ import ErrorPage from "./Pages/ErrorPage"
 import Navbar from "./components/Navbar"
 import { Routes, Route } from "react-router-dom"
 import {useState} from 'react'
-
+import TaskManagement from './Pages/TaskManagement'
 
 function App() {
 
@@ -24,9 +24,10 @@ function App() {
 
           <Route path="/" element={<BaseDirectory LoggedIn={LoggedIn}/>}/>
           <Route path="/login" element={<Logon LoggedIn={LoggedIn} setLoggedIn={setLoggedIn}/>} />
+          <Route path='/tasks' element={<TaskManagement />} />
           <Route path="/Admin" element={<AdminDashboard />}/>
-          <Route path="/:UserID/Checklist" element={<MyChecklist />}/>
-          <Route path="/:UserID/Profile" element={<Profile />}/>
+          <Route path="/:UserID/Checklist" element={<MyChecklist LoggedIn={LoggedIn}/>}/>
+          <Route path="/:UserID/Profile" element={<Profile LoggedIn={LoggedIn}/>}/>
           <Route path="/:UserID/Dashboard" element={<Dashboard LoggedIn={LoggedIn} />}/>
           <Route path="/*" element={<ErrorPage />}/>
 

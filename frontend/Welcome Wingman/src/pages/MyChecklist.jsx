@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { CheckCircle2, Circle, ListChecks } from "lucide-react";
 
-import UserIcon from '../components/UserIcon'
-import LoginButton from '../components/LoginButton'
+import UserIcon from "../components/UserIcon";
+import LoginButton from "../components/LoginButton";
 import Layout from "../components/Layout";
 import "../css/theme.css";
-import "../styles/MyChecklist.css"
+import "../styles/MyChecklist.css";
 
 // ---------------- Permissions ----------------
 
@@ -20,17 +20,13 @@ import "../styles/MyChecklist.css"
 
 // ---------------- Component ----------------
 
-export default function MyChecklist() {
+export default function MyChecklist({ LoggedIn }) {
 	const API = "http://localhost:8000";
 
 	const [tasks, setTasks] = useState([]);
-	const [users, setUsers] = useState([]);
 	const [userTasks, setUserTasks] = useState([]);
 	const [taskItem, setTaskItem] = useState(null);
-
 	const [notes, setNotes] = useState("");
-
-	const [currentUserId, setCurrentUserId] = useState("");
 	const [filter, setFilter] = useState("all");
 	//----------------Save Notes ---------------
 
@@ -72,73 +68,38 @@ export default function MyChecklist() {
 	useEffect(() => {
 		Promise.all([
 			fetch(`${API}/tasks`).then((r) => r.json()),
-			fetch(`${API}/users`).then((r) => r.json()),
 			fetch(`${API}/user_tasks`).then((r) => r.json()),
 		])
-			.then(([taskData, userData, userTaskData]) => {
-				console.log("TASKS:", taskData);
-				console.log("USERS:", userData);
-				console.log("USER TASKS:", userTaskData);
-
+			.then(([taskData, userTaskData]) => {
 				setTasks(taskData.tasks || []);
-				setUsers(userData.users || []);
 				setUserTasks(userTaskData || []);
-
-				if (userData.users?.length) {
-					setCurrentUserId(userData.users[0].id);
-				}
 			})
 			.catch(console.error);
 	}, []);
-
 	// ---------------- Current User ----------------
 
 	// TODO CHANGE //
-	const currentUser = users.find((u) => u.id === currentUserId);
-
-	const isAdmin = hasPermission(currentUser, "manage_users");
-	const canManage = hasPermission(currentUser, "manage_tasks");
+	const isAdmin = hasPermission(LoggedIn, "manage_users");
+	const canManage = hasPermission(LoggedIn, "manage_tasks");
 
 	// ---------------- Visible Tasks ----------------
 
 	const visibleTasks = useMemo(() => {
-		if (!currentUserId || !currentUser) return [];
+    if (!LoggedIn) return [];
 
-		let results = userTasks
-			// ---- * Below Filter is filtering by name * ----- ///
-			.filter(
-				(ut) =>
-					ut.first_name === currentUser.first_name &&
-					ut.last_name === currentUser.last_name,
-			)
-		//Below is code for when filtering by userId
-		// .filter((ut) => ut.user_id === currentUserId)
-		.map((ut) => {
-			const task = tasks.find((t) => t.id === ut.task_id);
-			return { ...ut, ...task, note: ut.note }
+    let results = userTasks
+      .filter((ut) => ut.user_id === LoggedIn.id)
+      .map((ut) => {
+        const task = tasks.find((t) => t.id === ut.task_id);
+        return { ...ut, ...task, note: ut.note };
+      })
+      .filter((task) => task.id);
 
-		//   console.log("User task:", ut),
-		//   console.log("Matched task:", task)
+    if (filter === "complete") results = results.filter((t) => t.is_complete);
+    if (filter === "incomplete") results = results.filter((t) => !t.is_complete);
 
-		// 	return {
-		// 		...ut,
-		// 		...task,
-		// 	};
-		})
-		.filter((task) => task.id)
-
-		console.log("Visible tasks:", results);
-
-		if (filter === "complete") {
-			results = results.filter((task) => task.is_complete);
-		}
-
-		if (filter === "incomplete") {
-			results = results.filter((task) => !task.is_complete);
-		}
-
-		return results;
-	}, [userTasks, tasks, currentUserId, filter]);
+    return results;
+  }, [userTasks, tasks, LoggedIn, filter]);
 
 	// ---------------- Progress ----------------
 
@@ -151,43 +112,41 @@ export default function MyChecklist() {
 	// ---------------- Toggle ----------------
 
 	const toggleTask = async (taskId) => {
-    const target = userTasks.find((ut) => ut.id === taskId);
-    if (!target) return;
+		const target = userTasks.find((ut) => ut.id === taskId);
+		if (!target) return;
 
-    const updated = { ...target, is_complete: !target.is_complete };
+		const updated = { ...target, is_complete: !target.is_complete };
 
-    setUserTasks((prev) =>
-        prev.map((ut) =>
-            ut.id === taskId
-                ? { ...ut, is_complete: !ut.is_complete }
-                : ut
-        )
-    );
+		setUserTasks((prev) =>
+			prev.map((ut) =>
+				ut.id === taskId ? { ...ut, is_complete: !ut.is_complete } : ut,
+			),
+		);
 
-    setTaskItem((prev) =>
-        prev && prev.id === taskId
-            ? { ...prev, is_complete: !prev.is_complete }
-            : prev
-    );
+		setTaskItem((prev) =>
+			prev && prev.id === taskId
+				? { ...prev, is_complete: !prev.is_complete }
+				: prev,
+		);
 
-    try {
-        const response = await fetch(`${API}/user_tasks`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: updated.id,
-				note: updated.notes,
-                is_complete: updated.is_complete,
-            }),
-        });
-        if (!response.ok) throw new Error("Failed to update task status");
-    } catch (error) {
-        console.error(error);
-        setUserTasks((prev) =>
-            prev.map((ut) => (ut.id === taskId ? target : ut))
-        );
-    }
-};
+		try {
+			const response = await fetch(`${API}/user_tasks`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					id: updated.id,
+					note: updated.notes,
+					is_complete: updated.is_complete,
+				}),
+			});
+			if (!response.ok) throw new Error("Failed to update task status");
+		} catch (error) {
+			console.error(error);
+			setUserTasks((prev) =>
+				prev.map((ut) => (ut.id === taskId ? target : ut)),
+			);
+		}
+	};
 	// ------------------ Format Date --------
 
 	const formatDate = (isoString) =>
@@ -224,16 +183,6 @@ export default function MyChecklist() {
 				</div>
 
 				<div className="filter-bar">
-					<select
-						value={currentUserId}
-						onChange={(e) => setCurrentUserId(Number(e.target.value))}
-					>
-						{users.map((u) => (
-							<option key={u.id} value={u.id}>
-								{u.first_name} {u.last_name}
-							</option>
-						))}
-					</select>
 
 					<button
 						className={filter === "all" ? "filter-chip active" : "filter-chip"}
@@ -306,7 +255,7 @@ export default function MyChecklist() {
 						))}
 					</ul>
 
-						{taskItem && (
+					{taskItem && (
 						<div className="modal-overlay" onClick={() => setTaskItem(null)}>
 							<div className="modal" onClick={(e) => e.stopPropagation()}>
 								<h2>{taskItem.title}</h2>
@@ -327,34 +276,34 @@ export default function MyChecklist() {
 									/>
 								</div>
 								<button onClick={() => saveNotes()}>Save</button>
-							<button
-										onClick={(e) => {
-											e.stopPropagation();
-											toggleTask(taskItem.id);
-										}}
-
-										style={{
-											color: taskItem.is_complete ? "#ffffff" : "#333333",
-											backgroundColor: taskItem.is_complete ? "#22c55e" : "#e5e7eb",
-										}}
-									>
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										toggleTask(taskItem.id);
+									}}
+									style={{
+										color: taskItem.is_complete ? "#ffffff" : "#333333",
+										backgroundColor: taskItem.is_complete
+											? "#22c55e"
+											: "#e5e7eb",
+									}}
+								>
 									{taskItem.is_complete ? (
-	<>
-		<CheckCircle2 size={10} /> <span>Completed</span>
-	</>
-) : (
-	<>
-		<Circle size={10} /> <span>Incomplete</span>
-	</>
-)}
-									</button>
+										<>
+											<CheckCircle2 size={10} /> <span>Completed</span>
+										</>
+									) : (
+										<>
+											<Circle size={10} /> <span>Incomplete</span>
+										</>
+									)}
+								</button>
 								<button onClick={() => setTaskItem(null)}>Close</button>
 							</div>
 						</div>
 					)}
 				</div>
 			</div>
-
 		</Layout>
 	);
 }

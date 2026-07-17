@@ -1,11 +1,34 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/Dashboard.css'
+import {useParams} from 'react-router-dom'
+import {useEffect, useState} from 'react'
 
 function Dashboard({LoggedIn}) {
+
+  const API = "http://localhost:8000";
+  const [user, setUser] = useState(null)
+  const { userID } = useParams()
+
+useEffect(() => {
+    fetch(`${API}/users`)
+      .then((r) => r.json())
+      .then((userData) => {
+        console.log("USERS:", userData);
+
+        const users = userData.users || [];
+        const matched = users.find((u) => String(u.id) === String(userID));
+
+        setUser(matched || users[0] || null);
+      })
+      .catch(console.error);
+  }, [userID]);
+
+  if(!user) {return null;}
+
   return (
     <Layout LoggedIn={LoggedIn}>
-         <h1>{LoggedIn}</h1>
+
       <div className="page dashboard-page">
         <div className="dashboard-bg">
           <div className="dashboard-bg-grid"></div>
@@ -34,7 +57,7 @@ function Dashboard({LoggedIn}) {
               <div className="hero-brand">
                 <span className="hero-brand-title">Welcome Wingman</span>
               </div>
-              <h1>Welcome back, User Name</h1>
+              <h1>Welcome back, {user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : ''}</h1>
               <span className="rank-tag">Rank · Unit</span>
               <p>You have 4 tasks remaining.</p>
               <div className="hero-actions">

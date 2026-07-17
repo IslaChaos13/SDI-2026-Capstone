@@ -32,7 +32,7 @@ function createEntries(rows){
 }
 
 exports.seed = async function(knex) {
-  //await knex('users').del()
+  await knex('users').del()
   await knex('users').insert(createEntries(10));
   await knex('users').insert({
     is_admin: true,

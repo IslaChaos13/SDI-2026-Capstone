@@ -17,7 +17,7 @@ function Sidebar() {
         <span className="nav-icon">✅</span>
         <span className="nav-label" >My Checklist</span>
       </div>
-      <div className="nav-item">
+      <div className="nav-item" onClick={() => navigate('/')}>
         <span className="nav-icon">📇</span>
         <span className="nav-label">Base Directory</span>
       </div>

@@ -7,20 +7,16 @@ import {useEffect, useState} from 'react'
 
 
 // Static mockup only — no data, no logic, no routing.
-function Profile() {
+function Profile({ LoggedIn }) {
   const API = "http://localhost:8000";
   const [user, setUser] = useState(null)
   const { userID } = useParams()
-
-useEffect(() => {
+  useEffect(() => {
     fetch(`${API}/users`)
       .then((r) => r.json())
       .then((userData) => {
-        console.log("USERS:", userData);
-
         const users = userData.users || [];
         const matched = users.find((u) => String(u.id) === String(userID));
-
         setUser(matched || users[0] || null);
       })
       .catch(console.error);
@@ -30,7 +26,7 @@ useEffect(() => {
 
 
   return (
-    <Layout>
+    <Layout LoggedIn = {LoggedIn}>
       <div className="page">
         <div className="page-header">
           <h1>Profile</h1>

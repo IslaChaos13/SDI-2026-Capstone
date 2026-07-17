@@ -7,7 +7,7 @@ console.log('We here!')
 let navigate = useNavigate()
 
     return(
-      <div className="LoginButton" onClick={()=>navigate('/')}>
+      <div className="LoginButton" onClick={()=>navigate('/login')}>
         <img src={Silloutte2} alt='Silloutte' />
 
 

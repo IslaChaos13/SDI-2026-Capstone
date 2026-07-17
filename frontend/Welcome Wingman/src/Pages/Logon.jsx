@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import '../css/Logon.css'
 
 
-function Logon() {
+function Logon({LoggedIn, setLoggedIn}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
@@ -22,8 +22,10 @@ function Logon() {
             if (data.error) {
                 setError(data.error)
             } else {
+                const user = data.user
+                setLoggedIn(user)
                 // login(data.user ?? data) /* TJF */
-                navigate('/')
+                navigate(`/${user.id}/Profile`)
             }
         })
         .catch(() => setError('Server error, try again'))
