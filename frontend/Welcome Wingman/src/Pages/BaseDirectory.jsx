@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
-import '..styles/BaseDirectory.css'
+import '../styles/BaseDirectory.css'
 
 const mapCenter = [32.50283298104374, -93.66312248601946]
 

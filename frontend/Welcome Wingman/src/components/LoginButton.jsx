@@ -1,22 +1,19 @@
 import {useNavigate} from 'react-router-dom'
-<<<<<<< HEAD
-// import Silloutte from '../assets/siloutte.png'
-=======
-import Silloutte from '../assets/siloutte.png'
->>>>>>> Main-Layout
-function LoginButton(){
+import Silloutte2 from '../assets/silloutte2.svg'
+
+
+export default function LoginButton(){
 console.log('We here!')
 let navigate = useNavigate()
 
     return(
-<<<<<<< HEAD
-=======
-        < img src={Silloutte} alt='Silloutte'
-        onClick={() => } />
->>>>>>> Main-Layout
-        <button>Click Me</button>
+      <div className="LoginButton" onClick={()=>navigate('/')}>
+        <img src={Silloutte2} alt='Silloutte' />
+
+
+      </div>
     )
 }
 
-export default LoginButton
+
 

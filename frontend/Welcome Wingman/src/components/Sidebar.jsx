@@ -9,21 +9,21 @@ function Sidebar() {
 
   return (
     <aside className="app-sidebar">
-      <div className="nav-item active">
+      <div className="nav-item active" onClick={() => navigate('/:USERID/dashboard')}>
         <span className="nav-icon">🏠</span>
-        <span className="nav-label"onClick={() => navigate('/dashboard')}>Dashboard</span>
+        <span className="nav-label">Dashboard</span>
       </div>
-      <div className="nav-item">
+      <div className="nav-item" onClick={() => navigate(`/:USERID/checklist`)}>
         <span className="nav-icon">✅</span>
-        <span className="nav-label" onClick={() => navigate(`${userId}/checklist`)}>My Checklist</span>
+        <span className="nav-label" >My Checklist</span>
       </div>
       <div className="nav-item">
         <span className="nav-icon">📇</span>
         <span className="nav-label">Base Directory</span>
       </div>
-      <div className="nav-item">
+      <div className="nav-item" onClick={() => navigate('/:USERID/profile')}>
         <span className="nav-icon">👤</span>
-        <span className="nav-label" onClick={() => navigate('/profile')}>Profile</span>
+        <span className="nav-label" >Profile</span>
       </div>
 
       <hr className="sidebar-divider" />

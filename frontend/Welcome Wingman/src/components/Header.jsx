@@ -61,7 +61,10 @@ function Header({ LoggedIn }) {
 				<button className="btn-icon" type="button">
 					⚙
 				</button>
-      <LoginButton />
+
+			</div>
+			<div className = "conditional-rendering">
+				  {{LoggedIn} ? <LoginButton /> : <UserIcon />}
 			</div>
 
 
