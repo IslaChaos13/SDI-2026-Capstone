@@ -6,7 +6,7 @@
 const { faker } = require('@faker-js/faker')
 const bcrypt = require('bcrypt')
 
-async function createEntries(rows){
+async function createEntries(rows) {
   let data = []
 
   for (let i = 1; i <= rows; i++) {
@@ -20,7 +20,7 @@ async function createEntries(rows){
       rank: `E-${faker.number.int({ min: 1, max: 9 })}`,
       first_name: firstName,
       last_name: lastName,
-      email: faker.internet.email({firstName,lastName,}),
+      email: faker.internet.email({ firstName, lastName, }),
       phone: faker.phone.number(),
       address: faker.location.streetAddress(),
       avatar: faker.image.avatar(),
@@ -31,8 +31,8 @@ async function createEntries(rows){
   return data
 }
 
-exports.seed = async function(knex) {
-  //await knex('users').del()
+exports.seed = async function (knex) {
+  await knex('users').del()
   await knex('users').insert(await createEntries(10));
   await knex('users').insert({
     is_admin: true,
