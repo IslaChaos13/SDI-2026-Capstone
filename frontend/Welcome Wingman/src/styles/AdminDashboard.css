@@ -1,0 +1,108 @@
+.admin-stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+@media (min-width: 700px) {
+  .admin-stats-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-stats-row {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.hbar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.hbar-row:last-child {
+  margin-bottom: 0;
+}
+.hbar-label {
+  width: 130px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.hbar-track {
+  flex: 1;
+  height: 10px;
+  background: var(--bg);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.hbar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 999px;
+}
+.hbar-value {
+  width: 30px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.table-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.table-progress .track {
+  width: 80px;
+  height: 6px;
+  background: var(--bg);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.table-progress .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.approval-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.readiness-card-body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+.readiness-figures {
+  display: flex;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+  flex: 1;
+}
+.readiness-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.readiness-figure .figure-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+.readiness-figure .figure-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+

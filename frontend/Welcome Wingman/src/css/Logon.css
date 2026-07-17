@@ -1,0 +1,38 @@
+.LogonWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+}
+
+.LogonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 40px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 300px;
+}
+
+.LogonContainer h2 {
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.LogonContainer input {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.LogonContainer button {
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.LogonError {
+    color: red;
+    font-size: 13px;
+    margin: 0;
+}
