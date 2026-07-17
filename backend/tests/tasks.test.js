@@ -1,6 +1,6 @@
 const request = require('supertest')
 
-//Get routes - TEST
+//Get routes
 describe('GET /db_status', () => {
    it('returns database connection', async () => {
       const response = await request('http://localhost:8000')
@@ -51,4 +51,25 @@ describe('GET /user_tasks', () => {
    })
 })
 
-//Post routes - TEST
+
+//Post routes
+describe('POST /login', () => {
+   test('accepts login with valid credentials', async () => {
+      const response = await request('http://localhost:8000')
+         .post('/login')
+         .send({
+            email: 'ImAdmin@admin.com',
+            password: 'Admin Password'
+         })
+
+      expect(response.status).toBe(200)
+      expect(response.body.message).toBe('Log in successful!')
+   })
+})
+
+// describe('POST /register', () => {
+//   test('accepts and adds new users into users table', async () => {
+//     const response = await request('http://localhost:8000')
+//       })
+//   })
+// })
