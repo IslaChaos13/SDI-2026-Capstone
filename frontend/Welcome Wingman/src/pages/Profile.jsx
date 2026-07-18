@@ -1,35 +1,33 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/Profile.css'
-import {useParams} from 'react-router-dom'
-import {useEffect, useState, useContext} from 'react'
+import { useParams } from 'react-router-dom'
+import { useEffect, useState, useContext } from 'react'
 import UserContext from '../context/UserContext'
-
-
 
 function Profile() {
 
-  const {LoggedIn, setLoggedIn} = useContext(UserContext)
+  const { LoggedIn } = useContext(UserContext)
 
   const API = "http://localhost:8000";
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(LoggedIn)
   const { userID } = useParams()
+
   useEffect(() => {
     fetch(`${API}/users`)
       .then((r) => r.json())
       .then((userData) => {
         const users = userData.users || [];
         const matched = users.find((u) => String(u.id) === String(userID));
-        setUser(matched || users[0] || null);
+        setUser(matched || LoggedIn)
       })
       .catch(console.error);
   }, [userID]);
 
-  if(!user) {return null;}
-
+  if (!user) { return null; }
 
   return (
-    <Layout LoggedIn = {LoggedIn}>
+    <Layout LoggedIn={LoggedIn}>
       <div className="page">
         <div className="page-header">
           <h1>Profile</h1>

@@ -1,25 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import UserContext from '../context/UserContext'
 
-export default function UserIcon({userID}) {
-    const API = "http://localhost:8000";
+export default function UserIcon() {
 
-        const [user, setUser] = useState(null);
+	const { LoggedIn } = useContext(UserContext)
 
-	useEffect(() => {
-		fetch(`${API}/users`)
-			.then((r) => r.json())
-			.then((userData) => {
-				console.log("USERS:", userData);
-
-				const users = userData.users || [];
-				const matched = users.find((u) => String(u.id) === String(userID));
-
-				setUser(matched || users[0] || null);
-			})
-			.catch(console.error);
-	}, [userID]);
-
-	if (!user) {
+	if (!LoggedIn) {
 		return null;
 	}
 	return (
@@ -27,14 +13,14 @@ export default function UserIcon({userID}) {
 			<div className="avatar avatar-sm">U</div>
 			<div className="header-user-info">
 				<div className="user-name">
-					<div className="user-name">
-						{user?.first_name && user?.last_name
-							? `${user.first_name} ${user.last_name}`
+					<div className="user-name-1">
+						{LoggedIn?.first_name && LoggedIn?.last_name
+							? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 							: "Guest"}
 					</div>
 				</div>{" "}
 				{/*TJF*/}
-				<div className="user-rank">{user.rank ?? ""}</div> {/*TJF*/}
+				<div className="user-rank">{LoggedIn.rank ?? ""}</div> {/*TJF*/}
 			</div>
 		</div>
 	);

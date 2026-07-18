@@ -14,7 +14,15 @@ import UserContext from './context/UserContext'
 
 function App() {
 
-  const [LoggedIn, setLoggedIn] = useState(null)
+const [LoggedIn, setLoggedIn] = useState(() => {
+    try {
+        const saved = localStorage.getItem('user')
+        return saved ? JSON.parse(saved) : null
+    } catch {
+        localStorage.removeItem('user')
+        return null
+    }
+})
   const value = {LoggedIn, setLoggedIn}
 
   return (
@@ -26,6 +34,7 @@ function App() {
 
           <Route path="/" element={<BaseDirectory LoggedIn={LoggedIn}/>}/>
           <Route path="/login" element={<Logon LoggedIn={LoggedIn} setLoggedIn={setLoggedIn}/>} />
+          <Route path="/Directory" element={<BaseDirectory LoggedIn={LoggedIn}/>}/>
           <Route path='/tasks' element={<TaskManagement />} />
           <Route path="/Admin" element={<AdminDashboard />}/>
           <Route path="/:UserID/Checklist" element={<MyChecklist LoggedIn={LoggedIn}/>}/>

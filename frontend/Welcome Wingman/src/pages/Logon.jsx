@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import '../css/Logon.css'
 import UserContext from '../context/UserContext'
 
+
 function Logon() {
 
     const {setLoggedIn} = useContext(UserContext)
@@ -24,7 +25,8 @@ function Logon() {
             if (data.error) {
                 setError(data.error)
             } else {
-                setLoggedIn(data)
+                localStorage.setItem('user', JSON.stringify(data.user))
+                setLoggedIn(data.user)
                 navigate('/')
             }
         })

@@ -6,7 +6,8 @@
 const { faker } = require('@faker-js/faker')
 const bcrypt = require('bcrypt')
 
-function createEntries(rows){
+
+async function createEntries(rows){
   let data = []
 
   for (let i = 1; i <= rows; i++) {
@@ -33,17 +34,17 @@ function createEntries(rows){
 
 exports.seed = async function(knex) {
   await knex('users').del()
-  await knex('users').insert(createEntries(10));
+  await knex('users').insert(await createEntries(10));
   await knex('users').insert({
     is_admin: true,
     is_manager: true,
     rank: 'E-5',
     first_name: 'John',
     last_name: 'Admin',
-    email: 'ImAdmin@admin.com',
+    email: 'Admin@admin.com',
     phone: '000 000 0000',
     address: 'Admin Street, Admin City',
     avatar: 'Adminvatar',
-    password: await bcrypt.hash('Admin Password', 10)
+    password: await bcrypt.hash('password', 10)
   })
 };

@@ -1,32 +1,37 @@
 import {useNavigate, useParams } from 'react-router-dom'
-
+import { useContext } from 'react'
+import UserContext from '../context/UserContext'
 import '../styles/theme.css'
 import './Sidebar.css'
 
 function Sidebar() {
   const navigate = useNavigate();
-  const { userID } = useParams();
+  const { LoggedIn, setLoggedIn } = useContext(UserContext);
+  const userId = LoggedIn?.id;
+  const isAdmin = LoggedIn?.is_admin;
 
   return (
     <aside className="app-sidebar">
-      <div className="nav-item active" onClick={() => navigate('/:USERID/dashboard')}>
+      <div className="nav-item active" onClick={() => navigate(`/${userId}/dashboard`)}>
         <span className="nav-icon">🏠</span>
         <span className="nav-label">Dashboard</span>
       </div>
-      <div className="nav-item" onClick={() => navigate(`/:USERID/checklist`)}>
+      <div className="nav-item" onClick={() => navigate(`/${userId}/checklist`)}>
         <span className="nav-icon">✅</span>
         <span className="nav-label" >My Checklist</span>
       </div>
-      <div className="nav-item" onClick={() => navigate('/')}>
+      <div className="nav-item" onClick={() => navigate(`/`)}>
         <span className="nav-icon">📇</span>
         <span className="nav-label">Base Directory</span>
       </div>
-      <div className="nav-item" onClick={() => navigate('/:USERID/profile')}>
+      <div className="nav-item" onClick={() => navigate(`/${userId}/profile`)}>
         <span className="nav-icon">👤</span>
         <span className="nav-label" >Profile</span>
       </div>
 
-      <hr className="sidebar-divider" />
+      {isAdmin && (
+        <>
+        <hr className="sidebar-divider" />
       <div className="sidebar-section-label">Admin</div>
 
       <div className="nav-item">
@@ -45,12 +50,16 @@ function Sidebar() {
         <span className="nav-icon">⚙</span>
         <span className="nav-label">Settings</span>
       </div>
+        </>
+      )}
 
       <div className="sidebar-footer">
         <hr className="sidebar-divider" />
         <div className="nav-item">
           <span className="nav-icon">🚪</span>
           <span className="nav-label">Logout</span>
+
+          {/* onClick={()=>setLoggedIn(null)} */}
         </div>
       </div>
     </aside>
