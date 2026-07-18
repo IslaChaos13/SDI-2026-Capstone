@@ -24,10 +24,7 @@ function Header() {
 					<div className="brand-subtitle">In-Processing Portal</div>
 				</div>
 			</div>
-			<div className="header-search search-bar">
-				<span className="search-icon">⌕</span>
-				<input type="text" placeholder="Search the portal..." readOnly />
-			</div>
+
 			<div className="header-spacer"></div>
 			<span className="header-date">{today}</span>
 			<div className="header-actions">
