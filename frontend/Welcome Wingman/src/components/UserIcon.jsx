@@ -1,16 +1,15 @@
 import { useEffect, useState, useContext } from "react";
-import UserContext from '../context/UserContext'
+import UserContext from "../context/UserContext";
 
 export default function UserIcon() {
-
-	const { LoggedIn } = useContext(UserContext)
+	const { LoggedIn } = useContext(UserContext);
 
 	if (!LoggedIn) {
 		return null;
 	}
 	return (
 		<div className="header-user">
-			<div className="avatar avatar-sm">U</div>
+			<div className="avatar avatar-sm">{LoggedIn.avatar}</div>
 			<div className="header-user-info">
 				<div className="user-name">
 					<div className="user-name-1">

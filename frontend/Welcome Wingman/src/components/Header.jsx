@@ -1,16 +1,12 @@
 import "../styles/theme.css";
 import "./Header.css";
 import { useEffect, useState, useContext } from "react";
-import  UserIcon from "../components/UserIcon";
-import LoginButton from "./LoginButton"
-import UserContext from '../context/UserContext'
+import UserIcon from "../components/UserIcon";
+import LoginButton from "./LoginButton";
+import UserContext from "../context/UserContext";
 
 function Header() {
-
-	const {LoggedIn, setLoggedIn} = useContext(UserContext)
-
-	const {user} = UserContext
-	// const [user, setUser] = useState(null);
+	const { LoggedIn, logout } = useContext(UserContext);
 
 	const today = new Date().toLocaleDateString("en-US", {
 		weekday: "long",
@@ -18,9 +14,6 @@ function Header() {
 		month: "long",
 		day: "numeric",
 	}); /*TJF*/
-
-
-
 
 	return (
 		<div className="app-header">
@@ -47,12 +40,9 @@ function Header() {
 				</button>
 				{/* <p>{user.first_name}</p> */}
 			</div>
-			<div className = "conditional-rendering">
-				  {LoggedIn ? <UserIcon /> : <LoginButton /> }
+			<div className="conditional-rendering">
+				{LoggedIn ? <UserIcon /> : <LoginButton />}
 			</div>
-
-
-
 		</div>
 	);
 }
