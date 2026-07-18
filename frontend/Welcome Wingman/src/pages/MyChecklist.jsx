@@ -7,17 +7,6 @@ import Layout from "../components/Layout";
 import "../css/theme.css";
 import "../styles/MyChecklist.css";
 
-// ---------------- Permissions ----------------
-
-// const PERMISSIONS = {
-// 	admin: ["manage_users", "assign_tasks", "manage_tasks", "view_own_tasks"],
-// 	task_manager: ["manage_tasks", "assign_tasks", "view_own_tasks"],
-// 	user: ["view_own_tasks"],
-// };
-
-// const hasPermission = (user, permission) =>
-// 	user?.roles?.some((role) => PERMISSIONS[role]?.includes(permission));
-
 // ---------------- Component ----------------
 
 export default function MyChecklist({ LoggedIn }) {
@@ -76,30 +65,26 @@ export default function MyChecklist({ LoggedIn }) {
 			})
 			.catch(console.error);
 	}, []);
-	// ---------------- Current User ----------------
-
-	// TODO CHANGE //
-	const isAdmin = hasPermission(LoggedIn, "manage_users");
-	const canManage = hasPermission(LoggedIn, "manage_tasks");
 
 	// ---------------- Visible Tasks ----------------
 
 	const visibleTasks = useMemo(() => {
-    if (!LoggedIn) return [];
+		if (!LoggedIn) return [];
 
-    let results = userTasks
-      .filter((ut) => ut.user_id === LoggedIn.id)
-      .map((ut) => {
-        const task = tasks.find((t) => t.id === ut.task_id);
-        return { ...ut, ...task, note: ut.note };
-      })
-      .filter((task) => task.id);
+		let results = userTasks
+			.filter((ut) => ut.user_id === LoggedIn.id)
+			.map((ut) => {
+				const task = tasks.find((t) => t.id === ut.task_id);
+				return { ...ut, ...task, note: ut.note };
+			})
+			.filter((task) => task.id);
 
-    if (filter === "complete") results = results.filter((t) => t.is_complete);
-    if (filter === "incomplete") results = results.filter((t) => !t.is_complete);
+		if (filter === "complete") results = results.filter((t) => t.is_complete);
+		if (filter === "incomplete")
+			results = results.filter((t) => !t.is_complete);
 
-    return results;
-  }, [userTasks, tasks, LoggedIn, filter]);
+		return results;
+	}, [userTasks, tasks, LoggedIn, filter]);
 
 	// ---------------- Progress ----------------
 
@@ -135,7 +120,7 @@ export default function MyChecklist({ LoggedIn }) {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					id: updated.id,
-					note: updated.notes,
+					note: updated.note,
 					is_complete: updated.is_complete,
 				}),
 			});
@@ -163,7 +148,11 @@ export default function MyChecklist({ LoggedIn }) {
 			<div className="page">
 				<div className="page-header">
 					<h1>My Checklist</h1>
-					<p>Track your in-processing tasks.</p>
+					<p>
+						{LoggedIn?.first_name
+							? `Track ${LoggedIn.first_name}'s in-processing tasks.`
+							: "Track your in-processing tasks."}
+					</p>
 				</div>
 
 				<div className="card checklist-progress-card">
@@ -183,7 +172,6 @@ export default function MyChecklist({ LoggedIn }) {
 				</div>
 
 				<div className="filter-bar">
-
 					<button
 						className={filter === "all" ? "filter-chip active" : "filter-chip"}
 						onClick={() => setFilter("all")}
