@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import { CheckCircle2, Circle, ListChecks } from "lucide-react";
 
+import UserContext from "../context/UserContext";
 import UserIcon from "../components/UserIcon";
 import LoginButton from "../components/LoginButton";
 import Layout from "../components/Layout";
@@ -9,7 +10,9 @@ import "../styles/MyChecklist.css";
 
 // ---------------- Component ----------------
 
-export default function MyChecklist({ LoggedIn }) {
+export default function MyChecklist() {
+	const { LoggedIn } = useContext(UserContext);
+
 	const API = "http://localhost:8000";
 
 	const [tasks, setTasks] = useState([]);
@@ -72,11 +75,16 @@ export default function MyChecklist({ LoggedIn }) {
 		if (!LoggedIn) return [];
 
 		let results = userTasks
-			.filter((ut) => ut.user_id === LoggedIn.id)
-			.map((ut) => {
-				const task = tasks.find((t) => t.id === ut.task_id);
-				return { ...ut, ...task, note: ut.note };
-			})
+			.filter(
+				(ut) =>
+					ut.first_name === LoggedIn.first_name &&
+					ut.last_name === LoggedIn.last_name,
+			)
+
+			// .map((ut) => {
+			// 	const task = tasks.find((t) => t.id === ut.task_id);
+			// 	return { ...ut, ...task, note: ut.note };
+			// })
 			.filter((task) => task.id);
 
 		if (filter === "complete") results = results.filter((t) => t.is_complete);
@@ -85,6 +93,11 @@ export default function MyChecklist({ LoggedIn }) {
 
 		return results;
 	}, [userTasks, tasks, LoggedIn, filter]);
+
+	// console.log("LoggedIn:", LoggedIn);
+	// console.log("userTasks:", userTasks);
+	// console.log("tasks:", tasks);
+	// console.log("visibleTasks:", visibleTasks);
 
 	// ---------------- Progress ----------------
 

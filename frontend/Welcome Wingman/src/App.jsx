@@ -61,12 +61,9 @@ function App() {
 						path="/directory"
 						element={<BaseDirectory LoggedIn={LoggedIn} />}
 					/>
-					<Route path="/tasks" element={<TaskManagement />} />
+					<Route path="/:UserID/tasks" element={<TaskManagement />} />
 					<Route path="/admin" element={<AdminDashboard />} />
-					<Route
-						path="/:UserID/Checklist"
-						element={<MyChecklist LoggedIn={LoggedIn} />}
-					/>
+					<Route path="/:UserID/Checklist" element={<MyChecklist />} />
 					<Route
 						path="/:UserID/profile"
 						element={<Profile LoggedIn={LoggedIn} />}
