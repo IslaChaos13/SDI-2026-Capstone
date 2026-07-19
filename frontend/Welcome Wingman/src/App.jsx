@@ -71,9 +71,10 @@ function App() {
 						path="/:UserID/profile"
 						element={<Profile LoggedIn={LoggedIn} />}
 					/>
+					<Route path="/:UserID/dashboard" element={<Dashboard />} />
 					<Route
-						path="/:UserID/dashboard"
-						element={<Dashboard LoggedIn={LoggedIn} />}
+						path="/:UserID/pdashboard"
+						element={<PersonnelDashboard LoggedI={LoggedIn} />}
 					/>
 					<Route path="/*" element={<ErrorPage />} />
 				</Routes>

@@ -1,0 +1,69 @@
+.next-task-card {
+	border-color: var(--border-strong);
+	background: linear-gradient(135deg, var(--panel) 0%, #0d2038 100%);
+}
+.next-task-label {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--accent);
+	margin-bottom: var(--space-xs);
+}
+.next-task-card h3 {
+	margin: 0 0 6px;
+	font-size: 18px;
+}
+.next-task-card p {
+	margin: 0 0 var(--space-md);
+	color: var(--text-secondary);
+	font-size: 13px;
+}
+.next-task-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.card {
+	width: 100%;
+}
+
+.personnel-info-header {
+	padding-bottom: var(--space-sm);
+	border-bottom: 1px solid var(--border);
+	display: grid;
+	grid-template-columns: 10% 10% 30% 50%;
+	align-items: center;
+	column-gap: var(--space-sm);
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.personnel-info-card img {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.personnel-info-card {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+.personnel-item {
+	display: grid;
+	grid-template-columns: 10% 10% 30% 50%;
+	align-items: center;
+	column-gap: var(--space-sm);
+	width: 100%;
+	box-sizing: border-box;
+	padding: var(--space-sm) 0;
+	border-bottom: 1px solid var(--border);
+}

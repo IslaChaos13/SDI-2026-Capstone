@@ -45,11 +45,17 @@ function Sidebar() {
 					<hr className="sidebar-divider" />
 					<div className="sidebar-section-label">Admin</div>
 
-					<div className="nav-item">
+					<div
+						className="nav-item"
+						onClick={() => navigate(`/${userId}/pdashboard`)}
+					>
 						<span className="nav-icon">👥</span>
 						<span className="nav-label">Personnel</span>
 					</div>
-					<div className="nav-item">
+					<div
+						className="nav-item"
+						onClick={() => navigate(`/${userId}/tasks`)}
+					>
 						<span className="nav-icon">📋</span>
 						<span className="nav-label">Tasks</span>
 					</div>
