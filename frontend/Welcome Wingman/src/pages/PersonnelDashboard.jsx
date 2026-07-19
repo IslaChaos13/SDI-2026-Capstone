@@ -98,7 +98,7 @@ export default function PersonnelDashboard() {
 									? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 									: ""}
 							</h1>
-							<span className="rank-tag">Rank · Unit</span>
+							<span className="rank-tag">{LoggedIn.rank} · Unit</span>
 							<p>You have 4 tasks remaining.</p>
 							<div className="hero-actions">
 								<button className="btn btn-primary" type="button">
@@ -120,38 +120,52 @@ export default function PersonnelDashboard() {
 							<h2>Create Personnel</h2>
 						</div>
 						<form onSubmit={handleSubmit} className="form-group">
-							<input
-								type="text"
-								name="first_name"
-								placeholder="First name"
-								value={form.first_name}
-								onChange={handleChange}
-								required
-							/>
-							<input
-								type="text"
-								name="last_name"
-								placeholder="Last name"
-								value={form.last_name}
-								onChange={handleChange}
-								required
-							/>
-							<input
-								type="email"
-								name="email"
-								placeholder="Email"
-								value={form.email}
-								onChange={handleChange}
-								required
-							/>
-							<input
-								type="password"
-								name="password"
-								placeholder="Password"
-								value={form.password}
-								onChange={handleChange}
-								required
-							/>
+							<div className="form-row">
+								<div className="form-field">
+									<label htmlFor="first_name">First Name</label>
+									<input
+										type="text"
+										name="first_name"
+										placeholder="First name"
+										value={form.first_name}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+								<div className="form-field">
+									<label htmlFor="last_name">Last Name</label>
+									<input
+										type="text"
+										name="last_name"
+										placeholder="Last name"
+										value={form.last_name}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+							</div>
+							<div className="form-field">
+								<label htmlFor="email">Email</label>
+								<input
+									type="email"
+									name="email"
+									placeholder="Email"
+									value={form.email}
+									onChange={handleChange}
+									required
+								/>
+							</div>
+							<div className="form-field">
+								<label htmlFor="password">Password</label>
+								<input
+									type="password"
+									name="password"
+									placeholder="Password"
+									value={form.password}
+									onChange={handleChange}
+									required
+								/>
+							</div>
 							{error && <div className="error-text">{error}</div>}
 							{status === "success" && (
 								<div className="success-text">
@@ -172,13 +186,13 @@ export default function PersonnelDashboard() {
 
 					<div className="card">
 						<div className="card-header">
-							<h3>All Personnel</h3>
+							<h1>All Personnel</h1>
 						</div>
 						<div className="personnel-info-header">
-							<h2>Avatar</h2>
-							<h2>Rank</h2>
-							<h2>Name</h2>
-							<h2>Contact Information</h2>
+							<h3>Avatar</h3>
+							<h3>Rank</h3>
+							<h3>Name</h3>
+							<h3>Contact Information</h3>
 						</div>
 						<ul className="personnel-info-card">
 							{users.map((usr) => (
@@ -192,6 +206,7 @@ export default function PersonnelDashboard() {
 										{usr.first_name} {usr.last_name}
 									</span>
 									<span>{usr.phone}</span>
+									<button>Assign Manager</button>
 								</li>
 							))}
 						</ul>

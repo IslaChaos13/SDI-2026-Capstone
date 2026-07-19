@@ -24,15 +24,58 @@
 	align-items: center;
 }
 
+.form-row {
+	display: flex;
+	gap: var(--space-sm);
+	width: 100%;
+}
+
+.form-row .form-field {
+	flex: 1;
+	min-width: 0;
+}
+
+.form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+	padding: 5px;
+}
+
+.form-field label {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-secondary);
+}
+
+form.form-group {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+form.form-group .form-row,
+form.form-group .form-field {
+	align-self: stretch;
+}
+
+.card-header form input {
+	padding: 10px;
+}
+
 .card {
 	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	overflow-x: hidden;
 }
 
 .personnel-info-header {
 	padding-bottom: var(--space-sm);
 	border-bottom: 1px solid var(--border);
 	display: grid;
-	grid-template-columns: 10% 10% 30% 50%;
+	grid-template-columns: 8% 8% 25% 39% 20%;
 	align-items: center;
 	column-gap: var(--space-sm);
 	width: 100%;
@@ -59,11 +102,21 @@
 
 .personnel-item {
 	display: grid;
-	grid-template-columns: 10% 10% 30% 50%;
+	grid-template-columns: 8% 8% 25% 39% 20%;
 	align-items: center;
 	column-gap: var(--space-sm);
 	width: 100%;
 	box-sizing: border-box;
 	padding: var(--space-sm) 0;
 	border-bottom: 1px solid var(--border);
+}
+.personnel-item button,
+.personnel-info-header button {
+	background: var(--primary);
+	color: var(--text);
+	white-space: nowrap;
+	padding: 6px 10px;
+	font-size: 12px;
+	width: fit-content;
+	justify-self: first baseline;
 }
