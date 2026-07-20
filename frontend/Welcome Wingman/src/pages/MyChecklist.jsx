@@ -38,8 +38,8 @@ export default function MyChecklist() {
 				}),
 			});
 
-			if (!response.ok) {
-				throw new Error("Failed to save notes");
+			if (error) {
+				console.log(error);
 			}
 
 			// Update the page state so the new note appears immediately
@@ -233,7 +233,7 @@ export default function MyChecklist() {
 								<div className="task-title-cell">
 									<button
 										onClick={(e) => {
-											e.stopPropagation();
+											// e.stopPropagation();
 											toggleTask(task.id);
 										}}
 									>

@@ -9,6 +9,13 @@ function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
 	const nav = useNavigate();
 
+	const formatDate = (isoString) =>
+		new Date(isoString).toLocaleDateString("en-US", {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		});
+
 	//Since we are using useContext, we won't need this fetch
 	// const API = "http://localhost:8000";
 	// const [user, setUser] = useState(null);
@@ -370,7 +377,7 @@ function Dashboard() {
 												<span className="priority priority-medium">
 													{t.priority}
 												</span>
-												<span>{t.due_date}</span>
+												<span>{formatDate(t.due_date)}</span>
 											</div>
 										</div>
 										<span className="badge badge-pending">Pending</span>
@@ -511,10 +518,27 @@ function Dashboard() {
 							<h2>Quick Links</h2>
 						</div>
 						<div className="quick-links-strip">
-							<span className="quick-link-pill">🏠 Dashboard</span>
-							<span className="quick-link-pill">✅ My Checklist</span>
-							<span className="quick-link-pill">📇 Base Directory</span>
-							<span className="quick-link-pill">👤 Profile</span>
+							<span
+								className="quick-link-pill"
+								onClick={() => navigate(`/${userId}/dashboard`)}
+							>
+								🏠 Dashboard
+							</span>
+							<span
+								className="quick-link-pill"
+								onClick={() => navigate(`/${userId}/checklist`)}
+							>
+								✅ My Checklist
+							</span>
+							<span className="quick-link-pill" onClick={() => navigate(`/`)}>
+								📇 Base Directory
+							</span>
+							<span
+								className="quick-link-pill"
+								onClick={() => navigate(`/${userId}/profile`)}
+							>
+								👤 Profile
+							</span>
 						</div>
 					</div>
 				</div>
