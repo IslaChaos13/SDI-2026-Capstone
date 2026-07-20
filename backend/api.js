@@ -135,7 +135,7 @@ app.post("/register", async (req, res) => {
 
 app.post('/register', async (req, res) => {
    try {
-      const { first_name, last_name, rank, phone, address, email, password } = req.body
+      const { first_name, last_name, rank, phone, address, unit, email, password } = req.body
 
       if (!email || !password) {
          return res.status(400).json({ error: 'Email and password required' })
@@ -154,6 +154,7 @@ app.post('/register', async (req, res) => {
          rank,
          phone,
          address,
+         unit,
          email,
          password: hashedPassword,
       }).returning('*')
