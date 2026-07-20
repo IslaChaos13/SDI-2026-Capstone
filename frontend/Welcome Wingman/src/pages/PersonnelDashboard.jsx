@@ -6,35 +6,37 @@ import { useContext, useState, useEffect } from "react";
 import UserContext from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
+const EMPTY_FORM = {
+	rank: "",
+	first_name: "",
+	last_name: "",
+	unit: "",
+	address: "",
+	email: "",
+	password: "",
+};
+
 export default function PersonnelDashboard() {
 	const nav = useNavigate();
 	const { LoggedIn } = useContext(UserContext);
-	const [form, setForm] = useState({
-		first_name: "",
-		last_name: "",
-		email: "",
-		password: "",
-	});
+	const [form, setForm] = useState(EMPTY_FORM);
 	const [status, setStatus] = useState("idle"); // 'idle' | 'submitting' | 'success'
 	const [error, setError] = useState(null);
 	const [users, setUsers] = useState([]);
+	const [facilities, setFacilities] = useState([]);
+	const [loadingDirectory, setLoadingDirectory] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	// const [rankFilter, setRankFitler] = useState("All");
-	// const [search, seSearch] = useState("");
-
-	// const ranks = ["All", ...new Set(users.map((u) => u.rank).filter(Boolean))];
-
-	// const filteredUsers = users.filter((usr) => {
-	// 	const matchesRank = rankFilter === "All" || usr.rank === rankFilter;
-	// 	const fullName =
-	// 		`${usr.first_name ?? ""}${usr.last_name ?? ""}`.toLowerCase();
-	// 	const matchesSearch =
-	// 		search.trim() === "" ||
-	// 		fullName.includes(search.toLowerCase()) ||
-	// 		(usr.email ?? "").toLowerCase().includes(search.toLowerCase());
-	// 	return matchesRank && matchesSearch;
-	// });
+	const filteredUsers = users.filter((usr) => {
+		const fullName =
+			`${usr.first_name ?? ""} ${usr.last_name ?? ""}`.toLowerCase();
+		const term = searchTerm.trim().toLowerCase();
+		return (
+			term === "" ||
+			fullName.includes(term) ||
+			(usr.email ?? "").toLowerCase().includes(term)
+		);
+	});
 
 	function handleChange(e) {
 		const { name, value } = e.target;
@@ -61,15 +63,7 @@ export default function PersonnelDashboard() {
 				throw new Error(data.error || "Could not create your account.");
 			}
 
-			setForm({
-				first_name: "",
-				last_name: "",
-				email: "",
-				password: "",
-				rank: "",
-				unit: "",
-				address: "",
-			});
+			setForm(EMPTY_FORM);
 			setStatus("success");
 		} catch (err) {
 			setStatus("idle");
@@ -78,12 +72,32 @@ export default function PersonnelDashboard() {
 	}
 
 	useEffect(() => {
-		fetch("http://localhost:8000/users")
-			.then((r) => r.json())
-			.then((userData) => {
+		async function loadDirectory() {
+			try {
+				const [usersRes, dirRes] = await Promise.all([
+					fetch("http://localhost:8000/users"),
+					fetch("http://localhost:8000/directory"),
+				]);
+
+				if (!usersRes.ok || !dirRes.ok) {
+					throw new Error("Failed to load personnel directory.");
+				}
+
+				const [userData, dir] = await Promise.all([
+					usersRes.json(),
+					dirRes.json(),
+				]);
+
 				setUsers(userData.users || []);
-			})
-			.catch(console.error);
+				setFacilities(dir.directory || []);
+			} catch (err) {
+				console.error(err);
+			} finally {
+				setLoadingDirectory(false);
+			}
+		}
+
+		loadDirectory();
 	}, []);
 
 	return (
@@ -119,19 +133,21 @@ export default function PersonnelDashboard() {
 							<div className="hero-brand">
 								<span className="hero-brand-title">Welcome Wingman</span>
 							</div>
-							<h1>
-								Welcome back,{" "}
-								{LoggedIn?.first_name && LoggedIn.last_name
+							<h2>
+								Welcome back, {LoggedIn.rank} {""}
+								{LoggedIn?.first_name && LoggedIn?.last_name
 									? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 									: ""}
-							</h1>
-							<span className="rank-tag">{LoggedIn.rank} · Unit</span>
-							<p>You have 4 tasks remaining.</p>
+							</h2>
+							<span className="rank-tag">
+								{LoggedIn?.rank} · {LoggedIn?.unit}
+							</span>
+							<p>You have 4 member in-processing today</p>
 							<div className="hero-actions">
 								<button
 									className="btn btn-outline"
 									type="button"
-									onClick={() => nav(`${LoggedIn?.id}/profile`)}
+									onClick={() => nav(`/:UserId/profile`)}
 								>
 									View Profile
 								</button>
@@ -153,6 +169,7 @@ export default function PersonnelDashboard() {
 									<label htmlFor="rank">Rank</label>
 									<input
 										type="text"
+										id="rank"
 										name="rank"
 										placeholder="Rank"
 										value={form.rank}
@@ -160,11 +177,11 @@ export default function PersonnelDashboard() {
 										required
 									/>
 								</div>
-
 								<div className="form-field">
 									<label htmlFor="first_name">First Name</label>
 									<input
 										type="text"
+										id="first_name"
 										name="first_name"
 										placeholder="First name"
 										value={form.first_name}
@@ -176,6 +193,7 @@ export default function PersonnelDashboard() {
 									<label htmlFor="last_name">Last Name</label>
 									<input
 										type="text"
+										id="last_name"
 										name="last_name"
 										placeholder="Last name"
 										value={form.last_name}
@@ -183,25 +201,27 @@ export default function PersonnelDashboard() {
 										required
 									/>
 								</div>
-
+							</div>
+							<div className="form-row">
 								<div className="form-field">
 									<label htmlFor="unit">Unit</label>
 									<input
 										type="text"
+										id="unit"
 										name="unit"
-										placeholder="unit"
+										placeholder="Unit"
 										value={form.unit}
 										onChange={handleChange}
 										required
 									/>
 								</div>
-
 								<div className="form-field">
 									<label htmlFor="address">Address</label>
 									<input
 										type="text"
+										id="address"
 										name="address"
-										placeholder="address"
+										placeholder="Address"
 										value={form.address}
 										onChange={handleChange}
 										required
@@ -212,6 +232,7 @@ export default function PersonnelDashboard() {
 								<label htmlFor="email">Email</label>
 								<input
 									type="email"
+									id="email"
 									name="email"
 									placeholder="Email"
 									value={form.email}
@@ -223,6 +244,7 @@ export default function PersonnelDashboard() {
 								<label htmlFor="password">Password</label>
 								<input
 									type="password"
+									id="password"
 									name="password"
 									placeholder="Password"
 									value={form.password}
@@ -246,14 +268,15 @@ export default function PersonnelDashboard() {
 						</form>
 					</div>
 
-					<div className="dashboard-row row-1-1"></div>
-
 					<div className="card">
 						<div className="card-header">
-							<h1>All Personnel</h1>
+							<h2>All Personnel</h2>
 						</div>
 
-						<div className="search-bar" style={{ marginBottom: "var(--space-md)" }}>
+						<div
+							className="search-bar"
+							style={{ marginBottom: "var(--space-md)" }}
+						>
 							<span className="search-icon">⌕</span>
 							<input
 								type="text"
@@ -270,13 +293,7 @@ export default function PersonnelDashboard() {
 							<h3>Contact Information</h3>
 						</div>
 						<ul className="personnel-info-card">
-							{users
-								.filter((usr) =>
-									`${usr.first_name} ${usr.last_name}`
-										.toLowerCase()
-										.includes(searchTerm.toLowerCase()),
-								)
-								.map((usr) => (
+							{filteredUsers.map((usr) => (
 								<li key={usr.id ?? usr.email} className="personnel-item">
 									<img
 										src={usr.avatar || "/default-avatar.png"}
@@ -287,7 +304,7 @@ export default function PersonnelDashboard() {
 										{usr.first_name} {usr.last_name}
 									</span>
 									<span>{usr.phone}</span>
-									<button>Assign Manager</button>
+									<button type="button">Assign Manager</button>
 								</li>
 							))}
 						</ul>
@@ -307,7 +324,7 @@ export default function PersonnelDashboard() {
 						>
 							<div className="avatar avatar-md">C</div>
 							<div>
-								<div style={{ fontWeight: 600 }}>Contact</div>
+								<div style={{ fontWeight: 500 }}>Contact</div>
 								<div
 									style={{ fontSize: "12px", color: "var(--text-secondary)" }}
 								>
@@ -334,24 +351,38 @@ export default function PersonnelDashboard() {
 							<div className="card-header">
 								<h2>Important Contacts</h2>
 							</div>
-							<div className="contact-row">
-								<div>
-									<div className="contact-name">Contact</div>
-									<div className="contact-role">Sponsor</div>
-								</div>
-								<button className="btn btn-outline btn-sm" type="button">
-									Call
-								</button>
-							</div>
-							<div className="contact-row">
-								<div>
-									<div className="contact-name">Contact</div>
-									<div className="contact-role">Supervisor</div>
-								</div>
-								<button className="btn btn-outline btn-sm" type="button">
-									Call
-								</button>
-							</div>
+							{!loadingDirectory &&
+								users.length > 1 &&
+								facilities.length > 2 && (
+									<div className="contact-row">
+										<div>
+											<div className="contact-name">
+												{users[1].rank} {users[1].first_name}{" "}
+												{users[1].last_name}
+											</div>
+											<div className="contact-role">Sponsor</div>
+										</div>
+										<button className="btn btn-outline btn-sm" type="button">
+											{facilities[2].phone}
+										</button>
+									</div>
+								)}
+							{!loadingDirectory &&
+								facilities.length > 0 &&
+								users.length > 0 && (
+									<div className="contact-row">
+										<div>
+											<div className="contact-name">{facilities[0].title}</div>
+											<div className="contact-role">
+												{users[0].rank} {users[0].first_name}{" "}
+												{users[0].last_name}
+											</div>
+										</div>
+										<button className="btn btn-outline btn-sm" type="button">
+											{facilities[0].phone}
+										</button>
+									</div>
+								)}
 						</div>
 
 						<div className="card">

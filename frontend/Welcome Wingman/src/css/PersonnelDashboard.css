@@ -60,6 +60,10 @@ form.form-group .form-field {
 	align-self: stretch;
 }
 
+.form-group button {
+	margin-top: var(--space-md);
+}
+
 .card-header form input {
 	padding: 10px;
 }

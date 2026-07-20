@@ -44,7 +44,7 @@ function Profile() {
 						</h1>
 						<p>Senior Airman · 2nd Bomb Wing · Systems Analyst</p>
 						<div className="profile-header-tags">
-							<span className="tag">E-4</span>
+							<span className="tag">{LoggedIn?.rank}</span>
 							<span className="badge badge-complete">Active</span>
 						</div>
 					</div>
@@ -64,11 +64,11 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">First Name</span>
-							<span className="value">{user?.first_name}</span>
+							<span className="value">{LoggedIn?.first_name}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Last Name</span>
-							<span className="value">{user?.last_name}</span>
+							<span className="value">{LoggedIn?.last_name}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Duty Title</span>
@@ -76,7 +76,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Email</span>
-							<span className="value">{user?.email}</span>
+							<span className="value">{LoggedIn?.email}</span>
 						</div>
 					</div>
 
@@ -86,7 +86,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Phone</span>
-							<span className="value">{user?.phone}</span>
+							<span className="value">{LoggedIn?.phone}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Office</span>
@@ -94,7 +94,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Address</span>
-							<span className="value">{user?.address}</span>
+							<span className="value">{LoggedIn?.address}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Emergency Contact</span>
@@ -106,10 +106,10 @@ function Profile() {
 						<div className="card-header">
 							<h2>Rank</h2>
 						</div>
-						<span className="rank-badge-large">E-4 · Senior Airman</span>
+						<span className="rank-badge-large">{LoggedIn?.rank}</span>
 						<div className="info-row">
 							<span className="label">Unit</span>
-							<span className="value">2nd Bomb Wing</span>
+							<span className="value">{LoggedIn?.unit}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Supervisor</span>

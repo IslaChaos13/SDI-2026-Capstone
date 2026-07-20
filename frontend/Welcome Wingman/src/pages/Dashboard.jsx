@@ -16,24 +16,7 @@ function Dashboard() {
 			year: "numeric",
 		});
 
-	//Since we are using useContext, we won't need this fetch
-	// const API = "http://localhost:8000";
-	// const [user, setUser] = useState(null);
-	// const { userID } = useParams();
-
-	// useEffect(() => {
-	// 	fetch(`${API}/users`)
-	// 		.then((r) => r.json())
-	// 		.then((userData) => {
-	// 			console.log("USERS:", userData);
-
-	// 			const users = userData.users || [];
-	// 			const matched = users.find((u) => String(u.id) === String(userID));
-
-	// 			setUser(matched || users[0] || null);
-	// 		})
-	// 		.catch(console.error);
-	// }, [userID]);
+	const isAdmin = LoggedIn?.is_admin;
 
 	const [userTasks, setUserTasks] = useState([]);
 
@@ -96,28 +79,38 @@ function Dashboard() {
 								<span className="hero-brand-title">Welcome Wingman</span>
 							</div>
 							<h1>
-								Welcome back, Staff Sergeant{" "}
+								Welcome back, {LoggedIn?.rank}{" "}
 								{LoggedIn?.first_name && LoggedIn?.last_name
 									? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 									: ""}
 							</h1>
 							<span className="rank-tag">{LoggedIn.rank} · 2FSS</span>
 							<p>You have 4 members schedule to arrive today.</p>
-							<div className="hero-actions">
+							{isAdmin && (
 								<button
 									className="btn btn-primary"
 									type="button"
-									onClick={() => navigate(`/${userId}/pdashboard`)}
+									onClick={() => nav(`/${userId}/pdashboard`)}
 								>
 									Go to Personnel
 								</button>
-								<button className="btn btn-outline" type="button">
+							)}
+							<div className="hero-actions">
+								<button
+									className="btn btn-outline"
+									type="button"
+									onClick={() =>
+										document
+											.getElementById("schedule")
+											?.scrollIntoView({ behavior: "smooth", block: "start" })
+									}
+								>
 									View Schedule
 								</button>
 							</div>
 						</div>
 						<div className="hero-snapshot">
-							<span className="snapshot-value">60%</span>
+							<span className="snapshot-value">{completionPercent}%</span>
 							<span className="snapshot-label">Complete</span>
 						</div>
 					</div>
@@ -283,7 +276,7 @@ function Dashboard() {
 					<div className="dashboard-row row-1-2">
 						<div className="card">
 							<div className="card-header">
-								<h2>Today's Schedule</h2>
+								<h2 id="schedule">Today's Schedule</h2>
 							</div>
 							<div className="schedule-row">
 								<span className="schedule-time">0900</span>
@@ -365,7 +358,12 @@ function Dashboard() {
 						<div className="card">
 							<div className="card-header">
 								<h2>Upcoming Tasks</h2>
-								<span className="link">View All</span>
+								<span
+									className="link"
+									onClick={() => nav(`/${userId}/Checklist`)}
+								>
+									View All
+								</span>
 							</div>
 							{myTasks
 								.filter((t) => !t.is_complete)
