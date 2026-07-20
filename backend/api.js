@@ -148,30 +148,64 @@ app.post('/register', async (req, res) => {
 })
 
 app.post('/tasks', async (req, res) => {
-   const { id_directory, title, action_item } = req.body
+   const { id, ...updates } = req.body
 
-   const [newTask] = await knex('tasks').insert({
-      id_directory,
-      title,
-      action_item
-   }).returning('*')
+   if(id){
+      Object.keys(updates).forEach(key => {
+         if (updates[key] === undefined) {
+            delete updates[key];
+         }
+      });
 
-   res.json({ message: 'New task created' })
+      const [updatedTask] = await knex('tasks')
+         .where({ id })
+         .update(updates)
+         .returning('*');
+
+         if (!updatedTask) {
+            return res.status(404).json({ error: `Incorrect ID!` })
+         }
+
+         res.json({ message: "Task updated!", task: updatedTask })
+
+   } else{
+      const [newTask] = await knex('tasks')
+         .insert(updates)
+         .returning('*')
+
+      res.json({ message: 'New task created', task: newTask })
+   }
+
 })
 
 app.post('/directory', async (req, res) => {
-   const { title, link, phone, address, latitude, longitude } = req.body
+   const { id, ...updates } = req.body
 
-   const [newDirectory] = await knex('directory').insert({
-      title,
-      link,
-      phone,
-      address,
-      latitude,
-      longitude
-   }).returning('*')
+   if(id){
+      Object.keys(updates).forEach(key => {
+         if (updates[key] === undefined) {
+            delete updates[key];
+         }
+      });
 
-   res.json({ message: 'New Directory Entry created' })
+      const [updatedDirectory] = await knex('directory')
+         .where({id})
+         .update(updates)
+         .returning('*')
+
+         if (!updatedDirectory) {
+            return res.status(404).json({ error: `Incorrect ID!` })
+         }
+
+         res.json({ message: "Directory updated!", directory: updatedDirectory})
+
+   } else{
+      const [newDirectory] = await knex('directory')
+         .insert(updates)
+         .returning('*')
+
+      res.json({ message: 'New Directory Entry created', directory: newDirectory })
+   }
 })
 
 app.post('/user_tasks', async (req, res) => {
@@ -190,7 +224,7 @@ app.post('/user_tasks', async (req, res) => {
             return res.status(404).json({ error: `Incorrect ID!` })
          }
 
-         res.json({ message: "Note updated!" })
+         res.json({ message: "Note updated!", user_task: updatedUserTask })
       }
 
       if (is_complete) {
@@ -205,11 +239,11 @@ app.post('/user_tasks', async (req, res) => {
             return res.status(404).json({ error: `Incorrect ID!` })
          }
 
-         res.json({ message: "Successfully marked as completed" })
+         res.json({ message: "Successfully marked as completed", user_task: completeUserTask })
       }
 
    } else if (user_id && task_id && due_date) {
-      const [userTask] = await knex('user_tasks').insert({
+      const [newUserTask] = await knex('user_tasks').insert({
          user_id,
          task_id,
          priority: priority || 'Medium',
@@ -219,7 +253,7 @@ app.post('/user_tasks', async (req, res) => {
 
       }).returning('*')
 
-      res.json({ message: "Task created." })
+      res.json({ message: "Task created.", user_task: newUserTask  })
    }
 
    return res.status(400).json({ error: `Something went wrong :(` })
