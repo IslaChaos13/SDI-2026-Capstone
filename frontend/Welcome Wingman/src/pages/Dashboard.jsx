@@ -5,30 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
 
+
 function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
 	const navigate = useNavigate();
-
-	//Since we are using useContext, we won't need this fetch
-	// const API = "http://localhost:8000";
-	// const [user, setUser] = useState(null);
-	// const { userID } = useParams();
-
-	// useEffect(() => {
-	// 	fetch(`${API}/users`)
-	// 		.then((r) => r.json())
-	// 		.then((userData) => {
-	// 			console.log("USERS:", userData);
-
-	// 			const users = userData.users || [];
-	// 			const matched = users.find((u) => String(u.id) === String(userID));
-
-	// 			setUser(matched || users[0] || null);
-	// 		})
-	// 		.catch(console.error);
-	// }, [userID]);
-
 	const [userTasks, setUserTasks] = useState([]);
+	const [weather, setWeather] = useState(null);
+	let latitude = 32.50283298104374;
+	let longitude = -93.66312248601946;
 
 	useEffect(() => {
 		fetch("http://localhost:8000/user_tasks")
@@ -38,6 +22,16 @@ function Dashboard() {
 			})
 			.catch(console.error);
 	}, []);
+
+	useEffect(() => {
+			fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m&daily=precipitation_probability_max&forecast_days=1&temperature_unit=fahrenheit&wind_speed_unit=mph`)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data)
+				setWeather(data);
+			})
+			.catch(console.error)
+		}, []);
 
 	const myTasks = userTasks.filter(
 		(ut) =>
@@ -444,17 +438,16 @@ function Dashboard() {
 							<div className="card-header" style={{ justifyContent: "center" }}>
 								<h2>Weather</h2>
 							</div>
-							<div className="weather-icon">⛅</div>
-							<div className="weather-temp">70°F</div>
-							<div className="weather-condition">Partly Cloudy</div>
+							<div className="weather-icon">Current Temperature</div>
+							<div className="weather-temp">{weather ? `${weather.current.temperature_2m} °F`: "Loading..."}</div>
 							<div className="weather-forecast">
 								<div className="weather-day">
-									<span className="day-icon">☀️</span>
-									Day 2
+									<span className="day-icon">Rain</span>
+									{weather ? `${weather.daily.precipitation_probability_max[0]}%`: "Loading..."}
 								</div>
 								<div className="weather-day">
-									<span className="day-icon">🌦️</span>
-									Day 3
+									<span className="day-icon">Wind</span>
+									{weather ? `${weather.current.wind_speed_10m} mph`: "Loading..."}
 								</div>
 							</div>
 						</div>
