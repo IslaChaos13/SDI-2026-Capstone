@@ -16,7 +16,7 @@ const units = [
   '49th Test and Evaluation Squadron',
   '608th Air Communications Squadron',
   '55th Wing',
-  '9th Wing',
+  '95th Wing',
   'USSTRATCOM'
 ]
 
