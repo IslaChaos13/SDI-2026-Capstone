@@ -260,7 +260,6 @@ app.post('/user_tasks', async (req, res) => {
    return res.status(400).json({ error: 'Something went wrong :(' })
 })
 
-
 //Delete routes
 app.delete('/tasks/:id', async (req, res) => {
    console.log('params:', req.params)
@@ -321,6 +320,38 @@ app.delete('/directory_poc/:id', async (req, res) => {
 })
 
 // PUT Routes
+app.put('/users/:id', async (req, res) => {
+   try {
+      const { is_admin, is_manager, rank, first_name, last_name, email, phone, address, unit, avatar, password } = req.body
+
+      const updates = {}
+      if (is_admin !== undefined) updates.is_admin = is_admin
+      if (is_manager !== undefined) updates.is_manager = is_manager
+      if (rank !== undefined) updates.rank = rank
+      if (first_name !== undefined) updates.first_name = first_name
+      if (last_name !== undefined) updates.last_name = last_name
+      if (email !== undefined) updates.email = email
+      if (phone !== undefined) updates.phone = phone
+      if (address !== undefined) updates.address = address
+      if (unit !== undefined) updates.unit = unit
+      if (avatar !== undefined) updates.avatar = avatar
+      if (password !== undefined) updates.password = await bcrypt.hash(password, 10)
+
+      if (Object.keys(updates).length === 0) {
+         return res.status(400).json({ error: 'Nothing to update' })
+      }
+
+      const [user] = await knex('users')
+         .where({ id: req.params.id })
+         .update(updates)
+         .returning('*')
+
+      return res.json({ message: 'user updated', user })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'failed to update user' })
+   }
+})
 
 
 
