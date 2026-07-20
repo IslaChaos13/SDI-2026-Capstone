@@ -133,29 +133,37 @@ app.post("/login", async (req, res) => {
 app.post("/register", async (req, res) => {
 	const { first_name, last_name, email, password } = req.body;
 
-	const existing = await knex("users").where({ email }).first();
-	if (existing)
-		return res.status(400).json({ error: `You've already got an account!` });
+app.post('/register', async (req, res) => {
+   try {
+      const { first_name, last_name, rank, phone, address, email, password } = req.body
 
-	const hashedPassword = await bcrypt.hash(password, 10);
+      if (!email || !password) {
+         return res.status(400).json({ error: 'Email and password required' })
+      }
 
-	const [user] = await knex("users")
-		.insert({
-			is_admin: false,
-			is_manager: false,
-			rank,
-			first_name,
-			last_name,
-			email,
-			phone,
-			address,
-			avatar,
-			password: hashedPassword,
-		})
-		.returning("*");
+      const existing = await knex('users').where({ email }).first()
+      if (existing) return res.status(400).json({ error: `You've already got an account` })
 
-	res.json({ message: "Thanks for signing up! Log in with your email" });
-});
+      const hashedPassword = await bcrypt.hash(password, 10)
+
+      const [user] = await knex('users').insert({
+         is_admin: false,
+         is_manager: false,
+         first_name,
+         last_name,
+         rank,
+         phone,
+         address,
+         email,
+         password: hashedPassword,
+      }).returning('*')
+
+      res.json({ message: 'Thanks for signing up! Log in with your email' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'failed to register' })
+   }
+})
 
 app.post("/tasks", async (req, res) => {
 	const { id_directory, title, action_item } = req.body;
