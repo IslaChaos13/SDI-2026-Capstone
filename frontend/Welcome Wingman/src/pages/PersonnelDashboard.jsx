@@ -20,21 +20,21 @@ export default function PersonnelDashboard() {
 	const [users, setUsers] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	const [rankFilter, setRankFitler] = useState("All");
-	const [search, seSearch] = useState("");
+	// const [rankFilter, setRankFitler] = useState("All");
+	// const [search, seSearch] = useState("");
 
-	const ranks = ["All", ...new Set(users.map((u) => u.rank).filter(Boolean))];
+	// const ranks = ["All", ...new Set(users.map((u) => u.rank).filter(Boolean))];
 
-	const filteredUsers = users.filter((usr) => {
-		const matchesRank = rankFilter === "All" || usr.rank === rankFilter;
-		const fullName =
-			`${usr.first_name ?? ""}${usr.last_name ?? ""}`.toLowerCase();
-		const matchesSearch =
-			search.trim() === "" ||
-			fullName.includes(search.toLowerCase()) ||
-			(usr.email ?? "").toLowerCase().includes(search.toLowerCase());
-		return matchesRank && matchesSearch;
-	});
+	// const filteredUsers = users.filter((usr) => {
+	// 	const matchesRank = rankFilter === "All" || usr.rank === rankFilter;
+	// 	const fullName =
+	// 		`${usr.first_name ?? ""}${usr.last_name ?? ""}`.toLowerCase();
+	// 	const matchesSearch =
+	// 		search.trim() === "" ||
+	// 		fullName.includes(search.toLowerCase()) ||
+	// 		(usr.email ?? "").toLowerCase().includes(search.toLowerCase());
+	// 	return matchesRank && matchesSearch;
+	// });
 
 	function handleChange(e) {
 		const { name, value } = e.target;
@@ -61,7 +61,15 @@ export default function PersonnelDashboard() {
 				throw new Error(data.error || "Could not create your account.");
 			}
 
-			setForm({ first_name: "", last_name: "", email: "", password: "" });
+			setForm({
+				first_name: "",
+				last_name: "",
+				email: "",
+				password: "",
+				rank: "",
+				unit: "",
+				address: "",
+			});
 			setStatus("success");
 		} catch (err) {
 			setStatus("idle");
@@ -142,6 +150,18 @@ export default function PersonnelDashboard() {
 						<form onSubmit={handleSubmit} className="form-group">
 							<div className="form-row">
 								<div className="form-field">
+									<label htmlFor="rank">Rank</label>
+									<input
+										type="text"
+										name="rank"
+										placeholder="Rank"
+										value={form.rank}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+
+								<div className="form-field">
 									<label htmlFor="first_name">First Name</label>
 									<input
 										type="text"
@@ -159,6 +179,30 @@ export default function PersonnelDashboard() {
 										name="last_name"
 										placeholder="Last name"
 										value={form.last_name}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+
+								<div className="form-field">
+									<label htmlFor="unit">Unit</label>
+									<input
+										type="text"
+										name="unit"
+										placeholder="unit"
+										value={form.unit}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+
+								<div className="form-field">
+									<label htmlFor="address">Address</label>
+									<input
+										type="text"
+										name="address"
+										placeholder="address"
+										value={form.address}
 										onChange={handleChange}
 										required
 									/>
