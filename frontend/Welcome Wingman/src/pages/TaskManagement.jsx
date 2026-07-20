@@ -90,6 +90,12 @@ function TaskManagement() {
 			.catch(console.error);
 	}
 
+	const formatDate = (isoString) =>
+		new Date(isoString).toLocaleDateString("en-US", {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		});
 	return (
 		<Layout>
 			<div className="page">
@@ -338,12 +344,16 @@ function TaskManagement() {
 							<tbody>
 								{userTasks.map((ut) => (
 									<tr key={ut.id}>
-										<td>{ut.first_name} {ut.last_name}</td>
+										<td>
+											{ut.first_name} {ut.last_name}
+										</td>
 										<td>{ut.title}</td>
 										<td>
-											<span className="priority priority-medium">{ut.priority}</span>
+											<span className="priority priority-medium">
+												{ut.priority}
+											</span>
 										</td>
-										<td>{ut.due_date}</td>
+										<td>{formatDate(ut.due_date)}</td>
 										<td>
 											{ut.is_complete ? (
 												<span className="badge badge-complete">Completed</span>
@@ -357,10 +367,16 @@ function TaskManagement() {
 										</td>
 										<td>
 											<div className="assignment-actions">
-												<button className="btn btn-outline btn-sm" type="button">
+												<button
+													className="btn btn-outline btn-sm"
+													type="button"
+												>
 													View
 												</button>
-												<button className="btn btn-outline btn-sm" type="button">
+												<button
+													className="btn btn-outline btn-sm"
+													type="button"
+												>
 													Edit
 												</button>
 												<button
