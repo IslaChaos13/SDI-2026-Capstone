@@ -4,8 +4,10 @@ import "../css/PersonnelDashboard.css";
 import "../styles/Profile.css";
 import { useContext, useState, useEffect } from "react";
 import UserContext from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function PersonnelDashboard() {
+	const nav = useNavigate();
 	const { LoggedIn } = useContext(UserContext);
 	const [form, setForm] = useState({
 		first_name: "",
@@ -16,6 +18,22 @@ export default function PersonnelDashboard() {
 	const [status, setStatus] = useState("idle"); // 'idle' | 'submitting' | 'success'
 	const [error, setError] = useState(null);
 	const [users, setUsers] = useState([]);
+
+	const [rankFilter, setRankFitler] = useState("All");
+	const [search, seSearch] = useState("");
+
+	const ranks = ["All", ...new Set(users.map((u) => u.rank).filter(Boolean))];
+
+	const filteredUsers = users.filter((usr) => {
+		const matchesRank = rankFilter === "All" || usr.rank === rankFilter;
+		const fullName =
+			`${usr.first_name ?? ""}${usr.last_name ?? ""}`.toLowerCase();
+		const matchesSearch =
+			search.trim() === "" ||
+			fullName.includes(search.toLowerCase()) ||
+			(usr.email ?? "").toLowerCase().includes(search.toLowerCase());
+		return matchesRank && matchesSearch;
+	});
 
 	function handleChange(e) {
 		const { name, value } = e.target;
@@ -101,10 +119,11 @@ export default function PersonnelDashboard() {
 							<span className="rank-tag">{LoggedIn.rank} · Unit</span>
 							<p>You have 4 tasks remaining.</p>
 							<div className="hero-actions">
-								<button className="btn btn-primary" type="button">
-									Continue Checklist
-								</button>
-								<button className="btn btn-outline" type="button">
+								<button
+									className="btn btn-outline"
+									type="button"
+									onClick={() => nav(`${LoggedIn?.id}/profile`)}
+								>
 									View Profile
 								</button>
 							</div>
@@ -188,6 +207,7 @@ export default function PersonnelDashboard() {
 						<div className="card-header">
 							<h1>All Personnel</h1>
 						</div>
+
 						<div className="personnel-info-header">
 							<h3>Avatar</h3>
 							<h3>Rank</h3>

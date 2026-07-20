@@ -8,7 +8,7 @@ import UserContext from "../context/UserContext";
 //TODO REWORK PAGE
 
 function Profile() {
-	const { LoggedIn, setLoggedIn } = useContext(UserContext);
+	const { LoggedIn } = useContext(UserContext);
 
 	// const API = "http://localhost:8000";
 	// // const [user, setUser] = useState(null)
@@ -27,7 +27,7 @@ function Profile() {
 	// if(!user) {return null;}
 
 	return (
-		<Layout LoggedIn={LoggedIn}>
+		<Layout>
 			<div className="page">
 				<div className="page-header">
 					<h1>Profile</h1>

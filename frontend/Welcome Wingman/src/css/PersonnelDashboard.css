@@ -123,3 +123,33 @@ form.form-group .form-field {
 	width: fit-content;
 	justify-self: first baseline;
 }
+
+.personnel-filters {
+	display: flex;
+	gap: var(--space-md);
+	margin-bottom: var(--space-md);
+	flex-wrap: "wrap";
+}
+
+.personnel-filters input,
+.personnel-filters select {
+	color-scheme: dark;
+	background: var(--panel, #0d2038);
+	color: var(--text, #fff);
+	border: 1px solid var(--border, #2a3f5c);
+	border-radius: 6px;
+	padding: 8px 10px;
+	font-size: 13px;
+}
+.personnel-filters input {
+	flex: 1 1 220px;
+}
+
+.personnel-filters select {
+	flex: 0 0 160px;
+}
+
+.personnel-filters select option {
+	background: var(--panel, #0d2038);
+	color: var(--text, #fff);
+}

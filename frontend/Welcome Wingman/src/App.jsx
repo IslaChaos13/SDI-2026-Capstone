@@ -57,22 +57,13 @@ function App() {
 						path="/login"
 						element={<Logon LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} />}
 					/>
-					<Route
-						path="/directory"
-						element={<BaseDirectory LoggedIn={LoggedIn} />}
-					/>
+					<Route path="/directory" element={<BaseDirectory />} />
 					<Route path="/:UserID/tasks" element={<TaskManagement />} />
 					<Route path="/admin" element={<AdminDashboard />} />
 					<Route path="/:UserID/Checklist" element={<MyChecklist />} />
-					<Route
-						path="/:UserID/profile"
-						element={<Profile LoggedIn={LoggedIn} />}
-					/>
+					<Route path="/:UserID/profile" element={<Profile />} />
 					<Route path="/:UserID/dashboard" element={<Dashboard />} />
-					<Route
-						path="/:UserID/pdashboard"
-						element={<PersonnelDashboard LoggedI={LoggedIn} />}
-					/>
+					<Route path="/:UserID/pdashboard" element={<PersonnelDashboard />} />
 					<Route path="/*" element={<ErrorPage />} />
 				</Routes>
 			</div>

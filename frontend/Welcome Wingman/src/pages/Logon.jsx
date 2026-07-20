@@ -25,7 +25,7 @@ function Logon() {
 					setError(data.error);
 				} else {
 					setLoggedIn(data.user);
-					navigate(`/${userId}/dashboard`);
+					navigate(`/:UserID/dashboard`);
 				}
 			})
 			.catch(() => setError("Server error, try again"));
