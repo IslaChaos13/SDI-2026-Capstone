@@ -99,41 +99,6 @@ app.get("/user_tasks", async (req, res) => {
 	}
 });
 
-//TJF//
-
-app.get("/login", async (req, res) => {
-	const { email, password } = req.body;
-	console.log(
-		"Login attempt for email:",
-		JSON.stringify(email),
-	); /*I added this */
-
-	const user = await knex("users").where({ email }).first();
-
-	if (!user) return res.status(401).json({ error: "User not found!" });
-
-	const validPassword = await bcrypt.compare(password, user.password);
-
-	if (!validPassword)
-		return res.status(401).json({ error: "Incorrect password!" });
-
-	const token = jwt.sign(
-		{ user_id: user.id, is_admin: user.is_admin },
-		"your_jwt_secret",
-		{ expiresIn: "24h" },
-	);
-
-	res.cookie("token", token, {
-		httpOnly: true,
-		secure: false,
-		maxAge: 24 * 60 * 60 * 1000,
-	});
-
-	const { password: _, ...safeUser } = user;
-
-	res.json(user);
-});
-
 // Post routes
 app.post("/login", async (req, res) => {
 	const { email, password } = req.body;
@@ -162,9 +127,7 @@ app.post("/login", async (req, res) => {
 		maxAge: 24 * 60 * 60 * 1000,
 	});
 
-	const { password: _, ...safeUser } = user;
-
-	res.json({ message: "Log in successful!", user: safeUser });
+	res.json({ message: "Log in successful!" });
 });
 
 app.post("/register", async (req, res) => {
@@ -208,61 +171,24 @@ app.post("/tasks", async (req, res) => {
 	res.json({ message: "New task created" });
 });
 
-app.post("/directory", async (req, res) => {
-	const { title, link, phone, address, latitude, longitude } = req.body;
-
-	const [newDirectory] = await knex("directory")
-		.insert({
-			title,
-			link,
-			phone,
-			address,
-			latitude,
-			longitude,
-		})
-		.returning("*");
-
-	res.json({ message: "New Directory Entry created" });
-});
-
 app.post("/user_tasks", async (req, res) => {
-	const { id, user_id, task_id, priority, due_date, is_complete, note } =
-		req.body;
+	const { id, user_id, task_id, priority, due_date, note } = req.body;
 
 	if (id) {
-		if (note) {
-			const [updatedUserTask] = await knex("user_tasks")
-				.where({
-					id,
-				})
-				.update({
-					note: note,
-				})
-				.returning("*");
+		const [updatedUserTask] = await knex("user_tasks")
+			.where({
+				id,
+			})
+			.update({
+				note: note || null,
+			})
+			.returning("*");
 
-			if (!updatedUserTask) {
-				return res.status(404).json({ error: `Incorrect ID!` });
-			}
-
-			res.json({ message: "Note updated!" });
+		if (!updatedUserTask) {
+			return res.status(404).json({ error: `Incorrect ID!` });
 		}
 
-		if (is_complete) {
-			const [completeUserTask] = await knex("user_tasks")
-				.where({
-					id,
-				})
-				.update({
-					is_complete: is_complete,
-				})
-				.returning("*");
-
-			if (!completeUserTask) {
-				return res.status(404).json({ error: `Incorrect ID!` });
-			}
-
-			res.json({ message: "Successfully marked as completed" });
-		}
+		res.json({ message: "Note updated!" });
 	} else if (user_id && task_id && due_date) {
 		const [userTask] = await knex("user_tasks")
 			.insert({
@@ -279,65 +205,6 @@ app.post("/user_tasks", async (req, res) => {
 	}
 
 	return res.status(400).json({ error: `Something went wrong :(` });
-});
-
-//Delete routes
-app.delete("/tasks/:id", async (req, res) => {
-	console.log("params:", req.params);
-	try {
-		await knex("user_tasks").where({ task_id: req.params.id }).del();
-		await knex("tasks").where({ id: req.params.id }).del();
-		res.json({ message: "task deleted!" });
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "failed to delete" });
-	}
-});
-
-app.delete("/user_tasks/:id", async (req, res) => {
-	console.log("params:", req.params);
-	try {
-		await knex("user_tasks").where({ id: req.params.id }).del();
-		res.json({ message: "user_task deleted" });
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "failed to delete" });
-	}
-});
-
-app.delete("/users/:id", async (req, res) => {
-	console.log("params:", req.params);
-	try {
-		await knex("user_tasks").where({ user_id: req.params.id }).del();
-		await knex("users").where({ id: req.params.id }).del();
-		res.json({ message: "user deleted" });
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "failed to delete" });
-	}
-});
-
-app.delete("/directory/:id", async (req, res) => {
-	console.log("params:", req.params);
-	try {
-		await knex("directory_poc").where({ id_users: req.params.id }).del();
-		await knex("directory").where({ id: req.params.id }).del();
-		res.json({ message: "directory deleted" });
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "failed to delete" });
-	}
-});
-
-app.delete("/directory_poc/:id", async (req, res) => {
-	console.log("params:", req.params);
-	try {
-		await knex("directory_poc").where({ id: req.params.id }).del();
-		res.json({ message: "directory_poc deleted" });
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({ message: "failed to delete" });
-	}
 });
 
 app.listen(PORT, () => {

@@ -5,30 +5,26 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
 
+//TODO REWORK PAGE
+
 function Profile() {
-	const { LoggedIn } = useContext(UserContext);
+	const { LoggedIn, setLoggedIn } = useContext(UserContext);
 
-	const API = "http://localhost:8000";
-	const [user, setUser] = useState(LoggedIn);
-	const { userID } = useParams();
-	const isAdmin = LoggedIn?.is_admin;
-	console.log("LoggedIn object:", LoggedIn);
-	console.log("is_admin value:", isAdmin, typeof isAdmin);
+	// const API = "http://localhost:8000";
+	// // const [user, setUser] = useState(null)
+	// const { userID } = useParams()
+	// useEffect(() => {
+	//   fetch(`${API}/users`)
+	//     .then((r) => r.json())
+	//     .then((userData) => {
+	//       const users = userData.users || [];
+	//       const matched = users.find((u) => String(u.id) === String(userID));
+	//       setUser(matched || users[0] || null);
+	//     })
+	//     .catch(console.error);
+	// }, [userID]);
 
-	useEffect(() => {
-		fetch(`${API}/users`)
-			.then((r) => r.json())
-			.then((userData) => {
-				const users = userData.users || [];
-				const matched = users.find((u) => String(u.id) === String(userID));
-				setUser(matched || LoggedIn);
-			})
-			.catch(console.error);
-	}, [userID]);
-
-	if (!user) {
-		return null;
-	}
+	// if(!user) {return null;}
 
 	return (
 		<Layout LoggedIn={LoggedIn}>
@@ -42,13 +38,13 @@ function Profile() {
 					<div className="avatar avatar-xl">AJ</div>
 					<div className="profile-header-info">
 						<h1>
-							{user?.first_name && user?.last_name
-								? `${user.first_name} ${user.last_name}`
+							{LoggedIn?.first_name && LoggedIn?.last_name
+								? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 								: "Guest"}
 						</h1>
-						<p>Staff Sergeant · 2nd Bomb Wing · Systems Analyst</p>
+						<p>Senior Airman · 2nd Bomb Wing · Systems Analyst</p>
 						<div className="profile-header-tags">
-							<span className="tag">{user?.rank}</span>
+							<span className="tag">E-4</span>
 							<span className="badge badge-complete">Active</span>
 						</div>
 					</div>
@@ -110,9 +106,7 @@ function Profile() {
 						<div className="card-header">
 							<h2>Rank</h2>
 						</div>
-						<span className="rank-badge-large">
-							{LoggedIn.rank} · Staff Sergeant
-						</span>
+						<span className="rank-badge-large">E-4 · Senior Airman</span>
 						<div className="info-row">
 							<span className="label">Unit</span>
 							<span className="value">2nd Bomb Wing</span>
@@ -129,9 +123,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Role</span>
-							<span className="value">
-								{isAdmin ? "Administrator" : "Standard User"}
-							</span>
+							<span className="value">Standard User</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Account Created</span>
