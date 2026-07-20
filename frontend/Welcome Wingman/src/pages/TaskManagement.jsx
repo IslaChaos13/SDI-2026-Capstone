@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Layout from "../components/Layout.jsx";
 import "../styles/theme.css";
 // import './Dashboard.css'
@@ -10,6 +10,85 @@ function TaskManagement() {
 	const { LoggedIn } = useContext(UserContext);
 
 	const [mode, setMode] = useState("existing");
+
+	const [users, setUsers] = useState([]);
+	const [tasks, setTasks] = useState([]);
+	const [userTasks, setUserTasks] = useState([]);
+
+	useEffect(() => {
+		fetch("http://localhost:8000/users")
+			.then((r) => r.json())
+			.then((data) => setUsers(data.users || []))
+			.catch(console.error);
+
+		fetch("http://localhost:8000/tasks")
+			.then((r) => r.json())
+			.then((data) => setTasks(data.tasks || []))
+			.catch(console.error);
+
+		fetch("http://localhost:8000/user_tasks")
+			.then((r) => r.json())
+			.then((data) => setUserTasks(data || []))
+			.catch(console.error);
+	}, []);
+
+	const [assignUserId, setAssignUserId] = useState("");
+	const [assignTaskId, setAssignTaskId] = useState("");
+	const [assignPriority, setAssignPriority] = useState("Medium");
+	const [assignDueDate, setAssignDueDate] = useState("");
+	const [assignNotes, setAssignNotes] = useState("");
+
+	function handleAssignTask() {
+		fetch("http://localhost:8000/user_tasks", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				user_id: assignUserId,
+				task_id: assignTaskId,
+				priority: assignPriority,
+				due_date: assignDueDate,
+				note: assignNotes,
+			}),
+		})
+			.then((r) => r.json())
+			.then(() => {
+				return fetch("http://localhost:8000/user_tasks")
+					.then((r) => r.json())
+					.then((data) => setUserTasks(data || []));
+			})
+			.catch(console.error);
+	}
+
+	const [customTitle, setCustomTitle] = useState("");
+	const [customDescription, setCustomDescription] = useState("");
+
+	function handleCreateTask() {
+		fetch("http://localhost:8000/tasks", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				title: customTitle,
+				action_item: customDescription,
+			}),
+		})
+			.then((r) => r.json())
+			.then(() => {
+				return fetch("http://localhost:8000/tasks")
+					.then((r) => r.json())
+					.then((data) => setTasks(data.tasks || []));
+			})
+			.catch(console.error);
+	}
+
+	function handleRemoveAssignment(id) {
+		fetch(`http://localhost:8000/user_tasks/${id}`, {
+			method: "DELETE",
+		})
+			.then(() => {
+				setUserTasks((prev) => prev.filter((ut) => ut.id !== id));
+			})
+			.catch(console.error);
+	}
 
 	return (
 		<Layout>
@@ -76,25 +155,38 @@ function TaskManagement() {
 							<div className="assign-panel-grid">
 								<div className="form-group">
 									<label>Select Personnel</label>
-									<select>
-										<option>Select User</option>
-										<option>User 1</option>
-										<option>User 2</option>
-										<option>User 3</option>
+									<select
+										value={assignUserId}
+										onChange={(e) => setAssignUserId(e.target.value)}
+									>
+										<option value="">Select User</option>
+										{users.map((u) => (
+											<option key={u.id} value={u.id}>
+												{u.first_name} {u.last_name}
+											</option>
+										))}
 									</select>
 								</div>
 								<div className="form-group">
 									<label>Select Existing Task</label>
-									<select>
-										<option>Select Task</option>
-										<option>Task 1</option>
-										<option>Task 2</option>
-										<option>Task 3</option>
+									<select
+										value={assignTaskId}
+										onChange={(e) => setAssignTaskId(e.target.value)}
+									>
+										<option value="">Select Task</option>
+										{tasks.map((t) => (
+											<option key={t.id} value={t.id}>
+												{t.title}
+											</option>
+										))}
 									</select>
 								</div>
 								<div className="form-group">
 									<label>Priority</label>
-									<select>
+									<select
+										value={assignPriority}
+										onChange={(e) => setAssignPriority(e.target.value)}
+									>
 										<option>Low</option>
 										<option>Medium</option>
 										<option>High</option>
@@ -102,14 +194,27 @@ function TaskManagement() {
 								</div>
 								<div className="form-group">
 									<label>Due Date</label>
-									<input type="date" />
+									<input
+										type="date"
+										value={assignDueDate}
+										onChange={(e) => setAssignDueDate(e.target.value)}
+									/>
 								</div>
 								<div className="form-group full">
 									<label>Notes</label>
-									<textarea rows="3" placeholder="Notes"></textarea>
+									<textarea
+										rows="3"
+										placeholder="Notes"
+										value={assignNotes}
+										onChange={(e) => setAssignNotes(e.target.value)}
+									></textarea>
 								</div>
 							</div>
-							<button className="btn btn-primary" type="button">
+							<button
+								className="btn btn-primary"
+								type="button"
+								onClick={handleAssignTask}
+							>
 								Assign Task
 							</button>
 						</div>
@@ -122,18 +227,30 @@ function TaskManagement() {
 									<label>Select Personnel</label>
 									<select>
 										<option>Select User</option>
-										<option>User 1</option>
-										<option>User 2</option>
-										<option>User 3</option>
+										{users.map((u) => (
+											<option key={u.id} value={u.id}>
+												{u.first_name} {u.last_name}
+											</option>
+										))}
 									</select>
 								</div>
 								<div className="form-group">
 									<label>Custom Task Title</label>
-									<input type="text" placeholder="Custom Task Title" />
+									<input
+										type="text"
+										placeholder="Custom Task Title"
+										value={customTitle}
+										onChange={(e) => setCustomTitle(e.target.value)}
+									/>
 								</div>
 								<div className="form-group full">
 									<label>Description</label>
-									<textarea rows="2" placeholder="Description"></textarea>
+									<textarea
+										rows="2"
+										placeholder="Description"
+										value={customDescription}
+										onChange={(e) => setCustomDescription(e.target.value)}
+									></textarea>
 								</div>
 								<div className="form-group">
 									<label>Category</label>
@@ -160,7 +277,11 @@ function TaskManagement() {
 									<textarea rows="3" placeholder="Notes"></textarea>
 								</div>
 							</div>
-							<button className="btn btn-primary" type="button">
+							<button
+								className="btn btn-primary"
+								type="button"
+								onClick={handleCreateTask}
+							>
 								Create &amp; Assign Task
 							</button>
 							<div className="task-preview">
@@ -215,90 +336,44 @@ function TaskManagement() {
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td>User 1</td>
-									<td>Task 1</td>
-									<td>
-										<span className="priority priority-high">High</span>
-									</td>
-									<td>Due Date</td>
-									<td>
-										<span className="badge badge-pending">In Progress</span>
-									</td>
-									<td>
-										<span className="assigned-name">Admin User</span>
-										<span className="assigned-date">Assigned: Date</span>
-									</td>
-									<td>
-										<div className="assignment-actions">
-											<button className="btn btn-outline btn-sm" type="button">
-												View
-											</button>
-											<button className="btn btn-outline btn-sm" type="button">
-												Edit
-											</button>
-											<button className="btn btn-outline btn-sm" type="button">
-												Remove
-											</button>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>User 2</td>
-									<td>Task 2</td>
-									<td>
-										<span className="priority priority-medium">Medium</span>
-									</td>
-									<td>Due Date</td>
-									<td>
-										<span className="badge badge-complete">Completed</span>
-									</td>
-									<td>
-										<span className="assigned-name">Admin User</span>
-										<span className="assigned-date">Assigned: Date</span>
-									</td>
-									<td>
-										<div className="assignment-actions">
-											<button className="btn btn-outline btn-sm" type="button">
-												View
-											</button>
-											<button className="btn btn-outline btn-sm" type="button">
-												Edit
-											</button>
-											<button className="btn btn-outline btn-sm" type="button">
-												Remove
-											</button>
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>User 3</td>
-									<td>Task 3</td>
-									<td>
-										<span className="priority priority-low">Low</span>
-									</td>
-									<td>Due Date</td>
-									<td>
-										<span className="badge badge-overdue">Overdue</span>
-									</td>
-									<td>
-										<span className="assigned-name">Admin User</span>
-										<span className="assigned-date">Assigned: Date</span>
-									</td>
-									<td>
-										<div className="assignment-actions">
-											<button className="btn btn-outline btn-sm" type="button">
-												View
-											</button>
-											<button className="btn btn-outline btn-sm" type="button">
-												Edit
-											</button>
-											<button className="btn btn-outline btn-sm" type="button">
-												Remove
-											</button>
-										</div>
-									</td>
-								</tr>
+								{userTasks.map((ut) => (
+									<tr key={ut.id}>
+										<td>{ut.first_name} {ut.last_name}</td>
+										<td>{ut.title}</td>
+										<td>
+											<span className="priority priority-medium">{ut.priority}</span>
+										</td>
+										<td>{ut.due_date}</td>
+										<td>
+											{ut.is_complete ? (
+												<span className="badge badge-complete">Completed</span>
+											) : (
+												<span className="badge badge-pending">In Progress</span>
+											)}
+										</td>
+										<td>
+											<span className="assigned-name">Admin User</span>
+											<span className="assigned-date">Assigned: Date</span>
+										</td>
+										<td>
+											<div className="assignment-actions">
+												<button className="btn btn-outline btn-sm" type="button">
+													View
+												</button>
+												<button className="btn btn-outline btn-sm" type="button">
+													Edit
+												</button>
+												<button
+													className="btn btn-outline btn-sm"
+													type="button"
+													onClick={() => handleRemoveAssignment(ut.id)}
+												>
+													Remove
+												</button>
+											</div>
+										</td>
+									</tr>
+								))}
 							</tbody>
 						</table>
 					</div>

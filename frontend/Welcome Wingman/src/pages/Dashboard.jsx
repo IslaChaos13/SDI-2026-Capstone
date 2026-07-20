@@ -28,6 +28,29 @@ function Dashboard() {
 	// 		.catch(console.error);
 	// }, [userID]);
 
+	const [userTasks, setUserTasks] = useState([]);
+
+	useEffect(() => {
+		fetch("http://localhost:8000/user_tasks")
+			.then((r) => r.json())
+			.then((data) => {
+				setUserTasks(data || []);
+			})
+			.catch(console.error);
+	}, []);
+
+	const myTasks = userTasks.filter(
+		(ut) =>
+			LoggedIn &&
+			ut.first_name === LoggedIn.first_name &&
+			ut.last_name === LoggedIn.last_name,
+	);
+	const tasksCompleted = myTasks.filter((t) => t.is_complete).length;
+	const tasksRemaining = myTasks.filter((t) => !t.is_complete).length;
+	const completionPercent = myTasks.length
+		? Math.round((tasksCompleted / myTasks.length) * 100)
+		: 0;
+
 	if (!LoggedIn) {
 		return null;
 	}
@@ -81,7 +104,7 @@ function Dashboard() {
 								>
 									Go to Personnel
 								</button>
-								<button className="btn btn-outline" type="button" a hre>
+								<button className="btn btn-outline" type="button">
 									View Schedule
 								</button>
 							</div>
@@ -103,14 +126,14 @@ function Dashboard() {
 						<div className="card stat-card">
 							<div className="stat-icon">📋</div>
 							<div>
-								<div className="stat-value">4</div>
+								<div className="stat-value">{tasksRemaining}</div>
 								<div className="stat-label">Tasks Remaining</div>
 							</div>
 						</div>
 						<div className="card stat-card">
 							<div className="stat-icon">✅</div>
 							<div>
-								<div className="stat-value">6</div>
+								<div className="stat-value">{tasksCompleted}</div>
 								<div className="stat-label">Completed</div>
 							</div>
 						</div>
@@ -131,7 +154,7 @@ function Dashboard() {
 						<div className="card stat-card">
 							<div className="stat-icon">📈</div>
 							<div>
-								<div className="stat-value">60%</div>
+								<div className="stat-value">{completionPercent}%</div>
 								<div className="stat-label">Avg. Completion</div>
 							</div>
 						</div>
@@ -175,9 +198,14 @@ function Dashboard() {
 								<h2>Progress</h2>
 							</div>
 							<div className="progress-track progress-track-lg">
-								<div className="progress-fill" style={{ width: "60%" }}></div>
+								<div
+									className="progress-fill"
+									style={{ width: `${completionPercent}%` }}
+								></div>
 							</div>
-							<p className="progress-caption">6 of 10 tasks complete</p>
+							<p className="progress-caption">
+								{tasksCompleted} of {myTasks.length} tasks complete
+							</p>
 						</div>
 
 						<div className="card">
@@ -332,29 +360,22 @@ function Dashboard() {
 								<h2>Upcoming Tasks</h2>
 								<span className="link">View All</span>
 							</div>
-							<div className="list-row">
-								<div>
-									<h3>Create user accounts for incoming personnel.</h3>
-									<div className="meta">
-										<span className="priority priority-medium">Medium</span>
-										<span>July 24, 2026</span>
+							{myTasks
+								.filter((t) => !t.is_complete)
+								.map((t) => (
+									<div className="list-row" key={t.id}>
+										<div>
+											<h3>{t.title}</h3>
+											<div className="meta">
+												<span className="priority priority-medium">
+													{t.priority}
+												</span>
+												<span>{t.due_date}</span>
+											</div>
+										</div>
+										<span className="badge badge-pending">Pending</span>
 									</div>
-								</div>
-								<span className="badge badge-pending">Pending</span>
-							</div>
-							<div className="list-row">
-								<div>
-									<h3>
-										Reschedule Newcomers briefing based on Wing Commander's
-										availability.
-									</h3>
-									<div className="meta">
-										<span className="priority priority-high">High</span>
-										<span>July 8, 2026</span>
-									</div>
-								</div>
-								<span className="badge badge-overdue">Overdue</span>
-							</div>
+								))}
 						</div>
 
 						<div className="card">

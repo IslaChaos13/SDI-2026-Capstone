@@ -1,8 +1,40 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/AdminDashboard.css'
+import { useState, useEffect } from 'react'
 
 function AdminDashboard() {
+  const [users, setUsers] = useState([])
+  const [userTasks, setUserTasks] = useState([])
+
+  useEffect(() => {
+    fetch('http://localhost:8000/users')
+      .then((r) => r.json())
+      .then((data) => setUsers(data.users || []))
+      .catch(console.error)
+
+    fetch('http://localhost:8000/user_tasks')
+      .then((r) => r.json())
+      .then((data) => setUserTasks(data || []))
+      .catch(console.error)
+  }, [])
+
+  const totalPersonnel = users.length
+  const overdueTasks = userTasks.filter(
+    (ut) => !ut.is_complete && ut.due_date && new Date(ut.due_date) < new Date(),
+  ).length
+
+  const completedPersonnel = users.filter((u) => {
+    const tasks = userTasks.filter(
+      (ut) => ut.first_name === u.first_name && ut.last_name === u.last_name,
+    )
+    return tasks.length > 0 && tasks.every((t) => t.is_complete)
+  }).length
+  const inProcessingPersonnel = totalPersonnel - completedPersonnel
+  const completionPercent = totalPersonnel
+    ? Math.round((completedPersonnel / totalPersonnel) * 100)
+    : 0
+
   return (
     <Layout>
       <div className="page dashboard-page">
@@ -31,7 +63,7 @@ function AdminDashboard() {
             <div className="card stat-card">
               <div className="stat-icon">👥</div>
               <div>
-                <div className="stat-value">10</div>
+                <div className="stat-value">{totalPersonnel}</div>
                 <div className="stat-label">Total Personnel</div>
               </div>
             </div>
@@ -45,21 +77,21 @@ function AdminDashboard() {
             <div className="card stat-card">
               <div className="stat-icon">⏳</div>
               <div>
-                <div className="stat-value">4</div>
+                <div className="stat-value">{inProcessingPersonnel}</div>
                 <div className="stat-label">In-Processing</div>
               </div>
             </div>
             <div className="card stat-card">
               <div className="stat-icon">✅</div>
               <div>
-                <div className="stat-value">6</div>
+                <div className="stat-value">{completedPersonnel}</div>
                 <div className="stat-label">Completed</div>
               </div>
             </div>
             <div className="card stat-card">
               <div className="stat-icon">⚠</div>
               <div>
-                <div className="stat-value">1</div>
+                <div className="stat-value">{overdueTasks}</div>
                 <div className="stat-label">Overdue Tasks</div>
               </div>
             </div>
@@ -83,25 +115,25 @@ function AdminDashboard() {
                   style={{
                     width: '150px',
                     height: '150px',
-                    background: 'conic-gradient(var(--accent) 0% 60%, rgba(184, 199, 217, 0.18) 60% 100%)',
+                    background: `conic-gradient(var(--accent) 0% ${completionPercent}%, rgba(184, 199, 217, 0.18) ${completionPercent}% 100%)`,
                   }}
                 >
                   <div className="donut-chart-inner" style={{ width: '106px', height: '106px' }}>
-                    <span className="value">60%</span>
+                    <span className="value">{completionPercent}%</span>
                     <span className="label">Complete</span>
                   </div>
                 </div>
                 <div className="readiness-figures">
                   <div className="readiness-figure">
-                    <span className="figure-value">10</span>
+                    <span className="figure-value">{totalPersonnel}</span>
                     <span className="figure-label">Total Personnel</span>
                   </div>
                   <div className="readiness-figure">
-                    <span className="figure-value">6</span>
+                    <span className="figure-value">{completedPersonnel}</span>
                     <span className="figure-label">Completed</span>
                   </div>
                   <div className="readiness-figure">
-                    <span className="figure-value">4</span>
+                    <span className="figure-value">{inProcessingPersonnel}</span>
                     <span className="figure-label">In-Processing</span>
                   </div>
                 </div>
@@ -220,42 +252,28 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>User 1</td>
-                    <td>Rank</td>
-                    <td>Unit A</td>
-                    <td>
-                      <div className="table-progress">
-                        <div className="track"><div className="fill" style={{ width: '60%' }}></div></div>
-                        <span>60%</span>
-                      </div>
-                    </td>
-                    <td><span className="badge badge-pending">In-Processing</span></td>
-                  </tr>
-                  <tr>
-                    <td>User 2</td>
-                    <td>Rank</td>
-                    <td>Unit B</td>
-                    <td>
-                      <div className="table-progress">
-                        <div className="track"><div className="fill" style={{ width: '30%' }}></div></div>
-                        <span>30%</span>
-                      </div>
-                    </td>
-                    <td><span className="badge badge-overdue">Overdue</span></td>
-                  </tr>
-                  <tr>
-                    <td>User 3</td>
-                    <td>Rank</td>
-                    <td>Unit C</td>
-                    <td>
-                      <div className="table-progress">
-                        <div className="track"><div className="fill" style={{ width: '100%' }}></div></div>
-                        <span>100%</span>
-                      </div>
-                    </td>
-                    <td><span className="badge badge-complete">Completed</span></td>
-                  </tr>
+                  {users.map((u) => {
+                    const tasks = userTasks.filter(
+                      (ut) => ut.first_name === u.first_name && ut.last_name === u.last_name,
+                    )
+                    const done = tasks.filter((t) => t.is_complete).length
+                    const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0
+                    const status = pct === 100 ? 'complete' : 'pending'
+                    return (
+                      <tr key={u.id}>
+                        <td>{u.first_name} {u.last_name}</td>
+                        <td>{u.rank}</td>
+                        <td>Unit A</td>
+                        <td>
+                          <div className="table-progress">
+                            <div className="track"><div className="fill" style={{ width: `${pct}%` }}></div></div>
+                            <span>{pct}%</span>
+                          </div>
+                        </td>
+                        <td><span className={`badge badge-${status}`}>{pct === 100 ? 'Completed' : 'In-Processing'}</span></td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

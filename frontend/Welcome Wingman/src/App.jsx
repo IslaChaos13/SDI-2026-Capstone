@@ -1,15 +1,15 @@
-import Logon from "./Pages/Logon";
-import AdminDashboard from "./Pages/AdminDashboard";
-import MyChecklist from "./Pages/MyChecklist";
-import Profile from "./Pages/Profile";
-import PersonnelDashboard from "./Pages/PersonnelDashboard";
-import Dashboard from "./Pages/Dashboard";
-import BaseDirectory from "./Pages/BaseDirectory";
-import ErrorPage from "./Pages/ErrorPage";
+import Logon from "./pages/Logon";
+import AdminDashboard from "./pages/AdminDashboard";
+import MyChecklist from "./pages/MyChecklist";
+import Profile from "./pages/Profile";
+import PersonnelDashboard from "./pages/PersonnelDashboard";
+import Dashboard from "./pages/Dashboard";
+import BaseDirectory from "./pages/BaseDirectory";
+import ErrorPage from "./pages/ErrorPage";
 import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
-import TaskManagement from "./Pages/TaskManagement";
+import TaskManagement from "./pages/TaskManagement";
 import UserContext from "./context/UserContext";
 
 // const SESSION_DURATION_MS = 30 * 60 * 1000;
