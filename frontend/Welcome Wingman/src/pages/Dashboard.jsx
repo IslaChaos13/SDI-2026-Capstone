@@ -1,12 +1,13 @@
 import Layout from "../components/Layout.jsx";
 import "../styles/theme.css";
 import "../styles/Dashboard.css";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
 
 function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
+	const nav = useNavigate();
 
 	//Since we are using useContext, we won't need this fetch
 	// const API = "http://localhost:8000";
@@ -65,18 +66,22 @@ function Dashboard() {
 								<span className="hero-brand-title">Welcome Wingman</span>
 							</div>
 							<h1>
-								Welcome back,{" "}
+								Welcome back, Staff Sergeant{" "}
 								{LoggedIn?.first_name && LoggedIn?.last_name
 									? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 									: ""}
 							</h1>
-							<span className="rank-tag">Rank · Unit</span>
-							<p>You have 4 tasks remaining.</p>
+							<span className="rank-tag">{LoggedIn.rank} · 2FSS</span>
+							<p>You have 4 members schedule to arrive today.</p>
 							<div className="hero-actions">
-								<button className="btn btn-primary" type="button">
-									Continue Checklist
+								<button
+									className="btn btn-primary"
+									type="button"
+									onClick={() => navigate(`/${userId}/pdashboard`)}
+								>
+									Go to Personnel
 								</button>
-								<button className="btn btn-outline" type="button">
+								<button className="btn btn-outline" type="button" a hre>
 									View Schedule
 								</button>
 							</div>
@@ -248,15 +253,15 @@ function Dashboard() {
 							<div className="schedule-row">
 								<span className="schedule-time">0900</span>
 								<div>
-									<p>Task Name</p>
-									<span>Office Name</span>
+									<p>Morning Standup</p>
+									<span>Commander's Conference Room</span>
 								</div>
 							</div>
 							<div className="schedule-row">
 								<span className="schedule-time">1300</span>
 								<div>
-									<p>Task Name</p>
-									<span>Office Name</span>
+									<p>Mass In-Processing</p>
+									<span>In-Processing Classroom</span>
 								</div>
 							</div>
 						</div>
@@ -329,20 +334,23 @@ function Dashboard() {
 							</div>
 							<div className="list-row">
 								<div>
-									<h3>Task Name</h3>
+									<h3>Create user accounts for incoming personnel.</h3>
 									<div className="meta">
 										<span className="priority priority-medium">Medium</span>
-										<span>Due Date</span>
+										<span>July 24, 2026</span>
 									</div>
 								</div>
 								<span className="badge badge-pending">Pending</span>
 							</div>
 							<div className="list-row">
 								<div>
-									<h3>Task Name</h3>
+									<h3>
+										Reschedule Newcomers briefing based on Wing Commander's
+										availability.
+									</h3>
 									<div className="meta">
 										<span className="priority priority-high">High</span>
-										<span>Due Date</span>
+										<span>July 8, 2026</span>
 									</div>
 								</div>
 								<span className="badge badge-overdue">Overdue</span>
