@@ -90,6 +90,7 @@ function Dashboard() {
 								<button
 									className="btn btn-primary"
 									type="button"
+									onClick={() => navigate(`/${LoggedIn.id}/pdashboard`)}
 									onClick={() => nav(`/${userId}/pdashboard`)}
 								>
 									Go to Personnel
@@ -388,15 +389,24 @@ function Dashboard() {
 								<h2>Quick Actions</h2>
 							</div>
 							<div className="quick-actions-grid">
-								<div className="quick-action-tile">
+								<div
+									className="quick-action-tile"
+									onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}
+								>
 									<span className="icon">✅</span>
 									View Checklist
 								</div>
-								<div className="quick-action-tile">
+								<div
+									className="quick-action-tile"
+									onClick={() => navigate("/")}
+								>
 									<span className="icon">📇</span>
 									Find Office
 								</div>
-								<div className="quick-action-tile">
+								<div
+									className="quick-action-tile"
+									onClick={() => navigate(`/${LoggedIn.id}/profile`)}
+								>
 									<span className="icon">👤</span>
 									Update Profile
 								</div>
@@ -511,7 +521,7 @@ function Dashboard() {
 						</div>
 					</div>
 
-					<div className="card">
+					{/* <div className="card">
 						<div className="card-header">
 							<h2>Quick Links</h2>
 						</div>
@@ -538,7 +548,7 @@ function Dashboard() {
 								👤 Profile
 							</span>
 						</div>
-					</div>
+					</div> */}
 				</div>
 			</div>
 		</Layout>
