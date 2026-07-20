@@ -6,6 +6,18 @@
 const { faker } = require('@faker-js/faker')
 const bcrypt = require('bcrypt')
 
+const ranks = [
+  'Airman Basic',
+  'Airman',
+  'Airman First Class',
+  'Senior Airman',
+  'Staff Sergeant',
+  'Technical Sergeant',
+  'Master Sergeant',
+  'Senior Master Sergeant',
+  'Chief Master Sergeant'
+]
+
 const units = [
   '2nd Bomb Wing',
   '2nd Operations Group',
@@ -38,13 +50,13 @@ async function createEntries(rows) {
     data.push({
       is_admin: false,
       is_manager: faker.datatype.boolean(),
-      rank: `E-${faker.number.int({ min: 1, max: 9 })}`,
+      rank: getRandomElements(ranks)[0],
       first_name: firstName,
       last_name: lastName,
       email: faker.internet.email({ firstName, lastName, }),
       phone: faker.phone.number(),
       address: faker.location.streetAddress(),
-      unit: getRandomElements(units)[0], 
+      unit: getRandomElements(units)[0],
       avatar: faker.image.avatar(),
       password: hashedPassword,
     })
@@ -59,7 +71,7 @@ exports.seed = async function (knex) {
   await knex('users').insert({
     is_admin: true,
     is_manager: true,
-    rank: 'E-5',
+    rank: 'Staff Sergeant',
     first_name: 'John',
     last_name: 'Admin',
     email: 'admin@admin.com',
@@ -69,4 +81,18 @@ exports.seed = async function (knex) {
     avatar: 'Adminvatar',
     password: await bcrypt.hash('password', 10)
   })
-};
+
+    await knex('users').insert({
+    is_admin: false,
+    is_manager: false,
+    rank: 'Airman First Class',
+    first_name: 'John',
+    last_name: 'User',
+    email: 'user@user.com',
+    phone: '000 000 0000',
+    address: 'User Street, User City',
+    unit: '2nd Bomb Wing',
+    avatar: 'Uservatar',
+    password: await bcrypt.hash('password', 10)
+    })
+  }
