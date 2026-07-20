@@ -150,7 +150,7 @@ app.post('/register', async (req, res) => {
 app.post('/tasks', async (req, res) => {
    const { id, ...updates } = req.body
 
-   if(id){
+   if (id) {
       Object.keys(updates).forEach(key => {
          if (updates[key] === undefined) {
             delete updates[key];
@@ -162,13 +162,13 @@ app.post('/tasks', async (req, res) => {
          .update(updates)
          .returning('*');
 
-         if (!updatedTask) {
-            return res.status(404).json({ error: `Incorrect ID!` })
-         }
+      if (!updatedTask) {
+         return res.status(404).json({ error: `Incorrect ID!` })
+      }
 
-         res.json({ message: "Task updated!", task: updatedTask })
+      res.json({ message: "Task updated!", task: updatedTask })
 
-   } else{
+   } else {
       const [newTask] = await knex('tasks')
          .insert(updates)
          .returning('*')
@@ -181,7 +181,7 @@ app.post('/tasks', async (req, res) => {
 app.post('/directory', async (req, res) => {
    const { id, ...updates } = req.body
 
-   if(id){
+   if (id) {
       Object.keys(updates).forEach(key => {
          if (updates[key] === undefined) {
             delete updates[key];
@@ -189,17 +189,17 @@ app.post('/directory', async (req, res) => {
       });
 
       const [updatedDirectory] = await knex('directory')
-         .where({id})
+         .where({ id })
          .update(updates)
          .returning('*')
 
-         if (!updatedDirectory) {
-            return res.status(404).json({ error: `Incorrect ID!` })
-         }
+      if (!updatedDirectory) {
+         return res.status(404).json({ error: `Incorrect ID!` })
+      }
 
-         res.json({ message: "Directory updated!", directory: updatedDirectory})
+      res.json({ message: "Directory updated!", directory: updatedDirectory })
 
-   } else{
+   } else {
       const [newDirectory] = await knex('directory')
          .insert(updates)
          .returning('*')
@@ -209,54 +209,46 @@ app.post('/directory', async (req, res) => {
 })
 
 app.post('/user_tasks', async (req, res) => {
-   const { id, user_id, task_id, priority, due_date, is_complete, note } = req.body
+   const { id, ...rest } = req.body
 
    if (id) {
-      if (note) {
-         const [updatedUserTask] = await knex('user_tasks').where({
-            id
-         })
-            .update({
-               note: note
-            }).returning('*')
+      const updates = {}
 
-         if (!updatedUserTask) {
-            return res.status(404).json({ error: `Incorrect ID!` })
+      Object.keys(rest).forEach(key => {
+         if (rest[key] !== undefined) {
+            updates[key] = rest[key]
          }
+      })
 
-         res.json({ message: "Note updated!", user_task: updatedUserTask })
+      if (Object.keys(updates).length === 0) {
+         return res.status(400).json({ error: 'Nothing to update' })
       }
 
-      if (is_complete) {
-         const [completeUserTask] = await knex('user_tasks').where({
-            id
-         })
-            .update({
-               is_complete: is_complete
-            }).returning('*')
+      const [updatedUserTask] = await knex('user_tasks')
+         .where({ id })
+         .update(updates)
+         .returning('*')
 
-         if (!completeUserTask) {
-            return res.status(404).json({ error: `Incorrect ID!` })
-         }
-
-         res.json({ message: "Successfully marked as completed", user_task: completeUserTask })
+      if (!updatedUserTask) {
+         return res.status(404).json({ error: 'Incorrect ID' })
       }
 
-   } else if (user_id && task_id && due_date) {
+      return res.json({ message: 'User task updated', user_task: updatedUserTask })
+
+   } else if (rest.user_id && rest.task_id ** rest.due_date) {
       const [newUserTask] = await knex('user_tasks').insert({
-         user_id,
-         task_id,
-         priority: priority || 'Medium',
-         due_date,
+         user_id: rest.user_id,
+         task_id: rest.task_id,
+         priority: rest.priority || 'Medium',
+         due_date: rest.due_date,
          is_complete: false,
-         note: note || null
-
+         note: rest.note || null
       }).returning('*')
 
-      res.json({ message: "Task created.", user_task: newUserTask  })
+      return res.json({ message: 'Task created', user_task: newUserTask })
    }
 
-   return res.status(400).json({ error: `Something went wrong :(` })
+   return res.status(400).json({ error: 'Something went wrong :(' })
 })
 
 
@@ -318,6 +310,8 @@ app.delete('/directory_poc/:id', async (req, res) => {
       res.status(500).json({ message: 'failed to delete' })
    }
 })
+
+// PUT Routes
 
 
 
