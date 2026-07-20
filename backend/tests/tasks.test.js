@@ -68,7 +68,7 @@ describe('POST /login', () => {
 })
 
 describe('POST /register', () => {
-   test('rejects an email that already exists', async () => {
+   test('rejects a user that already exists', async () => {
       const response = await request('http://localhost:8000')
          .post('/register')
          .send({

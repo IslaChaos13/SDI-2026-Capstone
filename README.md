@@ -39,3 +39,12 @@ docker start wingman-db
 
 ### CONNECT TO WINGMAN DATABASE IN CONTAINER
 docker exec -it wingman-db psql -U postgres -d WingmanDatabase
+
+
+# VITEST 
+### Commands
+cd backend
+Run npm run runServer
+make sure container is running
+npm test
+q (quits test)

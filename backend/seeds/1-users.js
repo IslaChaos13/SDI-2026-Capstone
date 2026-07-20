@@ -6,6 +6,27 @@
 const { faker } = require('@faker-js/faker')
 const bcrypt = require('bcrypt')
 
+const units = [
+  '2nd Bomb Wing',
+  '2nd Operations Group',
+  '2nd Maintenance Group',
+  '2nd Mission Support Group',
+  '2nd Medical Group',
+  '307th Bomb Wing',
+  '49th Test and Evaluation Squadron',
+  '608th Air Communications Squadron',
+  '55th Wing',
+  '9th Wing',
+  'USSTRATCOM'
+]
+
+function getRandomElements (elements){
+  const numElements = Math.floor(Math.random() * elements.length) + 1;
+  const shuffledElements = [...elements].sort(() => Math.random() - 0.5);
+
+  return shuffledElements.slice(0, numElements);
+}
+
 async function createEntries(rows) {
   let data = []
 
@@ -23,6 +44,7 @@ async function createEntries(rows) {
       email: faker.internet.email({ firstName, lastName, }),
       phone: faker.phone.number(),
       address: faker.location.streetAddress(),
+      unit: getRandomElements(units)[0], 
       avatar: faker.image.avatar(),
       password: hashedPassword,
     })
@@ -43,6 +65,7 @@ exports.seed = async function (knex) {
     email: 'ImAdmin@admin.com',
     phone: '000 000 0000',
     address: 'Admin Street, Admin City',
+    unit: '2nd Bomb Wing',
     avatar: 'Adminvatar',
     password: await bcrypt.hash('Admin Password', 10)
   })
