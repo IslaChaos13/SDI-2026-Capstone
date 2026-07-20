@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 
 function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
-	const nav = useNavigate();
+	const navigate = useNavigate();
 
 	//Since we are using useContext, we won't need this fetch
 	// const API = "http://localhost:8000";
@@ -100,7 +100,7 @@ function Dashboard() {
 								<button
 									className="btn btn-primary"
 									type="button"
-									onClick={() => navigate(`/${userId}/pdashboard`)}
+									onClick={() => navigate(`/${LoggedIn.id}/pdashboard`)}
 								>
 									Go to Personnel
 								</button>
@@ -383,15 +383,15 @@ function Dashboard() {
 								<h2>Quick Actions</h2>
 							</div>
 							<div className="quick-actions-grid">
-								<div className="quick-action-tile">
-									<span className="icon">✅</span>
+								<div className="quick-action-tile" onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}>
+									<span className="icon" >✅</span>
 									View Checklist
 								</div>
-								<div className="quick-action-tile">
+								<div className="quick-action-tile" onClick={() => navigate('/')}>
 									<span className="icon">📇</span>
 									Find Office
 								</div>
-								<div className="quick-action-tile">
+								<div className="quick-action-tile" onClick={() => navigate(`/${LoggedIn.id}/profile`)}>
 									<span className="icon">👤</span>
 									Update Profile
 								</div>
@@ -506,7 +506,7 @@ function Dashboard() {
 						</div>
 					</div>
 
-					<div className="card">
+					{/* <div className="card">
 						<div className="card-header">
 							<h2>Quick Links</h2>
 						</div>
@@ -516,7 +516,7 @@ function Dashboard() {
 							<span className="quick-link-pill">📇 Base Directory</span>
 							<span className="quick-link-pill">👤 Profile</span>
 						</div>
-					</div>
+					</div> */}
 				</div>
 			</div>
 		</Layout>
