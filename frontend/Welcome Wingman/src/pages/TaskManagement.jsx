@@ -14,6 +14,7 @@ function TaskManagement() {
 	const [users, setUsers] = useState([]);
 	const [tasks, setTasks] = useState([]);
 	const [userTasks, setUserTasks] = useState([]);
+	const [searchTerm, setSearchTerm] = useState("");
 
 	useEffect(() => {
 		fetch("http://localhost:8000/users")
@@ -303,7 +304,12 @@ function TaskManagement() {
 				<div className="filter-toolbar">
 					<div className="search-bar">
 						<span className="search-icon">⌕</span>
-						<input type="text" placeholder="Search assignments..." />
+						<input
+							type="text"
+							placeholder="Search assignments..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
 					</div>
 					<select>
 						<option>Status: All</option>
@@ -342,7 +348,13 @@ function TaskManagement() {
 								</tr>
 							</thead>
 							<tbody>
-								{userTasks.map((ut) => (
+								{userTasks
+									.filter((ut) =>
+										`${ut.first_name} ${ut.last_name}`
+											.toLowerCase()
+											.includes(searchTerm.toLowerCase()),
+									)
+									.map((ut) => (
 									<tr key={ut.id}>
 										<td>
 											{ut.first_name} {ut.last_name}

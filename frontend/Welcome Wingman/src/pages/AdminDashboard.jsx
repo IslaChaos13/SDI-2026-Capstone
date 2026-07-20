@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 function AdminDashboard() {
   const [users, setUsers] = useState([])
   const [userTasks, setUserTasks] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     fetch('http://localhost:8000/users')
@@ -240,6 +241,15 @@ function AdminDashboard() {
               <h2>Personnel Progress</h2>
               <span className="link">View All</span>
             </div>
+            <div className="search-bar" style={{ marginBottom: 'var(--space-md)' }}>
+              <span className="search-icon">⌕</span>
+              <input
+                type="text"
+                placeholder="Search personnel..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
             <div className="table-wrapper">
               <table>
                 <thead>
@@ -252,7 +262,13 @@ function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => {
+                  {users
+                    .filter((u) =>
+                      `${u.first_name} ${u.last_name}`
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()),
+                    )
+                    .map((u) => {
                     const tasks = userTasks.filter(
                       (ut) => ut.first_name === u.first_name && ut.last_name === u.last_name,
                     )

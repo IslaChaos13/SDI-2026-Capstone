@@ -18,6 +18,7 @@ export default function PersonnelDashboard() {
 	const [status, setStatus] = useState("idle"); // 'idle' | 'submitting' | 'success'
 	const [error, setError] = useState(null);
 	const [users, setUsers] = useState([]);
+	const [searchTerm, setSearchTerm] = useState("");
 
 	const [rankFilter, setRankFitler] = useState("All");
 	const [search, seSearch] = useState("");
@@ -208,6 +209,16 @@ export default function PersonnelDashboard() {
 							<h1>All Personnel</h1>
 						</div>
 
+						<div className="search-bar" style={{ marginBottom: "var(--space-md)" }}>
+							<span className="search-icon">⌕</span>
+							<input
+								type="text"
+								placeholder="Search personnel..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+							/>
+						</div>
+
 						<div className="personnel-info-header">
 							<h3>Avatar</h3>
 							<h3>Rank</h3>
@@ -215,7 +226,13 @@ export default function PersonnelDashboard() {
 							<h3>Contact Information</h3>
 						</div>
 						<ul className="personnel-info-card">
-							{users.map((usr) => (
+							{users
+								.filter((usr) =>
+									`${usr.first_name} ${usr.last_name}`
+										.toLowerCase()
+										.includes(searchTerm.toLowerCase()),
+								)
+								.map((usr) => (
 								<li key={usr.id ?? usr.email} className="personnel-item">
 									<img
 										src={usr.avatar || "/default-avatar.png"}
