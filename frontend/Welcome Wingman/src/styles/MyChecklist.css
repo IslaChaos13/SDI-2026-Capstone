@@ -1,218 +1,98 @@
 :root {
-  --af-blue: #1e90ff;
-  --neon-cyan: #00ffff;
-  --deep-navy: #0f203d;
-}
-
-.checklist-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-lg);
+	--af-blue: #1e90ff;
+	--neon-cyan: #00ffff;
+	--deep-navy: #0f203d;
 }
 
 .checklist-progress-card {
-  margin-bottom: var(--space-lg);
+	margin-bottom: var(--space-lg);
 }
 
 .checklist-progress-card .progress-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--space-sm);
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-bottom: var(--space-sm);
 }
 
 .checklist-progress-card .progress-label .percent {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--accent);
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--accent);
 }
 
 .checklist-progress-card .progress-label span:last-child {
-  font-size: 13px;
-  color: var(--text-secondary);
+	font-size: 13px;
+	color: var(--text-secondary);
 }
 
 .filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  align-items: center;
-  margin-bottom: var(--space-xl);
-}
-
-.filter-bar .search-bar {
-  flex: 1;
-  min-width: 220px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-sm);
+	align-items: center;
+	margin-bottom: var(--space-xl);
 }
 
 .filter-chip {
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-family: var(--font-base);
-  cursor: pointer;
+	padding: 8px 14px;
+	border-radius: 999px;
+	border: 1px solid var(--border-strong);
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: 13px;
+	font-family: var(--font-base);
+	cursor: pointer;
 }
 
 .filter-chip:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+	border-color: var(--accent);
+	color: var(--accent);
 }
 
 .filter-chip.active {
-  background: var(--primary);
-  color: var(--bg);
-  border-color: var(--primary);
-}
-
-.checklist-section-title {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin: var(--space-xl) 0 var(--space-md);
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-secondary);
-}
-
-.checklist-section-title .count {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 2px 9px;
-  font-size: 11px;
-}
-
-.task-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.task-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-sm);
-}
-
-.task-card h3 {
-  margin: 0;
-  font-size: 15px;
-}
-
-.task-card p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.task-card-meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.task-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--space-sm);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--border);
-}
-
-.task-card.is-complete {
-  opacity: 0.7;
-}
-
-.task-card.is-complete h3 {
-  text-decoration: line-through;
-  text-decoration-color: var(--border-strong);
-}
-
-/* ---------------- Checklist table layout ---------------- */
-
-.checklist-table {
-  width: 100%;
-}
-
-.task-row {
-  display: grid;
-  grid-template-columns: 50% 25% 25%;
-  align-items: center;
-  column-gap: var(--space-sm);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.task-row-header {
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--border);
-}
-
-.task-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
-.task-item {
-  padding: 10px 0;
-  cursor: pointer;
+	background: var(--primary);
+	color: var(--bg);
+	border-color: var(--primary);
 }
 
 .task-title-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	min-width: 0;
 }
 
-.task-title-cell span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.completed-task {
+	text-decoration: line-through;
+	text-decoration-color: var(--border-strong);
 }
 
-.task-title-cell span.completed-task {
-  text-decoration: line-through;
-  text-decoration-color: var(--border-strong);
-}
-
-.task-priority,
-.task-due {
-  font-size: 13px;
-  color: var(--text-secondary);
-  white-space: nowrap;
+.task-priority {
+	font-size: 13px;
+	color: var(--text-secondary);
+	white-space: nowrap;
 }
 
 /* ---------------- Modal ---------------- */
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
-  background: var(--dark-steel-bl);
+	background: var(--dark-steel-bl);
 
-  z-index: 9999;
+	z-index: 9999;
 }
 
-.modal{
+.modal {
 	background-color: #0f203d !important;
 	color: var(--muted-blue);
 	border-radius: 12px;
@@ -228,25 +108,49 @@
 
 .modal h2 {
 	color: var(--neon-cyan);
-  padding: 10px;
+	padding: 10px;
 }
 
 .modal p {
-  padding: 10px;
-  text-align: left;
+	padding: 10px;
+	text-align: left;
 }
 
-.modal-notes-group{
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.modal-notes-group {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
-.modal-notes-label{
-  display: block;
-  text-align: center;
-  margin-bottom: 8px;
+.modal-notes-label {
+	display: block;
+	text-align: center;
+	margin-bottom: 8px;
+}
+
+.modal-notes-text {
+	width: 100%;
+	max-width: 350px;
+	text-align: left;
+	padding: 10px;
+	margin: 0;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* Row wrapper that keeps modal buttons aligned side by side */
+.modal-button-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	margin-top: 20px;
+	width: 100%;
 }
 
 .modal button {
@@ -257,21 +161,59 @@
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
-	margin-top: 20px;
-  margin-right: 5px;
-  margin-left: 5px
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+}
+
+.modal-button-row button {
+	margin-top: 0;
+	margin-right: 0;
+	margin-left: 0;
 }
 
 .modal button:hover {
 	background: var(--neon-cyan);
 }
 
-.input::placeholder{
-  text-align: center;
-  font-family: var(--font-base);
+.input::placeholder {
+	text-align: center;
+	font-family: var(--font-base);
 }
 
-#task-notes{
-  width: 100%;
-  max-width: 350px
+#task-notes {
+	width: 100%;
+	max-width: 350px;
+}
+
+.library-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+}
+
+.library-card h3 {
+	margin: 0 0 4px;
+	font-size: 15px;
+}
+
+.library-card-meta {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	font-size: 12px;
+	color: var(--text-secondary);
+}
+
+.low {
+	color: var(--success);
+}
+
+.medium {
+	color: var(--warning);
+}
+
+.high {
+	color: var(--danger);
 }

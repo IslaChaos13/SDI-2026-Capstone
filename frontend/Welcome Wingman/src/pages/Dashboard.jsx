@@ -17,6 +17,7 @@ function formatDate(dateString) {
 
 function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
+	console.log("LoggedIn:", LoggedIn);
 	const navigate = useNavigate();
 	const [userTasks, setUserTasks] = useState([]);
 	const [weather, setWeather] = useState(null);
@@ -24,7 +25,7 @@ function Dashboard() {
 	let longitude = -93.66312248601946;
 	const [showSupport, setShowSupport] = useState(false);
 
-	const isAdmin = LoggedIn?.role === "admin";
+	const isAdmin = !!LoggedIn?.is_admin;
 
 	useEffect(() => {
 		fetch("http://localhost:8000/user_tasks")
@@ -102,18 +103,22 @@ function Dashboard() {
 									? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 									: ""}
 							</h1>
-							<span className="rank-tag">{LoggedIn.rank} · 2FSS</span>
-							<p>You have 4 members schedule to arrive today.</p>
-							{isAdmin && (
-								<button
-									className="btn btn-primary"
-									type="button"
-									onClick={() => navigate(`/${LoggedIn.id}/pdashboard`)}
-								>
-									Go to Personnel
-								</button>
-							)}
+							<span className="rank-tag">
+								{LoggedIn.rank} · {LoggedIn.unit}
+							</span>
+
+							{isAdmin && <p>You have 4 members schedule to arrive today.</p>}
+
 							<div className="hero-actions">
+								{isAdmin && (
+									<button
+										className="btn btn-primary"
+										type="button"
+										onClick={() => navigate(`/${LoggedIn.id}/pdashboard`)}
+									>
+										Go to Personnel
+									</button>
+								)}
 								<button
 									className="btn btn-outline"
 									type="button"

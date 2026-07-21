@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useContext } from "react";
-import { CheckCircle2, Circle, ListChecks } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import UserContext from "../context/UserContext";
 import UserIcon from "../components/UserIcon";
@@ -20,6 +20,8 @@ export default function MyChecklist() {
 	const [taskItem, setTaskItem] = useState(null);
 	const [notes, setNotes] = useState("");
 	const [filter, setFilter] = useState("all");
+	const [isEditingNote, setIsEditingNote] = useState(false);
+
 	//----------------Save Notes ---------------
 
 	const saveNotes = async () => {
@@ -47,9 +49,47 @@ export default function MyChecklist() {
 				prev.map((ut) => (ut.id === taskItem.id ? { ...ut, note: notes } : ut)),
 			);
 
-			// Clear modal
-			setTaskItem(null);
+			// Update the open task item and exit edit mode
+			setTaskItem((prev) =>
+				prev && prev.id === taskItem.id ? { ...prev, note: notes } : prev,
+			);
+			setIsEditingNote(false);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	// ---------------- Delete Note ----------------
+
+	const deleteNote = async () => {
+		if (!taskItem) return;
+
+		try {
+			const response = await fetch(`${API}/user_tasks`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					id: taskItem.id,
+					note: "",
+					is_complete: taskItem.is_complete,
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to delete note");
+			}
+
+			setUserTasks((prev) =>
+				prev.map((ut) => (ut.id === taskItem.id ? { ...ut, note: "" } : ut)),
+			);
+
+			setTaskItem((prev) =>
+				prev && prev.id === taskItem.id ? { ...prev, note: "" } : prev,
+			);
 			setNotes("");
+			setIsEditingNote(false);
 		} catch (error) {
 			console.error(error);
 		}
@@ -93,11 +133,6 @@ export default function MyChecklist() {
 
 		return results;
 	}, [userTasks, tasks, LoggedIn, filter]);
-
-	// console.log("LoggedIn:", LoggedIn);
-	// console.log("userTasks:", userTasks);
-	// console.log("tasks:", tasks);
-	// console.log("visibleTasks:", visibleTasks);
 
 	// ---------------- Progress ----------------
 
@@ -211,51 +246,57 @@ export default function MyChecklist() {
 					</button>
 				</div>
 
-				<div className="checklist-table">
-					<div className="task-row task-row-header">
-						<h2>
-							<ListChecks size={18} /> Tasks ({visibleTasks.length})
-						</h2>
-						<h3>Priority</h3>
-						<h3>Due Date</h3>
+				<div className="card" style={{ marginBottom: "var(--space-lg)" }}>
+					<div className="card-header">
+						<h2>Tasks</h2>
 					</div>
 
-					<ul className="task-list">
+					<div className="grid grid-3">
 						{visibleTasks.map((task) => (
-							<li
+							<div
+								className="card library-card"
 								key={task.id}
-								className="task-item task-row"
 								onClick={() => {
 									setTaskItem(task);
 									setNotes(task.note || "");
+									setIsEditingNote(!task.note);
 								}}
+								style={{ cursor: "pointer" }}
 							>
 								<div className="task-title-cell">
-									<button
-										onClick={(e) => {
-											// e.stopPropagation();
+									<input
+										type="checkbox"
+										checked={task.is_complete}
+										onClick={(e) => e.stopPropagation()}
+										onChange={(e) => {
+											e.stopPropagation();
 											toggleTask(task.id);
 										}}
-									>
-										{task.is_complete ? (
-											<CheckCircle2 size={10} />
-										) : (
-											<Circle size={10} />
-										)}
-									</button>
-
-									<span className={task.is_complete ? "completed-task" : ""}>
+									/>
+									<h3 className={task.is_complete ? "completed-task" : ""}>
 										{task.title}
-									</span>
+									</h3>
 								</div>
-								<span className="task-priority">{task.priority}</span>
-								<span className="task-priority">
-									{formatDate(task.due_date)}
-								</span>
-							</li>
+								<div className="library-card-meta">
+									Details: {task.action_item}
+								</div>
+								<div className="library-card-meta">
+									Due Date: {formatDate(task.due_date)}
+								</div>
+								<h5>
+									Priority:{".       "}
+									<span
+										className={`task-priority ${task.priority.toLowerCase()}`}
+									>
+										{task.priority}
+									</span>
+								</h5>
+							</div>
 						))}
-					</ul>
+					</div>
+				</div>
 
+				<>
 					{taskItem && (
 						<div className="modal-overlay" onClick={() => setTaskItem(null)}>
 							<div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -264,46 +305,71 @@ export default function MyChecklist() {
 								<p>Due Date: {formatDate(taskItem.due_date)}</p>
 
 								<div className="modal-notes-group">
-									<label htmlFor="tasks-notes" className="modal-notes-label">
+									<label htmlFor="task-notes" className="modal-notes-label">
 										Notes
 									</label>
-									<textarea
-										id="task-notes"
-										className="input"
-										placeholder="Add any notes about this task..."
-										rows={3}
-										value={notes}
-										onChange={(e) => setNotes(e.target.value)}
-									/>
-								</div>
-								<button onClick={() => saveNotes()}>Save</button>
-								<button
-									onClick={(e) => {
-										e.stopPropagation();
-										toggleTask(taskItem.id);
-									}}
-									style={{
-										color: taskItem.is_complete ? "#ffffff" : "#333333",
-										backgroundColor: taskItem.is_complete
-											? "#22c55e"
-											: "#e5e7eb",
-									}}
-								>
-									{taskItem.is_complete ? (
+
+									{isEditingNote ? (
 										<>
-											<CheckCircle2 size={10} /> <span>Completed</span>
+											<textarea
+												id="task-notes"
+												className="input"
+												placeholder="Add any notes about this task..."
+												rows={3}
+												value={notes}
+												onChange={(e) => setNotes(e.target.value)}
+											/>
+											<div className="modal-button-row">
+												<button onClick={() => saveNotes()}>Save</button>
+												{taskItem.note && (
+													<button
+														onClick={() => {
+															setNotes(taskItem.note || "");
+															setIsEditingNote(false);
+														}}
+													>
+														Cancel
+													</button>
+												)}
+											</div>
 										</>
 									) : (
 										<>
-											<Circle size={10} /> <span>Incomplete</span>
+											<p className="modal-notes-text">{taskItem.note}</p>
+											<div className="modal-button-row">
+												<button onClick={() => setIsEditingNote(true)}>
+													<Pencil size={10} /> <span>Edit</span>
+												</button>
+												{taskItem.note && (
+													<button onClick={() => deleteNote()}>
+														<Trash2 size={10} /> <span>Remove</span>
+													</button>
+												)}
+											</div>
 										</>
 									)}
-								</button>
-								<button onClick={() => setTaskItem(null)}>Close</button>
+								</div>
+								<div className="modal-button-row">
+									<button
+										onClick={(e) => {
+											e.stopPropagation();
+											toggleTask(taskItem.id);
+										}}
+										style={{
+											color: taskItem.is_complete ? "#ffffff" : "#333333",
+											backgroundColor: taskItem.is_complete
+												? "#22c55e"
+												: "#e5e7eb",
+										}}
+									>
+										{taskItem.is_complete ? "Completed" : "Incomplete"}
+									</button>
+									<button onClick={() => setTaskItem(null)}>Close</button>
+								</div>
 							</div>
 						</div>
 					)}
-				</div>
+				</>
 			</div>
 		</Layout>
 	);
