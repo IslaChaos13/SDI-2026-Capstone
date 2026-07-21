@@ -4,27 +4,27 @@ import "../styles/Profile.css";
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
+import { EditUserProvider, useEditUser } from "../context/EditUserContext";
+import EditUserModal from "../components/EditUserModal";
 
 //TODO REWORK PAGE
 
 function Profile() {
-	const { LoggedIn } = useContext(UserContext);
+	const { LoggedIn, setLoggedIn } = useContext(UserContext);
 
-	// const API = "http://localhost:8000";
-	// // const [user, setUser] = useState(null)
-	// const { userID } = useParams()
-	// useEffect(() => {
-	//   fetch(`${API}/users`)
-	//     .then((r) => r.json())
-	//     .then((userData) => {
-	//       const users = userData.users || [];
-	//       const matched = users.find((u) => String(u.id) === String(userID));
-	//       setUser(matched || users[0] || null);
-	//     })
-	//     .catch(console.error);
-	// }, [userID]);
+	function handleUserUpdated(updated) {
+		setLoggedIn((prev) => ({ ...prev, ...updated }));
+	}
 
-	// if(!user) {return null;}
+	return (
+		<EditUserProvider onUserUpdated={handleUserUpdated}>
+			<ProfileContent LoggedIn={LoggedIn} />
+		</EditUserProvider>
+	);
+}
+
+function ProfileContent({ LoggedIn }) {
+	const { openEditModal } = useEditUser();
 
 	return (
 		<Layout>
@@ -52,6 +52,7 @@ function Profile() {
 						className="btn btn-outline"
 						type="button"
 						style={{ marginLeft: "auto" }}
+						onClick={() => openEditModal(LoggedIn)}
 					>
 						Edit Profile
 					</button>
@@ -227,6 +228,8 @@ function Profile() {
 					</div>
 				</div>
 			</div>
+
+			<EditUserModal />
 		</Layout>
 	);
 }

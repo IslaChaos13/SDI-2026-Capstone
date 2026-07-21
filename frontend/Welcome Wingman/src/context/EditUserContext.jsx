@@ -1,4 +1,3 @@
-// context/EditUserContext.jsx
 import { createContext, useContext, useState } from "react";
 
 const API = "http://localhost:8000";

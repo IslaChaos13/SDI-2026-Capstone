@@ -107,7 +107,6 @@ export default function PersonnelDashboard() {
 		loadDirectory();
 	}, []);
 
-	// Called by EditUserContext after a successful PUT, so the list stays in sync
 	function handleUserUpdated(updated) {
 		setUsers((prev) =>
 			prev.map((usr) => (usr.id === updated.id ? { ...usr, ...updated } : usr)),
