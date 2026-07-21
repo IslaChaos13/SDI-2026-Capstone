@@ -1,29 +1,3 @@
-.next-task-card {
-	border-color: var(--border-strong);
-	background: linear-gradient(135deg, var(--panel) 0%, #0d2038 100%);
-}
-.next-task-label {
-	font-size: 11px;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-	color: var(--accent);
-	margin-bottom: var(--space-xs);
-}
-.next-task-card h3 {
-	margin: 0 0 6px;
-	font-size: 18px;
-}
-.next-task-card p {
-	margin: 0 0 var(--space-md);
-	color: var(--text-secondary);
-	font-size: 13px;
-}
-.next-task-footer {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
 .form-row {
 	display: flex;
 	gap: var(--space-sm);
@@ -74,7 +48,6 @@ form.form-group .form-field {
 	box-sizing: border-box;
 	overflow-x: hidden;
 	padding: var(--space-lg);
-
 	margin-bottom: var(--space-lg);
 }
 
@@ -82,7 +55,7 @@ form.form-group .form-field {
 	padding-bottom: var(--space-sm);
 	border-bottom: 1px solid var(--border);
 	display: grid;
-	grid-template-columns: 8% 8% 25% 39% 20%;
+	grid-template-columns: 6% 10% 8% 20% 18% 12% 12% 14%;
 	align-items: center;
 	column-gap: var(--space-sm);
 	width: 100%;
@@ -109,7 +82,7 @@ form.form-group .form-field {
 
 .personnel-item {
 	display: grid;
-	grid-template-columns: 8% 8% 25% 39% 20%;
+	grid-template-columns: 6% 10% 8% 20% 18% 12% 12% 14%;
 	align-items: center;
 	column-gap: var(--space-sm);
 	width: 100%;
@@ -117,6 +90,7 @@ form.form-group .form-field {
 	padding: var(--space-sm) 0;
 	border-bottom: 1px solid var(--border);
 }
+
 .personnel-item button,
 .personnel-info-header button {
 	background: var(--primary);
@@ -125,35 +99,28 @@ form.form-group .form-field {
 	padding: 6px 10px;
 	font-size: 12px;
 	width: fit-content;
-	justify-self: first baseline;
+	justify-self: start;
 }
 
-.personnel-filters {
-	display: flex;
-	gap: var(--space-md);
-	margin-bottom: var(--space-md);
-	flex-wrap: "wrap";
+.personnel-delete-btn {
+	background: #dc2626;
+	color: var(--text);
+	border: 1px solid whitesmoke;
 }
 
-.personnel-filters input,
-.personnel-filters select {
-	color-scheme: dark;
+.status-pill {
+	font-size: 11px;
+	padding: 2px 8px;
+	border-radius: 999px;
 	background: var(--panel, #0d2038);
-	color: var(--text, #fff);
 	border: 1px solid var(--border, #2a3f5c);
-	border-radius: 6px;
-	padding: 8px 10px;
-	font-size: 13px;
-}
-.personnel-filters input {
-	flex: 1 1 220px;
+	width: fit-content;
+	white-space: nowrap;
 }
 
-.personnel-filters select {
-	flex: 0 0 160px;
-}
-
-.personnel-filters select option {
-	background: var(--panel, #0d2038);
-	color: var(--text, #fff);
+.modal {
+	display: center;
+	max-width: 480px;
+	width: 90%;
+	color: var(--text);
 }

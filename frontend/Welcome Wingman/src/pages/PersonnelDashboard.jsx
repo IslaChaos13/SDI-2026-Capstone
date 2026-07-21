@@ -15,12 +15,13 @@ const EMPTY_FORM = {
 	email: "",
 	password: "",
 };
+const API = "http://localhost:8000";
 
 export default function PersonnelDashboard() {
 	const nav = useNavigate();
 	const { LoggedIn } = useContext(UserContext);
 	const [form, setForm] = useState(EMPTY_FORM);
-	const [status, setStatus] = useState("idle"); // 'idle' | 'submitting' | 'success'
+	const [status, setStatus] = useState("idle");
 	const [error, setError] = useState(null);
 	const [users, setUsers] = useState([]);
 	const [facilities, setFacilities] = useState([]);
@@ -38,6 +39,16 @@ export default function PersonnelDashboard() {
 		);
 	});
 
+	// ------- EDIT USER ------ //
+	const [editUser, setEditUser] = useState(null);
+	const [editStatus, setEditStatus] = useState("idle");
+	const [editError, setEditError] = useState(null);
+
+	// ------ DELETE USER ------- //
+	const [deleteId, setDeleteId] = useState(null);
+	const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+	const [deleteError, setDeleteError] = useState(null);
+
 	function handleChange(e) {
 		const { name, value } = e.target;
 		setForm((prev) => ({ ...prev, [name]: value }));
@@ -49,11 +60,9 @@ export default function PersonnelDashboard() {
 		setError(null);
 
 		try {
-			const res = await fetch("http://localhost:8000/register", {
+			const res = await fetch(`${API}/register`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(form),
 			});
 
@@ -75,8 +84,8 @@ export default function PersonnelDashboard() {
 		async function loadDirectory() {
 			try {
 				const [usersRes, dirRes] = await Promise.all([
-					fetch("http://localhost:8000/users"),
-					fetch("http://localhost:8000/directory"),
+					fetch(`${API}/users`),
+					fetch(`${API}/directory`),
 				]);
 
 				if (!usersRes.ok || !dirRes.ok) {
@@ -99,6 +108,84 @@ export default function PersonnelDashboard() {
 
 		loadDirectory();
 	}, []);
+
+	// --- EDIT USER MODAL -- //
+	function openEditModal(usr) {
+		setEditError(null);
+		setEditUser({ ...usr });
+	}
+
+	function handleEditChange(e) {
+		const { name, value } = e.target;
+		setEditUser((prev) => ({ ...prev, [name]: value }));
+	}
+
+	async function handleEditSubmit(e) {
+		e.preventDefault();
+		if (!editUser) return;
+
+		setEditStatus("submitting");
+		setEditError(null);
+
+		try {
+			const res = await fetch(`${API}/users/${editUser.id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(editUser),
+			});
+
+			const data = await res.json().catch(() => ({}));
+
+			if (!res.ok) {
+				throw new Error(data.error || "Could not update this user.");
+			}
+
+			const updated = data.user || editUser;
+			setUsers((prev) =>
+				prev.map((usr) =>
+					usr.id === updated.id ? { ...usr, ...updated } : usr,
+				),
+			);
+
+			setEditUser(null);
+		} catch (err) {
+			setEditError(err.message);
+		} finally {
+			setEditStatus("idle");
+		}
+	}
+
+	//---- Delete User ----//
+	function requestDelete(usr) {
+		setDeleteError(null);
+		setConfirmDeleteId(usr);
+	}
+
+	async function confirmDelete() {
+		if (!confirmDeleteId) return;
+		const id = confirmDeleteId.id;
+
+		setDeleteId(id);
+		setDeleteError(null);
+
+		try {
+			const res = await fetch(`${API}/users/${id}`, {
+				method: "DELETE",
+			});
+
+			if (!res.ok) {
+				const data = await res.json().catch(() => ({}));
+				throw new Error(data.error || "Could not delete this user.");
+			}
+
+			setUsers((prev) => prev.filter((usr) => usr.id !== id));
+			setConfirmDeleteId(null);
+		} catch (err) {
+			setDeleteError(err.message);
+		} finally {
+			setDeleteId(null);
+		}
+	}
 
 	return (
 		<Layout>
@@ -134,7 +221,7 @@ export default function PersonnelDashboard() {
 								<span className="hero-brand-title">Welcome Wingman</span>
 							</div>
 							<h2>
-								Welcome back, {LoggedIn.rank} {""}
+								Welcome back, {LoggedIn.rank}{" "}
 								{LoggedIn?.first_name && LoggedIn?.last_name
 									? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 									: ""}
@@ -288,6 +375,7 @@ export default function PersonnelDashboard() {
 
 						<div className="personnel-info-header">
 							<h3>Avatar</h3>
+
 							<h3>Rank</h3>
 							<h3>Name</h3>
 							<h3>Contact Information</h3>
@@ -304,6 +392,22 @@ export default function PersonnelDashboard() {
 										{usr.first_name} {usr.last_name}
 									</span>
 									<span>{usr.phone}</span>
+									<button
+										type="button"
+										className="btn btn-outline btn-sm"
+										onClick={() => openEditModal(usr)}
+									>
+										Edit
+									</button>
+									<button
+										type="button"
+										className="btn btn-outline btn-sm"
+										style={{ color: "#dc2626", borderColor: "#dc2626" }}
+										onClick={() => requestDelete(usr)}
+										disabled={deleteId === usr.id}
+									>
+										{deleteId === usr.id ? "Deleting..." : "Delete"}
+									</button>
 									<button type="button">Assign Manager</button>
 								</li>
 							))}
@@ -394,6 +498,143 @@ export default function PersonnelDashboard() {
 					</div>
 				</div>
 			</div>
+
+			{editUser && (
+				<div className="modal-overlay" onClick={() => setEditUser(null)}>
+					<div className="modal" onClick={(e) => e.stopPropagation()}>
+						<h2>Edit Personnel</h2>
+						<form onSubmit={handleEditSubmit} className="form-group">
+							<div className="form-row">
+								<div className="form-field">
+									<label htmlFor="edit-rank">Rank</label>
+									<input
+										type="text"
+										id="edit-rank"
+										name="rank"
+										value={editUser.rank || ""}
+										onChange={handleEditChange}
+										required
+									/>
+								</div>
+								<div className="form-field">
+									<label htmlFor="edit-first_name">First Name</label>
+									<input
+										type="text"
+										id="edit-first_name"
+										name="first_name"
+										value={editUser.first_name || ""}
+										onChange={handleEditChange}
+										required
+									/>
+								</div>
+								<div className="form-field">
+									<label htmlFor="edit-last_name">Last Name</label>
+									<input
+										type="text"
+										id="edit-last_name"
+										name="last_name"
+										value={editUser.last_name || ""}
+										onChange={handleEditChange}
+										required
+									/>
+								</div>
+							</div>
+
+							<div className="form-row">
+								<div className="form-field">
+									<label htmlFor="edit-unit">Unit</label>
+									<input
+										type="text"
+										id="edit-unit"
+										name="unit"
+										value={editUser.unit || ""}
+										onChange={handleEditChange}
+										required
+									/>
+								</div>
+								<div className="form-field">
+									<label htmlFor="edit-phone">Phone</label>
+									<input
+										type="text"
+										id="edit-phone"
+										name="phone"
+										value={editUser.phone || ""}
+										onChange={handleEditChange}
+										required
+									/>
+								</div>
+							</div>
+
+							<div className="form-field">
+								<label htmlFor="edit-email">Email</label>
+								<input
+									type="email"
+									id="edit-email"
+									name="email"
+									value={editUser.email || ""}
+									onChange={handleEditChange}
+									required
+								/>
+							</div>
+
+							{editError && <div className="error-text">{editError}</div>}
+
+							<div style={{ display: "flex", gap: "8px" }}>
+								<button
+									type="submit"
+									className="btn btn-primary"
+									disabled={editStatus === "submitting"}
+								>
+									{editStatus === "submitting" ? "Saving..." : "Save Changes"}
+								</button>
+								<button
+									type="button"
+									className="btn btn-outline"
+									onClick={() => setEditUser(null)}
+								>
+									Cancel
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			)}
+
+			{confirmDeleteId && (
+				<div className="modal-overlay" onClick={() => setConfirmDeleteId(null)}>
+					<div className="modal" onClick={(e) => e.stopPropagation()}>
+						<h2>Delete Personnel</h2>
+						<p>
+							Are you sure you want to delete{" "}
+							<strong>
+								{confirmDeleteId.first_name} {confirmDeleteId.last_name}
+							</strong>{" "}
+							? This action cannot be undone.
+						</p>
+						{deleteError && <div className="error-text">{deleteError}</div>}
+						<div style={{ display: "flex", gap: "8px" }}>
+							<button
+								type="button"
+								className="btn btn-primary"
+								style={{ backgroundColor: "#dc2626", borderColor: "#dc2626" }}
+								onClick={confirmDelete}
+								disabled={deleteId === confirmDeleteId.id}
+							>
+								{deleteId === confirmDeleteId.id
+									? "Deleting..."
+									: "Confirm Delete"}
+							</button>
+							<button
+								type="button"
+								className="btn btn-outline"
+								onClick={() => setConfirmDeleteId(null)}
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</Layout>
 	);
 }
