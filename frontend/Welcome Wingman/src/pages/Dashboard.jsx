@@ -12,6 +12,7 @@ function Dashboard() {
 	const [weather, setWeather] = useState(null);
 	let latitude = 32.50283298104374;
 	let longitude = -93.66312248601946;
+	const [showSupport, setShowSupport] = useState(false);
 
 	useEffect(() => {
 		fetch("http://localhost:8000/user_tasks")
@@ -415,10 +416,19 @@ function Dashboard() {
 									<span className="icon">👤</span>
 									Update Profile
 								</div>
-								<div className="quick-action-tile">
+								<div
+									className="quick-action-tile"
+									onClick={() => setShowSupport((prev) => !prev)}
+								>
 									<span className="icon">💬</span>
-									Contact Support
+									{showSupport ? "Close" : "Contact Support"}
 								</div>
+								{showSupport && (
+									<div>
+										<p>Support Contact:</p>
+										<p>WelcomeWingman@us.af.mil</p>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>
