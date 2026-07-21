@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
 
+
 function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
 	const navigate = useNavigate();
@@ -34,6 +35,17 @@ function Dashboard() {
 			})
 			.catch(console.error);
 	}, []);
+	}, []);
+
+	useEffect(() => {
+			fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m&daily=precipitation_probability_max&forecast_days=1&temperature_unit=fahrenheit&wind_speed_unit=mph`)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data)
+				setWeather(data);
+			})
+			.catch(console.error)
+		}, []);
 
 	const myTasks = userTasks.filter(
 		(ut) =>
@@ -97,7 +109,6 @@ function Dashboard() {
 									className="btn btn-primary"
 									type="button"
 									onClick={() => navigate(`/${LoggedIn.id}/pdashboard`)}
-									onClick={() => nav(`/${userId}/pdashboard`)}
 								>
 									Go to Personnel
 								</button>
@@ -400,12 +411,15 @@ function Dashboard() {
 									onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}
 								>
 									<span className="icon">✅</span>
+								<div className="quick-action-tile" onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}>
+									<span className="icon" >✅</span>
 									View Checklist
 								</div>
 								<div
 									className="quick-action-tile"
 									onClick={() => navigate("/")}
 								>
+								<div className="quick-action-tile" onClick={() => navigate('/')}>
 									<span className="icon">📇</span>
 									Find Office
 								</div>
@@ -413,6 +427,7 @@ function Dashboard() {
 									className="quick-action-tile"
 									onClick={() => navigate(`/${LoggedIn.id}/profile`)}
 								>
+								<div className="quick-action-tile" onClick={() => navigate(`/${LoggedIn.id}/profile`)}>
 									<span className="icon">👤</span>
 									Update Profile
 								</div>
@@ -420,8 +435,10 @@ function Dashboard() {
 									className="quick-action-tile"
 									onClick={() => setShowSupport((prev) => !prev)}
 								>
+								<div className="quick-action-tile" onClick={() => setShowSupport(prev => !prev)}>
 									<span className="icon">💬</span>
 									{showSupport ? "Close" : "Contact Support"}
+									{showSupport ? 'Close' : 'Contact Support'}
 								</div>
 								{showSupport && (
 									<div>
@@ -474,24 +491,16 @@ function Dashboard() {
 							<div className="card-header" style={{ justifyContent: "center" }}>
 								<h2>Weather</h2>
 							</div>
-							<div className="weather-icon">Current Temperature</div>
-							<div className="weather-temp">
-								{weather
-									? `${weather.current.temperature_2m} °F`
-									: "Loading..."}
-							</div>
+							<div className="weather">Current Temperature</div>
+							<div className="weather-temp">{weather ? `${weather.current.temperature_2m} °F`: "Loading..."}</div>
 							<div className="weather-forecast">
 								<div className="weather-day">
 									<span className="day-icon">Rain</span>
-									{weather
-										? `${weather.daily.precipitation_probability_max[0]}%`
-										: "Loading..."}
+									<p className="rain-wind">{weather ? `${weather.daily.precipitation_probability_max[0]}%`: "Loading..."}</p>
 								</div>
 								<div className="weather-day">
 									<span className="day-icon">Wind</span>
-									{weather
-										? `${weather.current.wind_speed_10m} mph`
-										: "Loading..."}
+									<p className="rain-wind">{weather ? `${weather.current.wind_speed_10m} mph`: "Loading..."}</p>
 								</div>
 							</div>
 						</div>

@@ -121,6 +121,7 @@ docker start wingman-db
 docker exec -it wingman-db psql -U postgres -d WingmanDatabase
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # VITEST
 
 ### Commands
@@ -131,6 +132,8 @@ make sure container is running
 npm test
 q (quits test)
 =======
+=======
+>>>>>>> origin/dashboard-navigation
 ## Built With
 
 ### Frontend
@@ -150,4 +153,7 @@ q (quits test)
 ### APIs
 - Open-Meteo
 
+<<<<<<< HEAD
 >>>>>>> eee1342 (updated readme with frontend features and technology stack used)
+=======
+>>>>>>> origin/dashboard-navigation
