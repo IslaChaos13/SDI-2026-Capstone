@@ -20,7 +20,7 @@ function Logon() {
             if (data.error) {
                 setError(data.error)
             } else {
-                navigate('/')
+                navigate('/Admin')
             }
         })
         .catch(() => setError('Server error, try again'))
