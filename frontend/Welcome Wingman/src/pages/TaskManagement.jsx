@@ -4,6 +4,7 @@ import "../styles/theme.css";
 // import './Dashboard.css'
 // import './AdminDashboard.css'
 import "../css/TaskManagement.css";
+import "../styles/MyChecklist.css";
 import UserContext from "../context/UserContext";
 
 function TaskManagement() {
@@ -15,6 +16,10 @@ function TaskManagement() {
 	const [tasks, setTasks] = useState([]);
 	const [userTasks, setUserTasks] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [statusFilter, setStatusFilter] = useState("All");
+	const [priorityFilter, setPriorityFilter] = useState("All");
+	const [viewingTask, setViewingTask] = useState(null);
+	const [editingTask, setEditingTask] = useState(null);
 
 	useEffect(() => {
 		fetch("http://localhost:8000/users")
@@ -57,6 +62,13 @@ function TaskManagement() {
 					.then((r) => r.json())
 					.then((data) => setUserTasks(data || []));
 			})
+			.then(() => {
+				setAssignUserId("");
+				setAssignTaskId("");
+				setAssignPriority("Medium");
+				setAssignDueDate("");
+				setAssignNotes("");
+			})
 			.catch(console.error);
 	}
 
@@ -73,12 +85,67 @@ function TaskManagement() {
 			}),
 		})
 			.then((r) => r.json())
-			.then(() => {
-				return fetch("http://localhost:8000/tasks")
-					.then((r) => r.json())
-					.then((data) => setTasks(data.tasks || []));
+			.then(() => fetch("http://localhost:8000/tasks"))
+			.then((r) => r.json())
+			.then((data) => {
+				const freshTasks = data.tasks || [];
+				setTasks(freshTasks);
+				// the new task has no id in the create response, so find it
+				// by title in the refreshed list (highest id = most recent)
+				const newTask = freshTasks
+					.filter((t) => t.title === customTitle)
+					.sort((a, b) => b.id - a.id)[0];
+				if (!newTask || !assignUserId) return null;
+				return fetch("http://localhost:8000/user_tasks", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						user_id: assignUserId,
+						task_id: newTask.id,
+						priority: assignPriority,
+						due_date: assignDueDate,
+						note: assignNotes,
+					}),
+				});
+			})
+			.then(() => fetch("http://localhost:8000/user_tasks"))
+			.then((r) => r.json())
+			.then((data) => {
+				setUserTasks(data || []);
+				setCustomTitle("");
+				setCustomDescription("");
+				setAssignUserId("");
+				setAssignTaskId("");
+				setAssignPriority("Medium");
+				setAssignDueDate("");
+				setAssignNotes("");
 			})
 			.catch(console.error);
+	}
+
+	function handleSaveEdit() {
+		fetch("http://localhost:8000/user_tasks", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				id: editingTask.id,
+				note: editingTask.note,
+				is_complete: editingTask.is_complete,
+			}),
+		})
+			.then(() => {
+				setUserTasks((prev) =>
+					prev.map((ut) => (ut.id === editingTask.id ? { ...ut, ...editingTask } : ut)),
+				);
+				setEditingTask(null);
+			})
+			.catch(console.error);
+	}
+
+	function getStatus(ut) {
+		if (ut.is_complete) return "Completed";
+		if (ut.due_date && new Date(ut.due_date) < new Date()) return "Overdue";
+		return "Pending";
 	}
 
 	function handleRemoveAssignment(id) {
@@ -232,8 +299,11 @@ function TaskManagement() {
 							<div className="assign-panel-grid">
 								<div className="form-group">
 									<label>Select Personnel</label>
-									<select>
-										<option>Select User</option>
+									<select
+										value={assignUserId}
+										onChange={(e) => setAssignUserId(e.target.value)}
+									>
+										<option value="">Select User</option>
 										{users.map((u) => (
 											<option key={u.id} value={u.id}>
 												{u.first_name} {u.last_name}
@@ -269,7 +339,10 @@ function TaskManagement() {
 								</div>
 								<div className="form-group">
 									<label>Priority</label>
-									<select>
+									<select
+										value={assignPriority}
+										onChange={(e) => setAssignPriority(e.target.value)}
+									>
 										<option>Low</option>
 										<option>Medium</option>
 										<option>High</option>
@@ -277,11 +350,20 @@ function TaskManagement() {
 								</div>
 								<div className="form-group">
 									<label>Due Date</label>
-									<input type="date" />
+									<input
+										type="date"
+										value={assignDueDate}
+										onChange={(e) => setAssignDueDate(e.target.value)}
+									/>
 								</div>
 								<div className="form-group full">
 									<label>Notes</label>
-									<textarea rows="3" placeholder="Notes"></textarea>
+									<textarea
+										rows="3"
+										placeholder="Notes"
+										value={assignNotes}
+										onChange={(e) => setAssignNotes(e.target.value)}
+									></textarea>
 								</div>
 							</div>
 							<button
@@ -311,17 +393,23 @@ function TaskManagement() {
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
 					</div>
-					<select>
-						<option>Status: All</option>
-						<option>In Progress</option>
-						<option>Completed</option>
-						<option>Overdue</option>
+					<select
+						value={statusFilter}
+						onChange={(e) => setStatusFilter(e.target.value)}
+					>
+						<option value="All">Status: All</option>
+						<option value="Pending">Pending</option>
+						<option value="Completed">Completed</option>
+						<option value="Overdue">Overdue</option>
 					</select>
-					<select>
-						<option>Priority: All</option>
-						<option>Low</option>
-						<option>Medium</option>
-						<option>High</option>
+					<select
+						value={priorityFilter}
+						onChange={(e) => setPriorityFilter(e.target.value)}
+					>
+						<option value="All">Priority: All</option>
+						<option value="Low">Low</option>
+						<option value="Medium">Medium</option>
+						<option value="High">High</option>
 					</select>
 					<select>
 						<option>Sort By: Due Date</option>
@@ -354,6 +442,12 @@ function TaskManagement() {
 											.toLowerCase()
 											.includes(searchTerm.toLowerCase()),
 									)
+									.filter(
+										(ut) => priorityFilter === "All" || ut.priority === priorityFilter,
+									)
+									.filter(
+										(ut) => statusFilter === "All" || getStatus(ut) === statusFilter,
+									)
 									.map((ut) => (
 									<tr key={ut.id}>
 										<td>
@@ -367,10 +461,14 @@ function TaskManagement() {
 										</td>
 										<td>{formatDate(ut.due_date)}</td>
 										<td>
-											{ut.is_complete ? (
+											{getStatus(ut) === "Completed" && (
 												<span className="badge badge-complete">Completed</span>
-											) : (
-												<span className="badge badge-pending">In Progress</span>
+											)}
+											{getStatus(ut) === "Overdue" && (
+												<span className="badge badge-overdue">Overdue</span>
+											)}
+											{getStatus(ut) === "Pending" && (
+												<span className="badge badge-pending">Pending</span>
 											)}
 										</td>
 										<td>
@@ -382,12 +480,14 @@ function TaskManagement() {
 												<button
 													className="btn btn-outline btn-sm"
 													type="button"
+													onClick={() => setViewingTask(ut)}
 												>
 													View
 												</button>
 												<button
 													className="btn btn-outline btn-sm"
 													type="button"
+													onClick={() => setEditingTask({ ...ut })}
 												>
 													Edit
 												</button>
@@ -412,81 +512,25 @@ function TaskManagement() {
 						<h2>Task Library</h2>
 					</div>
 					<div className="grid grid-3">
-						<div className="card library-card">
-							<div className="library-card-top">
-								<h3>Task 1</h3>
-								<span className="badge badge-complete">Active</span>
+						{tasks.map((t) => (
+							<div className="card library-card" key={t.id}>
+								<div className="library-card-top">
+									<h3>{t.title}</h3>
+								</div>
+								<div className="library-card-meta">{t.action_item}</div>
+								<div className="library-card-footer">
+									<button className="btn btn-primary btn-sm" type="button">
+										Assign
+									</button>
+									<button className="btn btn-outline btn-sm" type="button">
+										Edit
+									</button>
+									<button className="btn btn-outline btn-sm" type="button">
+										Archive
+									</button>
+								</div>
 							</div>
-							<div className="library-card-meta">
-								<span className="tag">General</span>
-								<span className="priority priority-high">High</span>
-							</div>
-							<div className="library-card-meta">Assigned to 4 users</div>
-							<div className="library-card-meta">
-								Created by Admin User · Created: Date
-							</div>
-							<div className="library-card-footer">
-								<button className="btn btn-primary btn-sm" type="button">
-									Assign
-								</button>
-								<button className="btn btn-outline btn-sm" type="button">
-									Edit
-								</button>
-								<button className="btn btn-outline btn-sm" type="button">
-									Archive
-								</button>
-							</div>
-						</div>
-						<div className="card library-card">
-							<div className="library-card-top">
-								<h3>Task 2</h3>
-								<span className="badge badge-complete">Active</span>
-							</div>
-							<div className="library-card-meta">
-								<span className="tag">Training</span>
-								<span className="priority priority-medium">Medium</span>
-							</div>
-							<div className="library-card-meta">Assigned to 2 users</div>
-							<div className="library-card-meta">
-								Created by Admin User · Created: Date
-							</div>
-							<div className="library-card-footer">
-								<button className="btn btn-primary btn-sm" type="button">
-									Assign
-								</button>
-								<button className="btn btn-outline btn-sm" type="button">
-									Edit
-								</button>
-								<button className="btn btn-outline btn-sm" type="button">
-									Archive
-								</button>
-							</div>
-						</div>
-						<div className="card library-card">
-							<div className="library-card-top">
-								<h3>Task 3</h3>
-								<span className="tag">Archived</span>
-							</div>
-							<div className="library-card-meta">
-								<span className="tag">Records</span>
-								<span className="priority priority-low">Low</span>
-							</div>
-							<div className="library-card-meta">Assigned to 1 user</div>
-							<div className="library-card-meta">
-								Created by Admin User · Created: Date
-							</div>
-							<div className="library-card-footer">
-								<button className="btn btn-primary btn-sm" type="button">
-									Assign
-								</button>
-								<button className="btn btn-outline btn-sm" type="button">
-									Edit
-								</button>
-								<button className="btn btn-outline btn-sm" type="button">
-									Archive
-								</button>
-							</div>
-						</div>
+						))}
 					</div>
 				</div>
 
@@ -519,6 +563,88 @@ function TaskManagement() {
 						<span className="badge badge-overdue">Behind</span>
 					</div>
 				</div>
+
+				{viewingTask && (
+					<div className="modal-overlay" onClick={() => setViewingTask(null)}>
+						<div className="modal" onClick={(e) => e.stopPropagation()}>
+							<h2>{viewingTask.title}</h2>
+							<p>Assigned to: {viewingTask.first_name} {viewingTask.last_name}</p>
+							<p>Description: {viewingTask.action_item}</p>
+							<p>Priority: {viewingTask.priority}</p>
+							<p>Status: {getStatus(viewingTask)}</p>
+							<p>Due Date: {formatDate(viewingTask.due_date)}</p>
+							<p>Notes: {viewingTask.note || "None"}</p>
+							<p>Assigned By: Admin User</p>
+							<button onClick={() => setViewingTask(null)}>Close</button>
+						</div>
+					</div>
+				)}
+
+				{editingTask && (
+					<div className="modal-overlay" onClick={() => setEditingTask(null)}>
+						<div className="modal" onClick={(e) => e.stopPropagation()}>
+							<h2>Edit Assignment</h2>
+							<div className="form-group">
+								<label>Priority</label>
+								<select
+									value={editingTask.priority}
+									onChange={(e) =>
+										setEditingTask({ ...editingTask, priority: e.target.value })
+									}
+								>
+									<option>Low</option>
+									<option>Medium</option>
+									<option>High</option>
+								</select>
+							</div>
+							<div className="form-group">
+								<label>Due Date</label>
+								<input
+									type="date"
+									value={editingTask.due_date ? editingTask.due_date.slice(0, 10) : ""}
+									onChange={(e) =>
+										setEditingTask({ ...editingTask, due_date: e.target.value })
+									}
+								/>
+							</div>
+							<div className="form-group">
+								<label>Completed</label>
+								<select
+									value={editingTask.is_complete ? "yes" : "no"}
+									onChange={(e) =>
+										setEditingTask({
+											...editingTask,
+											is_complete: e.target.value === "yes",
+										})
+									}
+								>
+									<option value="no">Not Complete</option>
+									<option value="yes">Complete</option>
+								</select>
+							</div>
+							<div className="form-group">
+								<label>Notes</label>
+								<textarea
+									rows="3"
+									value={editingTask.note || ""}
+									onChange={(e) =>
+										setEditingTask({ ...editingTask, note: e.target.value })
+									}
+								></textarea>
+							</div>
+							<button className="btn btn-primary" type="button" onClick={handleSaveEdit}>
+								Save
+							</button>
+							<button
+								className="btn btn-outline"
+								type="button"
+								onClick={() => setEditingTask(null)}
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				)}
 			</div>
 		</Layout>
 	);
