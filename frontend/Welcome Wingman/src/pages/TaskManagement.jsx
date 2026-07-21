@@ -18,6 +18,7 @@ function TaskManagement() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState("All");
 	const [priorityFilter, setPriorityFilter] = useState("All");
+	const [sortBy, setSortBy] = useState("Due Date");
 	const [viewingTask, setViewingTask] = useState(null);
 	const [editingTask, setEditingTask] = useState(null);
 
@@ -411,10 +412,10 @@ function TaskManagement() {
 						<option value="Medium">Medium</option>
 						<option value="High">High</option>
 					</select>
-					<select>
-						<option>Sort By: Due Date</option>
-						<option>Sort By: Priority</option>
-						<option>Sort By: Personnel</option>
+					<select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+						<option value="Due Date">Sort By: Due Date</option>
+						<option value="Priority">Sort By: Priority</option>
+						<option value="Personnel">Sort By: Personnel</option>
 					</select>
 				</div>
 
@@ -422,7 +423,7 @@ function TaskManagement() {
 					<div className="card-header">
 						<h2>Current Assignments</h2>
 					</div>
-					<div className="table-wrapper">
+					<div className="table-wrapper assignments-scroll">
 						<table>
 							<thead>
 								<tr>
@@ -448,6 +449,16 @@ function TaskManagement() {
 									.filter(
 										(ut) => statusFilter === "All" || getStatus(ut) === statusFilter,
 									)
+									.sort((a, b) => {
+										if (sortBy === "Due Date") return new Date(a.due_date) - new Date(b.due_date);
+										if (sortBy === "Priority") {
+											const rank = { High: 3, Medium: 2, Low: 1 };
+											return rank[b.priority] - rank[a.priority];
+										}
+										return `${a.first_name} ${a.last_name}`.localeCompare(
+											`${b.first_name} ${b.last_name}`,
+										);
+									})
 									.map((ut) => (
 									<tr key={ut.id}>
 										<td>
@@ -455,7 +466,7 @@ function TaskManagement() {
 										</td>
 										<td>{ut.title}</td>
 										<td>
-											<span className="priority priority-medium">
+											<span className={`priority priority-${ut.priority.toLowerCase()}`}>
 												{ut.priority}
 											</span>
 										</td>
@@ -511,7 +522,7 @@ function TaskManagement() {
 					<div className="card-header">
 						<h2>Task Library</h2>
 					</div>
-					<div className="grid grid-3">
+					<div className="library-scroll">
 						{tasks.map((t) => (
 							<div className="card library-card" key={t.id}>
 								<div className="library-card-top">
