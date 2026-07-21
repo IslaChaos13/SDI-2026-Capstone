@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { EditUserProvider } from "../context/EditUserContext";
 import EditUserModal from "../components/EditUserModal";
 import { useEditUser } from "../context/EditUserContext";
+import MW from "../assets/MW.png";
 
 const EMPTY_FORM = {
 	rank: "",
@@ -350,39 +351,95 @@ export default function PersonnelDashboard() {
 							</ul>
 						</div>
 
-						<div className="card">
-							<div className="card-header">
-								<h2>Sponsor Information</h2>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									alignItems: "center",
-									gap: "var(--space-md)",
-									marginBottom: "var(--space-md)",
-								}}
-							>
-								<div className="avatar avatar-md">C</div>
-								<div>
-									<div style={{ fontWeight: 500 }}>Contact</div>
-									<div
-										style={{ fontSize: "12px", color: "var(--text-secondary)" }}
-									>
-										Assigned Sponsor
+						<div className="dashboard-row row-1-1-1">
+							<div className="card">
+								<div className="card-header">
+									<h2>Sponsor Information</h2>
+								</div>
+								<div className="sponsor-info-row">
+									<div className="avatar avatar-sm">
+										<img
+											src={MW}
+											alt="MW"
+											style={{
+												width: "40px",
+												height: "40px",
+												borderRadius: "50%",
+												padding: "5px",
+											}}
+										/>
+									</div>
+									<div style={{ fontWeight: 500 }}>Matthew Wegenke</div>
+									<div>
+										<div
+											style={{
+												fontSize: "12px",
+												color: "var(--text-secondary)",
+											}}
+										>
+											Assigned Sponsor
+										</div>
 									</div>
 								</div>
+								<div className="info-row">
+									<span className="label">Unit</span>
+									<span className="value">Galvanize</span>
+								</div>
+								<div className="info-row">
+									<span className="label">Phone</span>
+									<span className="value">1-800-DEVIL-DOG</span>
+								</div>
+								<div className="info-row">
+									<span className="label">Email</span>
+									<span className="value">mathew.wegenke@galvanize.com</span>
+								</div>
 							</div>
-							<div className="info-row">
-								<span className="label">Unit</span>
-								<span className="value">Unit</span>
+
+							<div className="card">
+								<div className="card-header">
+									<h2>Important Contacts</h2>
+								</div>
+								{!loadingDirectory &&
+									users.length > 1 &&
+									facilities.length > 2 && (
+										<div className="contact-row">
+											<div>
+												<div className="contact-name">
+													{users[1].rank} {users[1].first_name}{" "}
+													{users[1].last_name}
+												</div>
+												<div className="contact-role">Sponsor</div>
+											</div>
+											<button className="btn btn-outline btn-sm" type="button">
+												{facilities[2].phone}
+											</button>
+										</div>
+									)}
+								{!loadingDirectory &&
+									facilities.length > 0 &&
+									users.length > 0 && (
+										<div className="contact-row">
+											<div>
+												<div className="contact-name">
+													{facilities[0].title}
+												</div>
+												<div className="contact-role">
+													{users[0].rank} {users[0].first_name}{" "}
+													{users[0].last_name}
+												</div>
+											</div>
+											<button className="btn btn-outline btn-sm" type="button">
+												{facilities[0].phone}
+											</button>
+										</div>
+									)}
 							</div>
-							<div className="info-row">
-								<span className="label">Phone</span>
-								<span className="value">Phone</span>
-							</div>
-							<div className="info-row">
-								<span className="label">Email</span>
-								<span className="value">Email</span>
+
+							<div className="card">
+								<div className="card-header">
+									<h2>Announcements</h2>
+								</div>
+								<div className="announcement-item"></div>
 							</div>
 						</div>
 
