@@ -38,8 +38,8 @@ export default function MyChecklist() {
 				}),
 			});
 
-			if (error) {
-				console.log(error);
+			if (!response.ok) {
+				throw new Error("Failed to save note");
 			}
 
 			// Update the page state so the new note appears immediately

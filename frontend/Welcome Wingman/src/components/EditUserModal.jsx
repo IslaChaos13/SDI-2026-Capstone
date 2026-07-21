@@ -1,4 +1,3 @@
-// components/EditUserModal.jsx
 import { useEditUser } from "../context/EditUserContext";
 
 export default function EditUserModal() {
@@ -77,6 +76,18 @@ export default function EditUserModal() {
 								required
 							/>
 						</div>
+					</div>
+
+					<div className="form-field">
+						<label htmlFor="edit-address">Address</label>
+						<input
+							type="address"
+							id="edit-address"
+							name="address"
+							value={editUser.address || ""}
+							onChange={handleEditChange}
+							required
+						/>
 					</div>
 
 					<div className="form-field">

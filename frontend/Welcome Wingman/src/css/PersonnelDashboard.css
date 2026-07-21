@@ -120,7 +120,7 @@ form.form-group .form-field {
 
 .modal {
 	display: center;
-	max-width: 480px;
+	max-width: 520px;
 	width: 90%;
 	color: var(--text);
 }

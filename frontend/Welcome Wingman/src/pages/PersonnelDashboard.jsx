@@ -442,55 +442,6 @@ export default function PersonnelDashboard() {
 								<div className="announcement-item"></div>
 							</div>
 						</div>
-
-						<div className="dashboard-row row-1-1">
-							<div className="card">
-								<div className="card-header">
-									<h2>Important Contacts</h2>
-								</div>
-								{!loadingDirectory &&
-									users.length > 1 &&
-									facilities.length > 2 && (
-										<div className="contact-row">
-											<div>
-												<div className="contact-name">
-													{users[1].rank} {users[1].first_name}{" "}
-													{users[1].last_name}
-												</div>
-												<div className="contact-role">Sponsor</div>
-											</div>
-											<button className="btn btn-outline btn-sm" type="button">
-												{facilities[2].phone}
-											</button>
-										</div>
-									)}
-								{!loadingDirectory &&
-									facilities.length > 0 &&
-									users.length > 0 && (
-										<div className="contact-row">
-											<div>
-												<div className="contact-name">
-													{facilities[0].title}
-												</div>
-												<div className="contact-role">
-													{users[0].rank} {users[0].first_name}{" "}
-													{users[0].last_name}
-												</div>
-											</div>
-											<button className="btn btn-outline btn-sm" type="button">
-												{facilities[0].phone}
-											</button>
-										</div>
-									)}
-							</div>
-
-							<div className="card">
-								<div className="card-header">
-									<h2>Announcements</h2>
-								</div>
-								<div className="announcement-item"></div>
-							</div>
-						</div>
 					</div>
 				</div>
 
