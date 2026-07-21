@@ -13,6 +13,7 @@ function Dashboard() {
 	const [weather, setWeather] = useState(null);
 	let latitude = 32.50283298104374;
 	let longitude = -93.66312248601946;
+	const [showSupport, setShowSupport] = useState(false);
 
 	useEffect(() => {
 		fetch("http://localhost:8000/user_tasks")
@@ -389,10 +390,16 @@ function Dashboard() {
 									<span className="icon">👤</span>
 									Update Profile
 								</div>
-								<div className="quick-action-tile">
+								<div className="quick-action-tile" onClick={() => setShowSupport(prev => !prev)}>
 									<span className="icon">💬</span>
-									Contact Support
+									{showSupport ? 'Close' : 'Contact Support'}
 								</div>
+								{showSupport && (
+									<div>
+										<p>Support Contact:</p>
+										<p>WelcomeWingman@us.af.mil</p>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>
@@ -438,16 +445,16 @@ function Dashboard() {
 							<div className="card-header" style={{ justifyContent: "center" }}>
 								<h2>Weather</h2>
 							</div>
-							<div className="weather-icon">Current Temperature</div>
+							<div className="weather">Current Temperature</div>
 							<div className="weather-temp">{weather ? `${weather.current.temperature_2m} °F`: "Loading..."}</div>
 							<div className="weather-forecast">
 								<div className="weather-day">
 									<span className="day-icon">Rain</span>
-									{weather ? `${weather.daily.precipitation_probability_max[0]}%`: "Loading..."}
+									<p className="rain-wind">{weather ? `${weather.daily.precipitation_probability_max[0]}%`: "Loading..."}</p>
 								</div>
 								<div className="weather-day">
 									<span className="day-icon">Wind</span>
-									{weather ? `${weather.current.wind_speed_10m} mph`: "Loading..."}
+									<p className="rain-wind">{weather ? `${weather.current.wind_speed_10m} mph`: "Loading..."}</p>
 								</div>
 							</div>
 						</div>
