@@ -112,6 +112,7 @@ app.get('/directory_poc', async (req, res) => {
    }
 })
 
+// connor's fix for cookies
 app.get("/userAuth", async (req, res) => {
    const token = req.cookies.token;
    if (!token) return res.status(401).json({ error: "Need to Log In" });
