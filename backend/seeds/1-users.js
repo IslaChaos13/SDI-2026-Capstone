@@ -32,6 +32,26 @@ const units = [
   'USSTRATCOM'
 ]
 
+const duty_titles = [
+  'Cyber Warfare Operations',
+  'Air Traffic Control',
+  'Cyber Defense Operations',
+  'Geospatial Intelligence',
+  'Cryptologic Language Analyst',
+  'Aircrew Flight Equipment',
+  'Weather',
+  'Special Reconnaissance',
+  'Tactical Aircraft Maintenance',
+  'Aircraft Fuel Systems',
+  'Ground Transportation',
+  'Munitions Systems',
+  'Electrical Systems',
+  'Personnel',
+  'Services',
+  'Security Forces',
+  'Health Services Management'
+]
+
 function getRandomElements (elements){
   const numElements = Math.floor(Math.random() * elements.length) + 1;
   const shuffledElements = [...elements].sort(() => Math.random() - 0.5);
@@ -57,6 +77,7 @@ async function createEntries(rows) {
       phone: faker.phone.number(),
       address: faker.location.streetAddress(),
       unit: getRandomElements(units)[0],
+      duty_title: getRandomElements(duty_titles)[0],
       avatar: faker.image.avatar(),
       password: hashedPassword,
     })
