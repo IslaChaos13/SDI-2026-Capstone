@@ -1,6 +1,6 @@
 {
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.fontFamily": "Arial",
-	"editor.wordWrap": "on"
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
+    "editor.wordWrap": "on"
 }
