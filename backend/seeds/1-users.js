@@ -32,6 +32,27 @@ const units = [
 	"USSTRATCOM",
 ];
 
+const duty_titles = [
+	"Cyber Warfare Operations",
+	"Air Traffic Control",
+	"Cyber Defense Operations",
+	"Geospatial Intelligence",
+	"Cryptologic Language Analyst",
+	"Aircrew Flight Equipment",
+	"Weather",
+	"Special Reconnaissance",
+	"Financial Management & Comptroller",
+	"Public Affairs",
+	"Aircraft Fuel Systems",
+	"Ground Transportation",
+	"Munitions Systems",
+	"Electrical Systems",
+	"Personnel",
+	"Services",
+	"Security Forces",
+	"Health Services Management",
+];
+
 function getRandomElements(elements) {
 	const numElements = Math.floor(Math.random() * elements.length) + 1;
 	const shuffledElements = [...elements].sort(() => Math.random() - 0.5);
@@ -57,6 +78,7 @@ async function createEntries(rows) {
 			phone: faker.phone.number(),
 			address: faker.location.streetAddress(),
 			unit: getRandomElements(units)[0],
+			duty_title: getRandomElements(duty_titles)[0],
 			avatar: faker.image.avatar(),
 			password: hashedPassword,
 		});
@@ -78,7 +100,8 @@ exports.seed = async function (knex) {
 		phone: "000 000 0000",
 		address: "Admin Street, Admin City",
 		unit: "2nd Bomb Wing",
-		avatar: "Adminvatar",
+		duty_title: "Cyber Warfare Operations",
+		avatar: "https://www.trademark.af.mil/portals/73/240801-F-DQ331-0002.png",
 		password: await bcrypt.hash("password", 10),
 	});
 
@@ -92,7 +115,8 @@ exports.seed = async function (knex) {
 		phone: "000 000 0000",
 		address: "User Street, User City",
 		unit: "2nd Bomb Wing",
-		avatar: "Uservatar",
+		duty_title: "Security Forces",
+		avatar: faker.image.avatar(),
 		password: await bcrypt.hash("password", 10),
 	});
 };

@@ -71,32 +71,54 @@ app.get("/directory", async (req, res) => {
 	}
 });
 
-app.get("/user_tasks", async (req, res) => {
-	try {
-		const [user_tasks] = await Promise.all([
-			knex("user_tasks")
-				.join("users", "users.id", "user_tasks.user_id")
-				.join("tasks", "tasks.id", "user_tasks.task_id")
-				.select(
-					"user_tasks.id",
-					"users.rank",
-					"users.first_name",
-					"users.last_name",
-					"tasks.title",
-					"tasks.action_item",
-					"user_tasks.priority",
-					"user_tasks.due_date",
-					"user_tasks.is_complete",
-					"user_tasks.note",
-				),
-		]);
+app.get('/user_tasks', async (req, res) => {
+   try {
+      const [user_tasks] = await Promise.all([
+         knex('user_tasks')
+            .join('users', 'users.id', 'user_tasks.user_id')
+            .join('tasks', 'tasks.id', 'user_tasks.task_id')
+            .select('user_tasks.id', 'users.rank', 'users.first_name', 'users.last_name', 'tasks.title', 'tasks.action_item', 'user_tasks.priority', 'user_tasks.due_date', 'user_tasks.is_complete', 'user_tasks.note')
+      ])
 
-		res.json(user_tasks);
-	} catch (err) {
-		res.status(500).json({
-			message: "Failed to fetch data",
-		});
-	}
+      res.json(user_tasks)
+   } catch (err) {
+      res.status(500).json({
+         message: 'Failed to fetch data'
+      })
+   }
+})
+
+app.get('/directory_poc', async (req, res) => {
+   try {
+      const [directory_poc] = await Promise.all([
+         knex('directory_poc')
+            .join('users', 'users.id', 'directory_poc.id_users')
+            .join('directory', 'directory.id', 'directory_poc.id_directory')
+            .select('directory_poc.id', 'users.rank', 'users.first_name', 'users.last_name', 'directory.title', 'directory.link')
+      ])
+
+      res.json(directory_poc)
+
+   } catch (err) {
+      res.status(500).json({
+         message: 'Failed to fetch data'
+      })
+   }
+})
+
+// connor's fix for cookies
+app.get("/userAuth", async (req, res) => {
+   const token = req.cookies.token;
+   if (!token) return res.status(401).json({ error: "Need to Log In" });
+   try {
+      const jwtCheck = jwt.verify(token, "your_jwt_secret");
+      const user = await knex("users").where({ id: jwtCheck.user_id }).first();
+      if (!user) return res.status(401).json({ error: "User not found" });
+      const { password: _, ...safeUser } = user;
+      res.json({ user: safeUser });
+   } catch {
+      res.status(401).json({ error: "Invalid/expired session" })
+   }
 });
 
 // Post routes
@@ -115,85 +137,126 @@ app.post("/login", async (req, res) => {
 	if (!validPassword)
 		return res.status(401).json({ error: "Incorrect password!" });
 
-	const token = jwt.sign(
-		{ user_id: user.id, is_admin: user.is_admin },
-		"your_jwt_secret",
-		{ expiresIn: "24h" },
-	);
+   const token = jwt.sign(
+      { user_id: user.id, is_admin: user.is_admin },
+      'your_jwt_secret',
+      { expiresIn: '24h' }
+   )
 
-	res.cookie("token", token, {
-		httpOnly: true,
-		secure: false,
-		maxAge: 24 * 60 * 60 * 1000,
-	});
+   res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000
+   })
 
-	res.json({ message: "Log in successful!" });
-});
+   const { password: _, ...safeUser } = user
 
-app.post("/register", async (req, res) => {
-	const { first_name, last_name, email, password } = req.body;
+   res.json({ message: 'Log in successful!', user: safeUser })
+})
 
-	app.post("/register", async (req, res) => {
-		try {
-			const {
-				first_name,
-				last_name,
-				rank,
-				phone,
-				address,
-				unit,
-				email,
-				password,
-			} = req.body;
+app.post("/logout", (req, res) => {
+   res.clearCookie("token");
+   res.json({ message: "Logged Out" })
+})
 
-			if (!email || !password) {
-				return res.status(400).json({ error: "Email and password required" });
-			}
+app.post('/register', async (req, res) => {
+   try {
+      const { first_name, last_name, rank, phone, address, unit, email, password, duty_title, supervisor } = req.body
 
-			const existing = await knex("users").where({ email }).first();
-			if (existing)
-				return res.status(400).json({ error: `You've already got an account` });
+      if (!email || !password) {
+         return res.status(400).json({ error: 'Email and password required' })
+      }
 
-			const hashedPassword = await bcrypt.hash(password, 10);
+      const existing = await knex('users').where({ email }).first()
+      if (existing) return res.status(400).json({ error: `You've already got an account` })
 
-			const [user] = await knex("users")
-				.insert({
-					is_admin: false,
-					is_manager: false,
-					first_name,
-					last_name,
-					rank,
-					phone,
-					address,
-					unit,
-					email,
-					password: hashedPassword,
-				})
-				.returning("*");
+      const hashedPassword = await bcrypt.hash(password, 10)
 
-			res.json({ message: "Thanks for signing up! Log in with your email" });
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({ error: "failed to register" });
-		}
-	});
+      const [user] = await knex('users').insert({
+         is_admin: false,
+         is_manager: false,
+         first_name,
+         last_name,
+         rank,
+         phone,
+         address,
+         unit,
+         email,
+         password: hashedPassword,
+         duty_title,
+         supervisor
+      }).returning('*')
 
-	app.post("/tasks", async (req, res) => {
-		const { id_directory, title, action_item } = req.body;
+      res.json({ message: 'Thanks for signing up! Log in with your email' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'failed to register' })
+   }
+})
 
-		const [newTask] = await knex("tasks")
-			.insert({
-				id_directory,
-				title,
-				action_item,
-			})
-			.returning("*");
+app.post('/tasks', async (req, res) => {
+   const { id, ...updates } = req.body
 
-		res.json({ message: "New task created" });
-	});
+   if (id) {
+      Object.keys(updates).forEach(key => {
+         if (updates[key] === undefined) {
+            delete updates[key];
+         }
+      });
 
-	app.post("/user_tasks", async (req, res) => {
-		const { id, user_id, task_id, priority, due_date, note } = req.body;
+      const [updatedTask] = await knex('tasks')
+         .where({ id })
+         .update(updates)
+         .returning('*');
+
+      if (!updatedTask) {
+         return res.status(404).json({ error: `Incorrect ID!` })
+      }
+
+      res.json({ message: "Task updated!", task: updatedTask })
+
+   } else {
+      const [newTask] = await knex('tasks')
+         .insert(updates)
+         .returning('*')
+
+      res.json({ message: 'New task created', task: newTask })
+   }
+
+})
+
+app.post('/directory', async (req, res) => {
+   const { id, ...updates } = req.body
+
+   if (id) {
+      Object.keys(updates).forEach(key => {
+         if (updates[key] === undefined) {
+            delete updates[key];
+         }
+      });
+
+      const [updatedDirectory] = await knex('directory')
+         .where({ id })
+         .update(updates)
+         .returning('*')
+
+      if (!updatedDirectory) {
+         return res.status(404).json({ error: `Incorrect ID!` })
+      }
+
+      res.json({ message: "Directory updated!", directory: updatedDirectory })
+
+   } else {
+      const [newDirectory] = await knex('directory')
+         .insert(updates)
+         .returning('*')
+
+      res.json({ message: 'New Directory Entry created', directory: newDirectory })
+   }
+})
+
+app.post('/user_tasks', async (req, res) => {
+   const { id, ...rest } = req.body
 
 		if (id) {
 			const [updatedUserTask] = await knex("user_tasks")
@@ -228,8 +291,8 @@ app.post("/register", async (req, res) => {
 			return res.json({ message: "Task created", user_task: newUserTask });
 		}
 
-		return res.status(400).json({ error: "Something went wrong :(" });
-	});
+   return res.status(400).json({ error: 'Something went wrong :(' })
+})
 
 	//Delete routes
 	app.delete("/tasks/:id", async (req, res) => {
@@ -290,52 +353,43 @@ app.post("/register", async (req, res) => {
 		}
 	});
 
-	// PUT Routes
-	app.put("/users/:id", async (req, res) => {
-		try {
-			const {
-				is_admin,
-				is_manager,
-				rank,
-				first_name,
-				last_name,
-				email,
-				phone,
-				address,
-				unit,
-				avatar,
-				password,
-			} = req.body;
+// PUT Routes
+app.put('/users/:id', async (req, res) => {
+   try {
+      const { is_admin, is_manager, rank, first_name, last_name, email, phone, address, unit, avatar, password, duty_title, supervisor } = req.body
 
-			const updates = {};
-			if (is_admin !== undefined) updates.is_admin = is_admin;
-			if (is_manager !== undefined) updates.is_manager = is_manager;
-			if (rank !== undefined) updates.rank = rank;
-			if (first_name !== undefined) updates.first_name = first_name;
-			if (last_name !== undefined) updates.last_name = last_name;
-			if (email !== undefined) updates.email = email;
-			if (phone !== undefined) updates.phone = phone;
-			if (address !== undefined) updates.address = address;
-			if (unit !== undefined) updates.unit = unit;
-			if (avatar !== undefined) updates.avatar = avatar;
-			if (password !== undefined)
-				updates.password = await bcrypt.hash(password, 10);
+      const updates = {}
+      if (is_admin !== undefined) updates.is_admin = is_admin
+      if (is_manager !== undefined) updates.is_manager = is_manager
+      if (rank !== undefined) updates.rank = rank
+      if (first_name !== undefined) updates.first_name = first_name
+      if (last_name !== undefined) updates.last_name = last_name
+      if (email !== undefined) updates.email = email
+      if (phone !== undefined) updates.phone = phone
+      if (address !== undefined) updates.address = address
+      if (unit !== undefined) updates.unit = unit
+      if (avatar !== undefined) updates.avatar = avatar
+      if (password !== undefined) updates.password = await bcrypt.hash(password, 10)
+      if (duty_title !== undefined) updates.duty_title = duty_title
+      if (supervisor !== undefined) updates.supervisor = supervisor
 
-			if (Object.keys(updates).length === 0) {
-				return res.status(400).json({ error: "Nothing to update" });
-			}
+      if (Object.keys(updates).length === 0) {
+         return res.status(400).json({ error: 'Nothing to update' })
+      }
 
-			const [user] = await knex("users")
-				.where({ id: req.params.id })
-				.update(updates)
-				.returning("*");
+      const [user] = await knex('users')
+         .where({ id: req.params.id })
+         .update(updates)
+         .returning('*')
 
-			return res.json({ message: "user updated", user });
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({ error: "failed to update user" });
-		}
-	});
+      return res.json({ message: 'user updated', user })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'failed to update user' })
+   }
+})
+
+
 
 	app.listen(PORT, () => {
 		console.log(`Server running at http://localhost:${PORT}`);
