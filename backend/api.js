@@ -284,7 +284,7 @@ app.post('/user_tasks', async (req, res) => {
 
       return res.json({ message: 'User task updated', user_task: updatedUserTask })
 
-   } else if (rest.user_id && rest.task_id ** rest.due_date) {
+   } else if (rest.user_id && rest.task_id && rest.due_date) {
       const [newUserTask] = await knex('user_tasks').insert({
          user_id: rest.user_id,
          task_id: rest.task_id,
