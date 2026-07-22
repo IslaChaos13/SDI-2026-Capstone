@@ -35,14 +35,22 @@ function ProfileContent({ LoggedIn }) {
 				</div>
 
 				<div className="card profile-header-card">
-					<div className="avatar avatar-xl">AJ</div>
+					<div className="avatar avatar-xl">
+						<img
+							src={LoggedIn.avatar || "/default-avatar.png"}
+							alt={`${LoggedIn.first_name} ${LoggedIn.last_name}`}
+							style={{ width: "115px", height: "115px", borderradius: "50%" }}
+						/>
+					</div>
 					<div className="profile-header-info">
 						<h1>
 							{LoggedIn?.first_name && LoggedIn?.last_name
 								? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 								: "Guest"}
 						</h1>
-						<p>Senior Airman · 2nd Bomb Wing · Systems Analyst</p>
+						<p>
+							{LoggedIn?.rank} · {LoggedIn?.unit} · Systems Analyst
+						</p>
 						<div className="profile-header-tags">
 							<span className="tag">{LoggedIn?.rank}</span>
 							<span className="badge badge-complete">Active</span>
@@ -90,8 +98,8 @@ function ProfileContent({ LoggedIn }) {
 							<span className="value">{LoggedIn?.phone}</span>
 						</div>
 						<div className="info-row">
-							<span className="label">Office</span>
-							<span className="value">Bldg 245, Room 12</span>
+							<span className="label">Unit</span>
+							<span className="value">{LoggedIn.unit}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Address</span>
@@ -124,7 +132,13 @@ function ProfileContent({ LoggedIn }) {
 						</div>
 						<div className="info-row">
 							<span className="label">Role</span>
-							<span className="value">Standard User</span>
+							<span className="value">
+								{LoggedIn?.is_admin
+									? "Administrator"
+									: LoggedIn?.is_manager
+										? "Manager"
+										: "Standard User"}
+							</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Account Created</span>

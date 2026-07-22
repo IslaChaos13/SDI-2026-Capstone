@@ -5,7 +5,7 @@
 }
 
 .form-row .form-field {
-	flex: 1;
+	flex: 1 1 0%;
 	min-width: 0;
 }
 
@@ -23,6 +23,32 @@
 	color: var(--text-secondary);
 }
 
+/* Shared box model for editable inputs and read-only display,
+   so toggling edit mode doesn't shift layout/height. */
+.form-field input,
+.form-field-readonly {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	min-height: 38px;
+	padding: 10px;
+	font-size: 14px;
+	border-radius: 6px;
+	border: 1px solid var(--border);
+	background: var(--panel, #0d2038);
+	line-height: 1.2;
+}
+
+.form-field-readonly {
+	color: var(--text);
+	background: transparent;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 form.form-group {
 	display: flex;
 	flex-direction: column;
@@ -36,10 +62,6 @@ form.form-group .form-field {
 
 .form-group button {
 	margin-top: var(--space-md);
-}
-
-.card-header form input {
-	padding: 10px;
 }
 
 .card {
@@ -119,8 +141,14 @@ form.form-group .form-field {
 }
 
 .modal {
-	display: center;
 	max-width: 520px;
 	width: 90%;
 	color: var(--text);
+}
+
+.form-field-readonly-info,
+.form-field-readonly-info label {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-secondary);
 }

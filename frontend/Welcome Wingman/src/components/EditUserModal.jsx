@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useEditUser } from "../context/EditUserContext";
 
 export default function EditUserModal() {
@@ -10,112 +11,128 @@ export default function EditUserModal() {
 		handleEditSubmit,
 	} = useEditUser();
 
+	const [isEditing, setIsEditing] = useState(false);
+
+	useEffect(() => {
+		if (editUser) setIsEditing(false);
+	}, [editUser]);
+
 	if (!editUser) return null;
+
+	const handleCancel = () => {
+		if (isEditing) {
+			setIsEditing(false);
+		} else {
+			closeEditModal();
+		}
+	};
+
+	const handleSubmit = (e) => {
+		handleEditSubmit(e);
+		setIsEditing(false);
+	};
+
+	const Field = ({ label, id, name, type = "text", ...rest }) => (
+		<div className="form-field-readonly-info">
+			<label htmlFor={id}>{label}</label>
+			{isEditing ? (
+				<input
+					type={type}
+					id={id}
+					name={name}
+					value={editUser[name] || ""}
+					onChange={handleEditChange}
+					{...rest}
+				/>
+			) : (
+				<div id={id} className="form-field-readonly">
+					{name === "password" ? "••••••••" : editUser[name] || "—"}
+				</div>
+			)}
+		</div>
+	);
 
 	return (
 		<div className="modal-overlay" onClick={closeEditModal}>
 			<div className="modal" onClick={(e) => e.stopPropagation()}>
 				<h2>Edit Personnel</h2>
-				<form onSubmit={handleEditSubmit} className="form-group">
+				<form onSubmit={handleSubmit} className="form-group">
 					<div className="form-row">
-						<div className="form-field">
-							<label htmlFor="edit-rank">Rank</label>
-							<input
-								type="text"
-								id="edit-rank"
-								name="rank"
-								value={editUser.rank || ""}
-								onChange={handleEditChange}
-								required
-							/>
-						</div>
-						<div className="form-field">
-							<label htmlFor="edit-first_name">First Name</label>
-							<input
-								type="text"
-								id="edit-first_name"
-								name="first_name"
-								value={editUser.first_name || ""}
-								onChange={handleEditChange}
-								required
-							/>
-						</div>
-						<div className="form-field">
-							<label htmlFor="edit-last_name">Last Name</label>
-							<input
-								type="text"
-								id="edit-last_name"
-								name="last_name"
-								value={editUser.last_name || ""}
-								onChange={handleEditChange}
-								required
-							/>
-						</div>
-					</div>
-
-					<div className="form-row">
-						<div className="form-field">
-							<label htmlFor="edit-unit">Unit</label>
-							<input
-								type="text"
-								id="edit-unit"
-								name="unit"
-								value={editUser.unit || ""}
-								onChange={handleEditChange}
-								required
-							/>
-						</div>
-						<div className="form-field">
-							<label htmlFor="edit-phone">Phone</label>
-							<input
-								type="text"
-								id="edit-phone"
-								name="phone"
-								value={editUser.phone || ""}
-								onChange={handleEditChange}
-								required
-							/>
-						</div>
-					</div>
-
-					<div className="form-field">
-						<label htmlFor="edit-address">Address</label>
-						<input
-							type="address"
-							id="edit-address"
-							name="address"
-							value={editUser.address || ""}
-							onChange={handleEditChange}
+						<Field label="Rank" id="edit-rank" name="rank" required />
+						<Field
+							label="First Name"
+							id="edit-first_name"
+							name="first_name"
+							required
+						/>
+						<Field
+							label="Last Name"
+							id="edit-last_name"
+							name="last_name"
 							required
 						/>
 					</div>
 
-					<div className="form-field">
-						<label htmlFor="edit-email">Email</label>
-						<input
-							type="email"
-							id="edit-email"
-							name="email"
-							value={editUser.email || ""}
-							onChange={handleEditChange}
-							required
-						/>
+					<div className="form-row">
+						<Field label="Unit" id="edit-unit" name="unit" required />
+						<Field label="Phone" id="edit-phone" name="phone" required />
 					</div>
+
+					<Field label="Address" id="edit-address" name="address" required />
+
+					<Field
+						label="Email"
+						id="edit-email"
+						name="email"
+						type="email"
+						required
+					/>
+
+					<Field
+						label="Password"
+						id="edit-password"
+						name="password"
+						type="password"
+						required={isEditing}
+					/>
+
 					{editError && <div className="error-text">{editError}</div>}
-					<button
-						type="submit"
-						className="btn btn-primary"
-						disabled={editStatus === "submitting"}
-					>
-						{editStatus === "submitting" ? "Saving..." : "Save Changes"}
-					</button>
-					<button
-						type="button"
-						className="btn btn-outline"
-						onClick={closeEditModal}
-					>
-						Cancel
-					</button>
+
+					{isEditing ? (
+						<>
+							<button
+								type="submit"
+								className="btn btn-primary"
+								disabled={editStatus === "submitting"}
+							>
+								{editStatus === "submitting" ? "Saving..." : "Save Changes"}
+							</button>
+							<button
+								type="button"
+								className="btn btn-outline"
+								onClick={handleCancel}
+							>
+								Cancel
+							</button>
+						</>
+					) : (
+						<>
+							<button
+								type="button"
+								className="btn btn-primary"
+								onClick={() => setIsEditing(true)}
+							>
+								Edit
+							</button>
+							<button
+								type="button"
+								className="btn btn-outline"
+								onClick={closeEditModal}
+							>
+								Close
+							</button>
+						</>
+					)}
 				</form>
 			</div>
 		</div>

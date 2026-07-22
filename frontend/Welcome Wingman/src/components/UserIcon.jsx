@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
-
+import "../styles/theme.css";
+import "../css/PersonnelDashboard.css";
 export default function UserIcon() {
 	const { LoggedIn } = useContext(UserContext);
 
@@ -9,7 +10,13 @@ export default function UserIcon() {
 	}
 	return (
 		<div className="header-user">
-			<div className="avatar avatar-sm">{LoggedIn.avatar}</div>
+			<div className="avatar avatar-sm">
+				<img
+					src={LoggedIn.avatar || "/default-avatar.png"}
+					alt={`${LoggedIn.first_name} ${LoggedIn.last_name}`}
+					style={{ width: "32px", height: "32px", borderradius: "50%" }}
+				/>
+			</div>
 			<div className="header-user-info">
 				<div className="user-name">
 					<div className="user-name-1">
