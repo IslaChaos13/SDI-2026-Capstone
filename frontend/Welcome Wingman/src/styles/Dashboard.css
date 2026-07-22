@@ -407,6 +407,7 @@
 .quick-action-tile:hover {
 	border-color: var(--accent);
 	color: var(--accent);
+	cursor: pointer;
 }
 .quick-action-tile .icon {
 	font-size: 20px;

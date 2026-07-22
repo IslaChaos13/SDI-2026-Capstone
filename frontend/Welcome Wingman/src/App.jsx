@@ -8,47 +8,60 @@ import BaseDirectory from "./pages/BaseDirectory";
 import ErrorPage from "./pages/ErrorPage";
 import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TaskManagement from "./pages/TaskManagement";
 import UserContext from "./context/UserContext";
 import NotificationContext, {
 	NotificationProvider,
 } from "./context/NotificationContext";
 // const SESSION_DURATION_MS = 30 * 60 * 1000;
-const SESSION_DURATION_MS = 10 * 1000; // 10 seconds, for testing
+// const SESSION_DURATION_MS = 10 * 1000; // 10 seconds, for testing
 function App() {
-	const [LoggedIn, setLoggedIn] = useState(() => {
-		try {
-			const saved = localStorage.getItem("user");
-			if (!saved) return null;
+	const [LoggedIn, setLoggedIn] = useState(null)
 
-			const session = JSON.parse(saved);
-			if (!session.expiresAt || Date.now() > session.expiresAt) {
-				localStorage.removeItem("user");
-				return null;
-			}
-			return session.user;
-			// return saved ? JSON.parse(saved) : null
-		} catch {
-			localStorage.removeItem("user");
-			return null;
-		}
-	});
-
-	const loginWithSession = (userData) => {
-		const session = {
-			user: userData,
-			expiresAt: Date.now() + SESSION_DURATION_MS,
-		};
-		localStorage.setItem("user", JSON.stringify(session));
-		setLoggedIn(userData);
-	};
+	useEffect(() => {
+		fetch("http://localhost:8000/userAuth", {credentials: "include"})
+		.then((res) => res.json())
+		.then((data) => data.user && setLoggedIn(data.user))
+		.catch(() => {})
+	}, [])
 
 	const logout = () => {
-		localStorage.removeItem("user");
-		setLoggedIn(null);
+		fetch("http://localhost:8000/logout", {
+			method: "POST",
+			credentials: "include",
+		}).finally(() => setLoggedIn(null))
 	};
-	const value = { LoggedIn, setLoggedIn: loginWithSession, logout };
+	const value = { LoggedIn, setLoggedIn, logout};
+
+
+	// 	try {
+	// 		const saved = localStorage.getItem("user");
+	// 		if (!saved) return null;
+
+	// 		const session = JSON.parse(saved);
+	// 		if (!session.expiresAt || Date.now() > session.expiresAt) {
+	// 			localStorage.removeItem("user");
+	// 			return null;
+	// 		}
+	// 		return session.user;
+	// 		// return saved ? JSON.parse(saved) : null
+	// 	} catch {
+	// 		localStorage.removeItem("user");
+	// 		return null;
+	// 	}
+	// });
+
+	// const loginWithSession = (userData) => {
+	// 	const session = {
+	// 		user: userData,
+	// 		expiresAt: Date.now() + SESSION_DURATION_MS,
+	// 	};
+	// 	localStorage.setItem("user", JSON.stringify(session));
+	// 	setLoggedIn(userData);
+	// };
+
+
 
 	return (
 		<UserContext.Provider value={value}>
