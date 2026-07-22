@@ -46,7 +46,7 @@ export default function EditUserModal() {
 				/>
 			) : (
 				<div id={id} className="form-field-readonly">
-					{name === "password" ? "••••••••" : editUser[name] || "—"}
+					{editUser[name] || "—"}
 				</div>
 			)}
 		</div>
@@ -86,14 +86,6 @@ export default function EditUserModal() {
 						name="email"
 						type="email"
 						required
-					/>
-
-					<Field
-						label="Password"
-						id="edit-password"
-						name="password"
-						type="password"
-						required={isEditing}
 					/>
 
 					{editError && <div className="error-text">{editError}</div>}
