@@ -80,7 +80,6 @@ app.get('/directory', async (req, res) => {
 })
 
 app.get('/user_tasks', async (req, res) => {
-
    try {
       const [user_tasks] = await Promise.all([
          knex('user_tasks')
@@ -96,6 +95,39 @@ app.get('/user_tasks', async (req, res) => {
       })
    }
 })
+
+app.get('/directory_poc', async (req, res) => {
+   try {
+      const [directory_poc] = await Promise.all([
+         knex('directory_poc')
+            .join('users', 'users.id', 'directory_poc.id_users')
+            .join('directory', 'directory.id', 'directory_poc.id_directory')
+            .select('directory_poc.id', 'users.rank', 'users.first_name', 'users.last_name', 'directory.title', 'directory.link')
+      ])
+
+      res.json(directory_poc)
+
+   } catch (err) {
+      res.status(500).json({
+         message: 'Failed to fetch data'
+      })
+   }
+})
+
+// connor's fix for cookies
+app.get("/userAuth", async (req, res) => {
+   const token = req.cookies.token;
+   if (!token) return res.status(401).json({ error: "Need to Log In" });
+   try {
+      const jwtCheck = jwt.verify(token, "your_jwt_secret");
+      const user = await knex("users").where({ id: jwtCheck.user_id }).first();
+      if (!user) return res.status(401).json({ error: "User not found" });
+      const { password: _, ...safeUser } = user;
+      res.json({ user: safeUser });
+   } catch {
+      res.status(401).json({ error: "Invalid/expired session" })
+   }
+});
 
 // Post routes
 app.post('/login', async (req, res) => {
@@ -121,77 +153,248 @@ app.post('/login', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000
    })
 
-   res.json({ message: 'Log in successful!' })
+   const { password: _, ...safeUser } = user
+
+   res.json({ message: 'Log in successful!', user: safeUser })
+})
+
+app.post("/logout", (req, res) => {
+   res.clearCookie("token");
+   res.json({ message: "Logged Out" })
 })
 
 app.post('/register', async (req, res) => {
-   const { first_name, last_name, email, password } = req.body
+   try {
+      const { first_name, last_name, rank, phone, address, unit, email, password, duty_title, supervisor } = req.body
 
-   const existing = await knex('users').where({ email }).first()
-   if (existing) return res.status(400).json({ error: `You've already got an account!` })
+      if (!email || !password) {
+         return res.status(400).json({ error: 'Email and password required' })
+      }
 
-   const hashedPassword = await bcrypt.hash(password, 10)
+      const existing = await knex('users').where({ email }).first()
+      if (existing) return res.status(400).json({ error: `You've already got an account` })
 
-   const [user] = await knex('users').insert({
-      is_admin: false,
-      is_manager: false,
-      rank,
-      first_name,
-      last_name,
-      email,
-      phone,
-      address,
-      avatar,
-      password: hashedPassword,
-   }).returning('*')
+      const hashedPassword = await bcrypt.hash(password, 10)
 
-   res.json({ message: 'Thanks for signing up! Log in with your email' })
+      const [user] = await knex('users').insert({
+         is_admin: false,
+         is_manager: false,
+         first_name,
+         last_name,
+         rank,
+         phone,
+         address,
+         unit,
+         email,
+         password: hashedPassword,
+         duty_title,
+         supervisor
+      }).returning('*')
+
+      res.json({ message: 'Thanks for signing up! Log in with your email' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'failed to register' })
+   }
 })
 
 app.post('/tasks', async (req, res) => {
-   const { id_directory, title, action_item } = req.body
-
-   const [newTask] = await knex('tasks').insert({
-      id_directory,
-      title,
-      action_item
-   }).returning('*')
-
-   res.json({ message: 'New task created' })
-})
-
-app.post('/user_tasks', async (req, res) => {
-   const { id, user_id, task_id, priority, due_date, note } = req.body
+   const { id, ...updates } = req.body
 
    if (id) {
-      const [updatedUserTask] = await knex('user_tasks').where({
-         id
-      })
-         .update({
-            note: note || null
-         }).returning('*')
+      Object.keys(updates).forEach(key => {
+         if (updates[key] === undefined) {
+            delete updates[key];
+         }
+      });
 
-      if (!updatedUserTask) {
+      const [updatedTask] = await knex('tasks')
+         .where({ id })
+         .update(updates)
+         .returning('*');
+
+      if (!updatedTask) {
          return res.status(404).json({ error: `Incorrect ID!` })
       }
 
-      res.json({ message: "Note updated!" })
+      res.json({ message: "Task updated!", task: updatedTask })
 
-   } else if (user_id && task_id && due_date) {
-      const [userTask] = await knex('user_tasks').insert({
-         user_id,
-         task_id,
-         priority: priority || 'Medium',
-         due_date,
-         is_complete: false,
-         note: note || null
+   } else {
+      const [newTask] = await knex('tasks')
+         .insert(updates)
+         .returning('*')
 
-      }).returning('*')
-
-      res.json({ message: "Task created." })
+      res.json({ message: 'New task created', task: newTask })
    }
 
-   return res.status(400).json({ error: `Something went wrong :(` })
+})
+
+app.post('/directory', async (req, res) => {
+   const { id, ...updates } = req.body
+
+   if (id) {
+      Object.keys(updates).forEach(key => {
+         if (updates[key] === undefined) {
+            delete updates[key];
+         }
+      });
+
+      const [updatedDirectory] = await knex('directory')
+         .where({ id })
+         .update(updates)
+         .returning('*')
+
+      if (!updatedDirectory) {
+         return res.status(404).json({ error: `Incorrect ID!` })
+      }
+
+      res.json({ message: "Directory updated!", directory: updatedDirectory })
+
+   } else {
+      const [newDirectory] = await knex('directory')
+         .insert(updates)
+         .returning('*')
+
+      res.json({ message: 'New Directory Entry created', directory: newDirectory })
+   }
+})
+
+app.post('/user_tasks', async (req, res) => {
+   const { id, ...rest } = req.body
+
+   if (id) {
+      const updates = {}
+
+      Object.keys(rest).forEach(key => {
+         if (rest[key] !== undefined) {
+            updates[key] = rest[key]
+         }
+      })
+
+      if (Object.keys(updates).length === 0) {
+         return res.status(400).json({ error: 'Nothing to update' })
+      }
+
+      const [updatedUserTask] = await knex('user_tasks')
+         .where({ id })
+         .update(updates)
+         .returning('*')
+
+      if (!updatedUserTask) {
+         return res.status(404).json({ error: 'Incorrect ID' })
+      }
+
+      return res.json({ message: 'User task updated', user_task: updatedUserTask })
+
+   } else if (rest.user_id && rest.task_id && rest.due_date) {
+      const [newUserTask] = await knex('user_tasks').insert({
+         user_id: rest.user_id,
+         task_id: rest.task_id,
+         priority: rest.priority || 'Medium',
+         due_date: rest.due_date,
+         is_complete: false,
+         note: rest.note || null
+      }).returning('*')
+
+      return res.json({ message: 'Task created', user_task: newUserTask })
+   }
+
+   return res.status(400).json({ error: 'Something went wrong :(' })
+})
+
+//Delete routes
+app.delete('/tasks/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('user_tasks').where({ task_id: req.params.id }).del()
+      await knex('tasks').where({ id: req.params.id }).del()
+      res.json({ message: 'task deleted!' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/user_tasks/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('user_tasks').where({ id: req.params.id }).del()
+      res.json({ message: 'user_task deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/users/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('user_tasks').where({ user_id: req.params.id }).del()
+      await knex('users').where({ id: req.params.id }).del()
+      res.json({ message: 'user deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/directory/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('directory_poc').where({ id_users: req.params.id }).del()
+      await knex('directory').where({ id: req.params.id }).del()
+      res.json({ message: 'directory deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+app.delete('/directory_poc/:id', async (req, res) => {
+   console.log('params:', req.params)
+   try {
+      await knex('directory_poc').where({ id: req.params.id }).del()
+      res.json({ message: 'directory_poc deleted' })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'failed to delete' })
+   }
+})
+
+// PUT Routes
+app.put('/users/:id', async (req, res) => {
+   try {
+      const { is_admin, is_manager, rank, first_name, last_name, email, phone, address, unit, avatar, password, duty_title, supervisor } = req.body
+
+      const updates = {}
+      if (is_admin !== undefined) updates.is_admin = is_admin
+      if (is_manager !== undefined) updates.is_manager = is_manager
+      if (rank !== undefined) updates.rank = rank
+      if (first_name !== undefined) updates.first_name = first_name
+      if (last_name !== undefined) updates.last_name = last_name
+      if (email !== undefined) updates.email = email
+      if (phone !== undefined) updates.phone = phone
+      if (address !== undefined) updates.address = address
+      if (unit !== undefined) updates.unit = unit
+      if (avatar !== undefined) updates.avatar = avatar
+      if (password !== undefined) updates.password = await bcrypt.hash(password, 10)
+      if (duty_title !== undefined) updates.duty_title = duty_title
+      if (supervisor !== undefined) updates.supervisor = supervisor
+
+      if (Object.keys(updates).length === 0) {
+         return res.status(400).json({ error: 'Nothing to update' })
+      }
+
+      const [user] = await knex('users')
+         .where({ id: req.params.id })
+         .update(updates)
+         .returning('*')
+
+      return res.json({ message: 'user updated', user })
+   } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'failed to update user' })
+   }
 })
 
 

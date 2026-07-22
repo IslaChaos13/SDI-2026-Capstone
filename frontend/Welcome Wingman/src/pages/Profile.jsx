@@ -1,11 +1,35 @@
 import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/Profile.css'
+import {useParams} from 'react-router-dom'
+import {useEffect, useState, useContext} from 'react'
+import UserContext from '../context/UserContext'
 
-// Static mockup only — no data, no logic, no routing.
+//TODO REWORK PAGE
+
 function Profile() {
+
+  const {LoggedIn, setLoggedIn} = useContext(UserContext)
+
+  // const API = "http://localhost:8000";
+  // // const [user, setUser] = useState(null)
+  // const { userID } = useParams()
+  // useEffect(() => {
+  //   fetch(`${API}/users`)
+  //     .then((r) => r.json())
+  //     .then((userData) => {
+  //       const users = userData.users || [];
+  //       const matched = users.find((u) => String(u.id) === String(userID));
+  //       setUser(matched || users[0] || null);
+  //     })
+  //     .catch(console.error);
+  // }, [userID]);
+
+  // if(!user) {return null;}
+
+
   return (
-    <Layout>
+    <Layout LoggedIn = {LoggedIn}>
       <div className="page">
         <div className="page-header">
           <h1>Profile</h1>
@@ -15,7 +39,7 @@ function Profile() {
         <div className="card profile-header-card">
           <div className="avatar avatar-xl">AJ</div>
           <div className="profile-header-info">
-            <h1>Amanda Johnson</h1>
+            <h1>{LoggedIn?.first_name && LoggedIn?.last_name ? `${LoggedIn.first_name} ${LoggedIn.last_name}` : 'Guest'}</h1>
             <p>Senior Airman · 2nd Bomb Wing · Systems Analyst</p>
             <div className="profile-header-tags">
               <span className="tag">E-4</span>
@@ -34,11 +58,11 @@ function Profile() {
             </div>
             <div className="info-row">
               <span className="label">First Name</span>
-              <span className="value">Amanda</span>
+              <span className="value">{user?.first_name}</span>
             </div>
             <div className="info-row">
               <span className="label">Last Name</span>
-              <span className="value">Johnson</span>
+              <span className="value">{user?.last_name}</span>
             </div>
             <div className="info-row">
               <span className="label">Duty Title</span>
@@ -46,7 +70,7 @@ function Profile() {
             </div>
             <div className="info-row">
               <span className="label">Email</span>
-              <span className="value">amanda.johnson@us.af.mil</span>
+              <span className="value">{user?.email}</span>
             </div>
           </div>
 
@@ -56,7 +80,7 @@ function Profile() {
             </div>
             <div className="info-row">
               <span className="label">Phone</span>
-              <span className="value">(318) 555-0148</span>
+              <span className="value">{user?.phone}</span>
             </div>
             <div className="info-row">
               <span className="label">Office</span>
@@ -64,7 +88,7 @@ function Profile() {
             </div>
             <div className="info-row">
               <span className="label">Address</span>
-              <span className="value">801 Kenney Ave, Barksdale AFB, LA</span>
+              <span className="value">{user?.address}</span>
             </div>
             <div className="info-row">
               <span className="label">Emergency Contact</span>

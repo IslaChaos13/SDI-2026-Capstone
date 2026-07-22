@@ -13,8 +13,11 @@ exports.up = function(knex) {
       table.string('email');
       table.string('phone');
       table.string('address');
-      table.string('avatar');
+      table.string('unit');
+      table.string('avatar').defaultTo('https://www.trademark.af.mil/portals/73/240801-F-DQ331-0002.png');
       table.string('password');
+      table.string('duty_title');
+      table.string('supervisor').nullable();
    });
 };
 

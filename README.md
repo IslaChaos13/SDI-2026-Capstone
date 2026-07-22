@@ -1,7 +1,7 @@
 # SDI-2026-Capstone
 
 ## DOCKER COMMANDS
-# NEW UPDATE
+# INITIAL SETUP
 The backend team is awesome and Dockerized the database. This means that if you do a `git pull` you should get a `docker-compose.yml` and a `Dockerfile` in the backend directory.
 
 From the root directory: <br>
@@ -13,6 +13,13 @@ f419667fca27   sdi-2026-capstone-api   "docker-entrypoint.s…"   7 minutes ago 
 4. Your stuff should be up and running.
 5. cd into the `/backend` directory and run `npm run resetServer`. You should see migrations run successfully.
 6. Happy coding!
+
+# UPDATING THE CONTAINER
+1. `git pull` to get the latest changes
+2. `docker-compose down` to tear down the old container
+3. `docker-compose build --no-cache api` to rebuild with changes implemented
+4. `docker-compose up -d` to bring up the container
+5. `cd backend` and then run `npm run resetServer`
 
 # This might be old now, your mileage will vary
 
@@ -32,3 +39,12 @@ docker start wingman-db
 
 ### CONNECT TO WINGMAN DATABASE IN CONTAINER
 docker exec -it wingman-db psql -U postgres -d WingmanDatabase
+
+
+# VITEST 
+### Commands
+cd backend
+Run npm run runServer
+make sure container is running
+npm test
+q (quits test)
