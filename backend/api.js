@@ -94,6 +94,24 @@ app.get('/user_tasks', async (req, res) => {
    }
 })
 
+app.get('/directory_poc', async (req, res) => {
+   try {
+      const [directory_poc] = await Promise.all([
+         knex('directory_poc')
+            .join('users', 'users.id', 'directory_poc.id_users')
+            .join('directory', 'directory.id', 'directory_poc.id_directory')
+            .select('directory_poc.id', 'users.rank', 'users.first_name', 'users.last_name', 'directory.title', 'directory.link')
+      ])
+
+      res.json(directory_poc)
+
+   } catch (err) {
+      res.status(500).json({
+         message: 'Failed to fetch data'
+      })
+   }
+})
+
 // Post routes
 app.post('/login', async (req, res) => {
    const { email, password } = req.body
