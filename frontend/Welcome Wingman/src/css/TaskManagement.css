@@ -106,6 +106,14 @@
   gap: var(--space-sm);
   flex: 0 0 240px;
 }
+.library-card.archived {
+  opacity: 0.5;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 13px;
+}
 .library-card-top {
   display: flex;
   justify-content: space-between;

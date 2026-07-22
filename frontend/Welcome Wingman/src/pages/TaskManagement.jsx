@@ -21,6 +21,10 @@ function TaskManagement() {
 	const [sortBy, setSortBy] = useState("Due Date");
 	const [viewingTask, setViewingTask] = useState(null);
 	const [editingTask, setEditingTask] = useState(null);
+	const [assignError, setAssignError] = useState("");
+	const [editingLibraryTask, setEditingLibraryTask] = useState(null);
+	const [archivedTaskIds, setArchivedTaskIds] = useState([]);
+	const [summaryUsers, setSummaryUsers] = useState([]);
 
 	useEffect(() => {
 		fetch("http://localhost:8000/users")
@@ -39,6 +43,12 @@ function TaskManagement() {
 			.catch(console.error);
 	}, []);
 
+	useEffect(() => {
+		if (users.length === 0) return;
+		const shuffled = [...users].sort(() => Math.random() - 0.5);
+		setSummaryUsers(shuffled.slice(0, 3));
+	}, [users]);
+
 	const [assignUserId, setAssignUserId] = useState("");
 	const [assignTaskId, setAssignTaskId] = useState("");
 	const [assignPriority, setAssignPriority] = useState("Medium");
@@ -46,6 +56,11 @@ function TaskManagement() {
 	const [assignNotes, setAssignNotes] = useState("");
 
 	function handleAssignTask() {
+		if (!assignUserId || !assignTaskId || !assignDueDate) {
+			setAssignError("Select a user, a task, and a due date.");
+			return;
+		}
+		setAssignError("");
 		fetch("http://localhost:8000/user_tasks", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -57,7 +72,10 @@ function TaskManagement() {
 				note: assignNotes,
 			}),
 		})
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error("Could not assign task");
+				return r.json();
+			})
 			.then(() => {
 				return fetch("http://localhost:8000/user_tasks")
 					.then((r) => r.json())
@@ -70,13 +88,18 @@ function TaskManagement() {
 				setAssignDueDate("");
 				setAssignNotes("");
 			})
-			.catch(console.error);
+			.catch(() => setAssignError("Could not assign task"));
 	}
 
 	const [customTitle, setCustomTitle] = useState("");
 	const [customDescription, setCustomDescription] = useState("");
 
 	function handleCreateTask() {
+		if (!assignUserId || !customTitle || !assignDueDate) {
+			setAssignError("Enter a title, select a user, and set a due date.");
+			return;
+		}
+		setAssignError("");
 		fetch("http://localhost:8000/tasks", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -85,18 +108,19 @@ function TaskManagement() {
 				action_item: customDescription,
 			}),
 		})
-			.then((r) => r.json())
+			.then((r) => {
+				if (!r.ok) throw new Error("Could not create task");
+				return r.json();
+			})
 			.then(() => fetch("http://localhost:8000/tasks"))
 			.then((r) => r.json())
 			.then((data) => {
 				const freshTasks = data.tasks || [];
 				setTasks(freshTasks);
-				// the new task has no id in the create response, so find it
-				// by title in the refreshed list (highest id = most recent)
 				const newTask = freshTasks
 					.filter((t) => t.title === customTitle)
 					.sort((a, b) => b.id - a.id)[0];
-				if (!newTask || !assignUserId) return null;
+				if (!newTask) throw new Error("Could not find new task");
 				return fetch("http://localhost:8000/user_tasks", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -109,7 +133,10 @@ function TaskManagement() {
 					}),
 				});
 			})
-			.then(() => fetch("http://localhost:8000/user_tasks"))
+			.then((r) => {
+				if (!r.ok) throw new Error("Could not assign task");
+				return fetch("http://localhost:8000/user_tasks");
+			})
 			.then((r) => r.json())
 			.then((data) => {
 				setUserTasks(data || []);
@@ -121,7 +148,7 @@ function TaskManagement() {
 				setAssignDueDate("");
 				setAssignNotes("");
 			})
-			.catch(console.error);
+			.catch(() => setAssignError("Could not create and assign task"));
 	}
 
 	function handleSaveEdit() {
@@ -149,6 +176,19 @@ function TaskManagement() {
 		return "Pending";
 	}
 
+	function handleSaveLibraryEdit() {
+		setTasks((prev) =>
+			prev.map((t) => (t.id === editingLibraryTask.id ? { ...t, ...editingLibraryTask } : t)),
+		);
+		setEditingLibraryTask(null);
+	}
+
+	function toggleArchive(id) {
+		setArchivedTaskIds((prev) =>
+			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+		);
+	}
+
 	function handleRemoveAssignment(id) {
 		fetch(`http://localhost:8000/user_tasks/${id}`, {
 			method: "DELETE",
@@ -165,6 +205,13 @@ function TaskManagement() {
 			day: "numeric",
 			year: "numeric",
 		});
+
+	const assignedTitles = new Set(userTasks.map((ut) => ut.title));
+	const totalTaskCount = tasks.length;
+	const assignedTaskCount = tasks.filter((t) => assignedTitles.has(t.title)).length;
+	const unassignedTaskCount = totalTaskCount - assignedTaskCount;
+	const overdueTaskCount = userTasks.filter((ut) => getStatus(ut) === "Overdue").length;
+
 	return (
 		<Layout>
 			<div className="page">
@@ -177,28 +224,28 @@ function TaskManagement() {
 					<div className="card stat-card">
 						<div className="stat-icon">📋</div>
 						<div>
-							<div className="stat-value">10</div>
+							<div className="stat-value">{totalTaskCount}</div>
 							<div className="stat-label">Total Tasks</div>
 						</div>
 					</div>
 					<div className="card stat-card">
 						<div className="stat-icon">✅</div>
 						<div>
-							<div className="stat-value">6</div>
+							<div className="stat-value">{assignedTaskCount}</div>
 							<div className="stat-label">Assigned Tasks</div>
 						</div>
 					</div>
 					<div className="card stat-card">
 						<div className="stat-icon">🕒</div>
 						<div>
-							<div className="stat-value">4</div>
+							<div className="stat-value">{unassignedTaskCount}</div>
 							<div className="stat-label">Unassigned Tasks</div>
 						</div>
 					</div>
 					<div className="card stat-card">
 						<div className="stat-icon">⚠</div>
 						<div>
-							<div className="stat-value">1</div>
+							<div className="stat-value">{overdueTaskCount}</div>
 							<div className="stat-label">Overdue Tasks</div>
 						</div>
 					</div>
@@ -285,6 +332,7 @@ function TaskManagement() {
 									></textarea>
 								</div>
 							</div>
+							{assignError && <p className="error-text">{assignError}</p>}
 							<button
 								className="btn btn-primary"
 								type="button"
@@ -367,6 +415,7 @@ function TaskManagement() {
 									></textarea>
 								</div>
 							</div>
+							{assignError && <p className="error-text">{assignError}</p>}
 							<button
 								className="btn btn-primary"
 								type="button"
@@ -523,21 +572,45 @@ function TaskManagement() {
 						<h2>Task Library</h2>
 					</div>
 					<div className="library-scroll">
-						{tasks.map((t) => (
-							<div className="card library-card" key={t.id}>
+						{[...tasks]
+							.sort((a, b) => archivedTaskIds.includes(a.id) - archivedTaskIds.includes(b.id))
+							.map((t) => (
+							<div
+								className={
+									archivedTaskIds.includes(t.id)
+										? "card library-card archived"
+										: "card library-card"
+								}
+								key={t.id}
+							>
 								<div className="library-card-top">
 									<h3>{t.title}</h3>
 								</div>
 								<div className="library-card-meta">{t.action_item}</div>
 								<div className="library-card-footer">
-									<button className="btn btn-primary btn-sm" type="button">
+									<button
+										className="btn btn-primary btn-sm"
+										type="button"
+										onClick={() => {
+											setAssignTaskId(t.id);
+											setMode("existing");
+										}}
+									>
 										Assign
 									</button>
-									<button className="btn btn-outline btn-sm" type="button">
+									<button
+										className="btn btn-outline btn-sm"
+										type="button"
+										onClick={() => setEditingLibraryTask({ ...t })}
+									>
 										Edit
 									</button>
-									<button className="btn btn-outline btn-sm" type="button">
-										Archive
+									<button
+										className="btn btn-outline btn-sm"
+										type="button"
+										onClick={() => toggleArchive(t.id)}
+									>
+										{archivedTaskIds.includes(t.id) ? "Unarchive" : "Archive"}
 									</button>
 								</div>
 							</div>
@@ -549,30 +622,30 @@ function TaskManagement() {
 					<div className="card-header">
 						<h2>User Task Summary</h2>
 					</div>
-					<div className="user-summary-row">
-						<span className="user-summary-name">User 1</span>
-						<span className="user-summary-counts">6 done · 4 left</span>
-						<div className="progress-track">
-							<div className="progress-fill" style={{ width: "60%" }}></div>
-						</div>
-						<span className="badge badge-pending">In Progress</span>
-					</div>
-					<div className="user-summary-row">
-						<span className="user-summary-name">User 2</span>
-						<span className="user-summary-counts">8 done · 2 left</span>
-						<div className="progress-track">
-							<div className="progress-fill" style={{ width: "80%" }}></div>
-						</div>
-						<span className="badge badge-complete">On Track</span>
-					</div>
-					<div className="user-summary-row">
-						<span className="user-summary-name">User 3</span>
-						<span className="user-summary-counts">3 done · 5 left</span>
-						<div className="progress-track">
-							<div className="progress-fill" style={{ width: "30%" }}></div>
-						</div>
-						<span className="badge badge-overdue">Behind</span>
-					</div>
+					{summaryUsers.map((u) => {
+						const uTasks = userTasks.filter(
+							(ut) => ut.first_name === u.first_name && ut.last_name === u.last_name,
+						);
+						const done = uTasks.filter((ut) => ut.is_complete).length;
+						const left = uTasks.length - done;
+						const pct = uTasks.length ? Math.round((done / uTasks.length) * 100) : 0;
+						return (
+							<div className="user-summary-row" key={u.id}>
+								<span className="user-summary-name">
+									{u.first_name} {u.last_name}
+								</span>
+								<span className="user-summary-counts">
+									{done} done · {left} left
+								</span>
+								<div className="progress-track">
+									<div className="progress-fill" style={{ width: `${pct}%` }}></div>
+								</div>
+								<span className={pct === 100 ? "badge badge-complete" : "badge badge-pending"}>
+									{pct === 100 ? "On Track" : "In Progress"}
+								</span>
+							</div>
+						);
+					})}
 				</div>
 
 				{viewingTask && (
@@ -650,6 +723,51 @@ function TaskManagement() {
 								className="btn btn-outline"
 								type="button"
 								onClick={() => setEditingTask(null)}
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				)}
+
+				{editingLibraryTask && (
+					<div className="modal-overlay" onClick={() => setEditingLibraryTask(null)}>
+						<div className="modal" onClick={(e) => e.stopPropagation()}>
+							<h2>Edit Task</h2>
+							<div className="form-group">
+								<label>Title</label>
+								<input
+									type="text"
+									value={editingLibraryTask.title}
+									onChange={(e) =>
+										setEditingLibraryTask({ ...editingLibraryTask, title: e.target.value })
+									}
+								/>
+							</div>
+							<div className="form-group">
+								<label>Description</label>
+								<textarea
+									rows="3"
+									value={editingLibraryTask.action_item}
+									onChange={(e) =>
+										setEditingLibraryTask({
+											...editingLibraryTask,
+											action_item: e.target.value,
+										})
+									}
+								></textarea>
+							</div>
+							<button
+								className="btn btn-primary"
+								type="button"
+								onClick={handleSaveLibraryEdit}
+							>
+								Save
+							</button>
+							<button
+								className="btn btn-outline"
+								type="button"
+								onClick={() => setEditingLibraryTask(null)}
 							>
 								Cancel
 							</button>
