@@ -100,6 +100,7 @@ exports.seed = async function (knex) {
     phone: '000 000 0000',
     address: 'Admin Street, Admin City',
     unit: '2nd Bomb Wing',
+    duty_title: 'Cyber Warfare Operations',
     avatar: 'https://www.trademark.af.mil/portals/73/240801-F-DQ331-0002.png',
     password: await bcrypt.hash('password', 10)
   })
@@ -114,6 +115,7 @@ exports.seed = async function (knex) {
     phone: '000 000 0000',
     address: 'User Street, User City',
     unit: '2nd Bomb Wing',
+    duty_title: 'Security Forces',
     avatar: faker.image.avatar(),
     password: await bcrypt.hash('password', 10)
     })
