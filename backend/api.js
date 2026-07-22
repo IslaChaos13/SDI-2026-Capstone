@@ -340,6 +340,25 @@ app.delete("/directory_poc/:id", async (req, res) => {
 	}
 });
 
+app.get("/userAuth", async (req, res) => {
+	const token = req.cookies.token;
+	if (!token) return res.status(401).json({error: "Need to Log In"});
+	try {
+		const jwtCheck = jwt.verify(token, "your_jwt_secret");
+		const user = await knex("users").where({id: jwtCheck.user_id}).first();
+		if (!user) return res.status(401).json({error: "User not found"});
+		const {password: _, ...safeUser} = user;
+		res.json({user: safeUser});
+	} catch {
+		res.status(401).json({error: "Invalid/expired session"})
+	}
+});
+
+app.post("/logout", (req,res) => {
+	res.clearCookie("token");
+	res.json({message: "Logged Out"})
+})
+
 app.listen(PORT, () => {
 	console.log(`Server running at http://localhost:${PORT}`);
 });

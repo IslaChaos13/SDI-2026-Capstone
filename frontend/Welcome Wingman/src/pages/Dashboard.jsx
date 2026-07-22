@@ -449,11 +449,11 @@ function Dashboard() {
 							<div className="weather-temp">{weather ? `${weather.current.temperature_2m} °F`: "Loading..."}</div>
 							<div className="weather-forecast">
 								<div className="weather-day">
-									<span className="day-icon">Rain</span>
+									<span className="day-icon">Rain 🌧️</span>
 									<p className="rain-wind">{weather ? `${weather.daily.precipitation_probability_max[0]}%`: "Loading..."}</p>
 								</div>
 								<div className="weather-day">
-									<span className="day-icon">Wind</span>
+									<span className="day-icon">Wind 💨</span>
 									<p className="rain-wind">{weather ? `${weather.current.wind_speed_10m} mph`: "Loading..."}</p>
 								</div>
 							</div>

@@ -12,7 +12,7 @@
   --danger: #ff6b6b;
   --warning: #f5b942;
   --success: #4ddaa8;
-
+}
 
 
 .LogonWrapper {
@@ -20,7 +20,7 @@
     display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 90vh;
+	height: 100vh;
 }
 
 .LogonContainer {
