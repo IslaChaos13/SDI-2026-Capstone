@@ -4,30 +4,30 @@ import "../styles/Profile.css";
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
+import { EditUserProvider, useEditUser } from "../context/EditUserContext";
+import EditUserModal from "../components/EditUserModal";
 
 //TODO REWORK PAGE
 
 function Profile() {
 	const { LoggedIn, setLoggedIn } = useContext(UserContext);
 
-	// const API = "http://localhost:8000";
-	// // const [user, setUser] = useState(null)
-	// const { userID } = useParams()
-	// useEffect(() => {
-	//   fetch(`${API}/users`)
-	//     .then((r) => r.json())
-	//     .then((userData) => {
-	//       const users = userData.users || [];
-	//       const matched = users.find((u) => String(u.id) === String(userID));
-	//       setUser(matched || users[0] || null);
-	//     })
-	//     .catch(console.error);
-	// }, [userID]);
-
-	// if(!user) {return null;}
+	function handleUserUpdated(updated) {
+		setLoggedIn((prev) => ({ ...prev, ...updated }));
+	}
 
 	return (
-		<Layout LoggedIn={LoggedIn}>
+		<EditUserProvider onUserUpdated={handleUserUpdated}>
+			<ProfileContent LoggedIn={LoggedIn} />
+		</EditUserProvider>
+	);
+}
+
+function ProfileContent({ LoggedIn }) {
+	const { openEditModal } = useEditUser();
+
+	return (
+		<Layout>
 			<div className="page">
 				<div className="page-header">
 					<h1>Profile</h1>
@@ -35,16 +35,24 @@ function Profile() {
 				</div>
 
 				<div className="card profile-header-card">
-					<div className="avatar avatar-xl">AJ</div>
+					<div className="avatar avatar-xl">
+						<img
+							src={LoggedIn.avatar || "/default-avatar.png"}
+							alt={`${LoggedIn.first_name} ${LoggedIn.last_name}`}
+							style={{ width: "115px", height: "115px", borderradius: "50%" }}
+						/>
+					</div>
 					<div className="profile-header-info">
 						<h1>
 							{LoggedIn?.first_name && LoggedIn?.last_name
 								? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 								: "Guest"}
 						</h1>
-						<p>Senior Airman · 2nd Bomb Wing · Systems Analyst</p>
+						<p>
+							{LoggedIn?.rank} · {LoggedIn?.unit} · Systems Analyst
+						</p>
 						<div className="profile-header-tags">
-							<span className="tag">E-4</span>
+							<span className="tag">{LoggedIn?.rank}</span>
 							<span className="badge badge-complete">Active</span>
 						</div>
 					</div>
@@ -52,6 +60,7 @@ function Profile() {
 						className="btn btn-outline"
 						type="button"
 						style={{ marginLeft: "auto" }}
+						onClick={() => openEditModal(LoggedIn)}
 					>
 						Edit Profile
 					</button>
@@ -64,11 +73,11 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">First Name</span>
-							<span className="value">{user?.first_name}</span>
+							<span className="value">{LoggedIn?.first_name}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Last Name</span>
-							<span className="value">{user?.last_name}</span>
+							<span className="value">{LoggedIn?.last_name}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Duty Title</span>
@@ -76,7 +85,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Email</span>
-							<span className="value">{user?.email}</span>
+							<span className="value">{LoggedIn?.email}</span>
 						</div>
 					</div>
 
@@ -86,15 +95,15 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Phone</span>
-							<span className="value">{user?.phone}</span>
+							<span className="value">{LoggedIn?.phone}</span>
 						</div>
 						<div className="info-row">
-							<span className="label">Office</span>
-							<span className="value">Bldg 245, Room 12</span>
+							<span className="label">Unit</span>
+							<span className="value">{LoggedIn.unit}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Address</span>
-							<span className="value">{user?.address}</span>
+							<span className="value">{LoggedIn?.address}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Emergency Contact</span>
@@ -106,10 +115,10 @@ function Profile() {
 						<div className="card-header">
 							<h2>Rank</h2>
 						</div>
-						<span className="rank-badge-large">E-4 · Senior Airman</span>
+						<span className="rank-badge-large">{LoggedIn?.rank}</span>
 						<div className="info-row">
 							<span className="label">Unit</span>
-							<span className="value">2nd Bomb Wing</span>
+							<span className="value">{LoggedIn?.unit}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Supervisor</span>
@@ -123,7 +132,13 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Role</span>
-							<span className="value">Standard User</span>
+							<span className="value">
+								{LoggedIn?.is_admin
+									? "Administrator"
+									: LoggedIn?.is_manager
+										? "Manager"
+										: "Standard User"}
+							</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Account Created</span>
@@ -227,6 +242,8 @@ function Profile() {
 					</div>
 				</div>
 			</div>
+
+			<EditUserModal />
 		</Layout>
 	);
 }

@@ -1,0 +1,219 @@
+:root {
+	--af-blue: #1e90ff;
+	--neon-cyan: #00ffff;
+	--deep-navy: #0f203d;
+}
+
+.checklist-progress-card {
+	margin-bottom: var(--space-lg);
+}
+
+.checklist-progress-card .progress-label {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-bottom: var(--space-sm);
+}
+
+.checklist-progress-card .progress-label .percent {
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--accent);
+}
+
+.checklist-progress-card .progress-label span:last-child {
+	font-size: 13px;
+	color: var(--text-secondary);
+}
+
+.filter-bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-sm);
+	align-items: center;
+	margin-bottom: var(--space-xl);
+}
+
+.filter-chip {
+	padding: 8px 14px;
+	border-radius: 999px;
+	border: 1px solid var(--border-strong);
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: 13px;
+	font-family: var(--font-base);
+	cursor: pointer;
+}
+
+.filter-chip:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.filter-chip.active {
+	background: var(--primary);
+	color: var(--bg);
+	border-color: var(--primary);
+}
+
+.task-title-cell {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	min-width: 0;
+}
+
+.completed-task {
+	text-decoration: line-through;
+	text-decoration-color: var(--border-strong);
+}
+
+.task-priority {
+	font-size: 13px;
+	color: var(--text-secondary);
+	white-space: nowrap;
+}
+
+/* ---------------- Modal ---------------- */
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	background: var(--dark-steel-bl);
+
+	z-index: 9999;
+}
+
+.modal {
+	background-color: #0f203d !important;
+	color: var(--muted-blue);
+	border-radius: 12px;
+	padding: 2rem;
+	min-height: 200px;
+	max-width: 450px;
+	width: 90%;
+	text-align: center;
+	position: relative;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	border: 1px solid var(--af-blue);
+}
+
+.modal h2 {
+	color: var(--neon-cyan);
+	padding: 10px;
+}
+
+.modal p {
+	padding: 10px;
+	text-align: left;
+}
+
+.modal-notes-group {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.modal-notes-label {
+	display: block;
+	text-align: center;
+	margin-bottom: 8px;
+}
+
+.modal-notes-text {
+	width: 100%;
+	max-width: 350px;
+	text-align: left;
+	padding: 10px;
+	margin: 0;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* Row wrapper that keeps modal buttons aligned side by side */
+.modal-button-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	margin-top: 20px;
+	width: 100%;
+}
+
+.modal button {
+	background: var(--af-blue);
+	color: var(--deep-navy);
+	font-weight: bold;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+}
+
+.modal-button-row button {
+	margin-top: 0;
+	margin-right: 0;
+	margin-left: 0;
+}
+
+.modal button:hover {
+	background: var(--neon-cyan);
+}
+
+.input::placeholder {
+	text-align: center;
+	font-family: var(--font-base);
+}
+
+#task-notes {
+	width: 100%;
+	max-width: 350px;
+}
+
+.library-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+}
+
+.library-card h3 {
+	margin: 0 0 4px;
+	font-size: 15px;
+}
+
+.library-card-meta {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	font-size: 12px;
+	color: var(--text-secondary);
+}
+
+.low {
+	color: var(--success);
+}
+
+.medium {
+	color: var(--warning);
+}
+
+.high {
+	color: var(--danger);
+}
