@@ -49,7 +49,7 @@ function ProfileContent({ LoggedIn }) {
 								: "Guest"}
 						</h1>
 						<p>
-							{LoggedIn?.rank} · {LoggedIn?.unit} · Systems Analyst
+							{LoggedIn?.rank} · {LoggedIn?.unit} · {LoggedIn?.duty_title}
 						</p>
 						<div className="profile-header-tags">
 							<span className="tag">{LoggedIn?.rank}</span>
@@ -81,7 +81,7 @@ function ProfileContent({ LoggedIn }) {
 						</div>
 						<div className="info-row">
 							<span className="label">Duty Title</span>
-							<span className="value">Systems Analyst</span>
+							<span className="value">{LoggedIn?.duty_title}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Email</span>
@@ -122,7 +122,7 @@ function ProfileContent({ LoggedIn }) {
 						</div>
 						<div className="info-row">
 							<span className="label">Supervisor</span>
-							<span className="value">TSgt. R. Martinez</span>
+							<span className="value">{LoggedIn?.supervisor}</span>
 						</div>
 					</div>
 

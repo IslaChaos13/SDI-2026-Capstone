@@ -15,15 +15,16 @@ export default function EditUserModal() {
 
 	useEffect(() => {
 		if (editUser) setIsEditing(false);
-	}, [editUser]);
+	}, [editUser?.id]);
 
 	if (!editUser) return null;
 
 	const handleCancel = () => {
 		if (isEditing) {
 			setIsEditing(false);
-		} else {
 			closeEditModal();
+		} else {
+			return;
 		}
 	};
 
@@ -112,10 +113,14 @@ export default function EditUserModal() {
 							<button
 								type="button"
 								className="btn btn-primary"
-								onClick={() => setIsEditing(true)}
+								onClick={() => {
+									setIsEditing(true);
+									console.log("click", isEditing);
+								}}
 							>
 								Edit
 							</button>
+
 							<button
 								type="button"
 								className="btn btn-outline"

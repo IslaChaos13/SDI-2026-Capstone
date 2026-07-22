@@ -10,11 +10,14 @@ export function EditUserProvider({ children, onUserUpdated }) {
 	const [editError, setEditError] = useState(null);
 
 	function openEditModal(usr) {
+		console.log("openEditModal");
 		setEditError(null);
 		setEditUser({ ...usr });
 	}
 
 	function closeEditModal() {
+		console.log("CloseEditModal");
+
 		setEditUser(null);
 		setEditError(null);
 	}

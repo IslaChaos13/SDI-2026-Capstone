@@ -71,6 +71,10 @@ export default function PersonnelDashboard() {
 				throw new Error(data.error || "Could not create your account.");
 			}
 
+			if (data.user) {
+				setUsers((prev) => [...prev, data.user]);
+			}
+
 			setForm(EMPTY_FORM);
 			setStatus("success");
 		} catch (err) {
