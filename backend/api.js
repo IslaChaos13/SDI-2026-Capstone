@@ -362,7 +362,7 @@ app.delete('/directory_poc/:id', async (req, res) => {
 // PUT Routes
 app.put('/users/:id', async (req, res) => {
    try {
-      const { is_admin, is_manager, rank, first_name, last_name, email, phone, address, unit, avatar, password } = req.body
+      const { is_admin, is_manager, rank, first_name, last_name, email, phone, address, unit, avatar, password, duty_title, supervisor } = req.body
 
       const updates = {}
       if (is_admin !== undefined) updates.is_admin = is_admin
@@ -376,6 +376,8 @@ app.put('/users/:id', async (req, res) => {
       if (unit !== undefined) updates.unit = unit
       if (avatar !== undefined) updates.avatar = avatar
       if (password !== undefined) updates.password = await bcrypt.hash(password, 10)
+      if (duty_title !== undefined) updates.duty_title = duty_title
+      if (supervisor !== undefined) updates.supervisor = supervisor
 
       if (Object.keys(updates).length === 0) {
          return res.status(400).json({ error: 'Nothing to update' })
