@@ -162,7 +162,7 @@ app.post("/logout", (req, res) => {
 
 app.post('/register', async (req, res) => {
    try {
-      const { first_name, last_name, rank, phone, address, unit, email, password } = req.body
+      const { first_name, last_name, rank, phone, address, unit, email, password, duty_title, supervisor } = req.body
 
       if (!email || !password) {
          return res.status(400).json({ error: 'Email and password required' })
@@ -184,6 +184,8 @@ app.post('/register', async (req, res) => {
          unit,
          email,
          password: hashedPassword,
+         duty_title,
+         supervisor
       }).returning('*')
 
       res.json({ message: 'Thanks for signing up! Log in with your email' })
