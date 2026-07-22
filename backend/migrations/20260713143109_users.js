@@ -14,7 +14,7 @@ exports.up = function(knex) {
       table.string('phone');
       table.string('address');
       table.string('unit');
-      table.string('avatar');
+      table.string('avatar').defaultTo('https://www.trademark.af.mil/portals/73/240801-F-DQ331-0002.png');
       table.string('password');
    });
 };
