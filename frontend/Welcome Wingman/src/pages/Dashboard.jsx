@@ -16,6 +16,13 @@ function formatDate(dateString) {
 	});
 }
 
+function priorityClass(priority) {
+	const p = (priority || "").toLowerCase();
+	if (p === "high") return "priority-high";
+	if (p === "low") return "priority-low";
+	return "priority-medium"; // default/fallback for medium or unrecognized values
+}
+
 function Dashboard() {
 	const { LoggedIn } = useContext(UserContext);
 	console.log("LoggedIn:", LoggedIn);
@@ -57,6 +64,19 @@ function Dashboard() {
 	);
 	const tasksCompleted = myTasks.filter((t) => t.is_complete).length;
 	const tasksRemaining = myTasks.filter((t) => !t.is_complete).length;
+
+	// Breakdown of tasks by priority level (low / medium / high)
+	const priorityCounts = myTasks.reduce(
+		(acc, t) => {
+			const p = (t.priority || "").toLowerCase();
+			if (p === "low" || p === "medium" || p === "high") {
+				acc[p] += 1;
+			}
+			return acc;
+		},
+		{ low: 0, medium: 0, high: 0 },
+	);
+
 	const completionPercent = myTasks.length
 		? Math.round((tasksCompleted / myTasks.length) * 100)
 		: 0;
@@ -162,24 +182,24 @@ function Dashboard() {
 							</div>
 						</div>
 						<div className="card stat-card">
-							<div className="stat-icon">🕒</div>
+							<div className="stat-icon">🔺</div>
 							<div>
-								<div className="stat-value">3</div>
-								<div className="stat-label">Pending</div>
+								<div className="stat-value">{priorityCounts.high}</div>
+								<div className="stat-label">High Priority</div>
 							</div>
 						</div>
 						<div className="card stat-card">
-							<div className="stat-icon">📇</div>
+							<div className="stat-icon">⚠️</div>
 							<div>
-								<div className="stat-value">5</div>
-								<div className="stat-label">Directory Visits</div>
+								<div className="stat-value">{priorityCounts.medium}</div>
+								<div className="stat-label">Medium Priority</div>
 							</div>
 						</div>
 						<div className="card stat-card">
-							<div className="stat-icon">📈</div>
+							<div className="stat-icon">🟢</div>
 							<div>
-								<div className="stat-value">{completionPercent}%</div>
-								<div className="stat-label">Avg. Completion</div>
+								<div className="stat-value">{priorityCounts.low}%</div>
+								<div className="stat-label">Low Priority</div>
 							</div>
 						</div>
 					</div>
@@ -234,64 +254,27 @@ function Dashboard() {
 
 						<div className="card">
 							<div className="card-header">
-								<h2>Weekly Processing</h2>
+								<h2>Task Priority Breakdown</h2>
 							</div>
-							<div className="bar-chart">
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">3</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "30%" }}
-									></div>
-									<span className="bar-chart-label">Mon</span>
+							<div className="chart-legend">
+								<div className="chart-legend-item">
+									<span className="swatch-label">
+										<span className="swatch priority-high-swatch"></span>High
+									</span>
+									<span>{priorityCounts.high}</span>
 								</div>
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">5</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "50%" }}
-									></div>
-									<span className="bar-chart-label">Tue</span>
+								<div className="chart-legend-item">
+									<span className="swatch-label">
+										<span className="swatch priority-medium-swatch"></span>
+										Medium
+									</span>
+									<span>{priorityCounts.medium}</span>
 								</div>
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">2</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "20%" }}
-									></div>
-									<span className="bar-chart-label">Wed</span>
-								</div>
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">7</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "70%" }}
-									></div>
-									<span className="bar-chart-label">Thu</span>
-								</div>
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">4</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "40%" }}
-									></div>
-									<span className="bar-chart-label">Fri</span>
-								</div>
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">1</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "10%" }}
-									></div>
-									<span className="bar-chart-label">Sat</span>
-								</div>
-								<div className="bar-chart-col">
-									<span className="bar-chart-value">1</span>
-									<div
-										className="bar-chart-bar"
-										style={{ height: "10%" }}
-									></div>
-									<span className="bar-chart-label">Sun</span>
+								<div className="chart-legend-item">
+									<span className="swatch-label">
+										<span className="swatch priority-low-swatch"></span>Low
+									</span>
+									<span>{priorityCounts.low}</span>
 								</div>
 							</div>
 						</div>
@@ -396,7 +379,9 @@ function Dashboard() {
 										<div>
 											<h3>{t.title}</h3>
 											<div className="meta">
-												<span className="priority priority-medium">
+												<span
+													className={`priority ${priorityClass(t.priority)}`}
+												>
 													{t.priority}
 												</span>
 												<span>{formatDate(t.due_date)}</span>
@@ -525,7 +510,7 @@ function Dashboard() {
 							</div>
 							<div className="contact-row">
 								<div>
-									<div className="contact-name">Contact</div>
+									<div className="contact-name">{LoggedIn?.supervisor}</div>
 									<div className="contact-role">Supervisor</div>
 								</div>
 								<button className="btn btn-outline btn-sm" type="button">
@@ -534,7 +519,7 @@ function Dashboard() {
 							</div>
 							<div className="contact-row">
 								<div>
-									<div className="contact-name">Contact</div>
+									<div className="contact-name"></div>
 									<div className="contact-role">Office Name</div>
 								</div>
 								<button className="btn btn-outline btn-sm" type="button">

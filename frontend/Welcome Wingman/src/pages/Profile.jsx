@@ -256,6 +256,7 @@ function Profile() {
 				onCancelEditing={cancelEditing}
 				onFieldChange={handleEditChange}
 				onSubmit={handleEditSubmit}
+				source="profile"
 			/>
 		</Layout>
 	);

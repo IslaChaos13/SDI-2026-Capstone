@@ -31,6 +31,61 @@ function Field({
 	);
 }
 
+function SupervisorField({
+	label,
+	id,
+	name,
+	isEditing,
+	editUser,
+	handleEditChange,
+	users,
+	...rest
+}) {
+	// Editing + we have a users list => render the select
+	if (isEditing && Array.isArray(users)) {
+		return (
+			<div className="form-field-readonly-info">
+				<label htmlFor={id}>{label}</label>
+				<select
+					id={id}
+					name={name}
+					value={editUser[name] || ""}
+					onChange={handleEditChange}
+					{...rest}
+				>
+					<option value="" disabled>
+						Select a supervisor
+					</option>
+					{users
+						.filter((usr) => usr.id !== editUser.id)
+						.map((usr) => {
+							const optLabel =
+								`${usr.rank ? usr.rank + " " : ""}${usr.first_name ?? ""} ${usr.last_name ?? ""}`.trim();
+							return (
+								<option key={usr.id ?? usr.email} value={optLabel}>
+									{optLabel}
+								</option>
+							);
+						})}
+				</select>
+			</div>
+		);
+	}
+
+	// Not editing, or no users list (e.g. profile source) => fall back to plain Field behavior
+	return (
+		<Field
+			label={label}
+			id={id}
+			name={name}
+			isEditing={isEditing}
+			editUser={editUser}
+			handleEditChange={handleEditChange}
+			{...rest}
+		/>
+	);
+}
+
 export default function EditUserModal({
 	editUser,
 	isEditing,
@@ -41,14 +96,17 @@ export default function EditUserModal({
 	onCancelEditing,
 	onFieldChange,
 	onSubmit,
+	source = "personneldashboard",
+	users = [],
 }) {
 	if (!editUser) return null;
+
+	const canEditSupervisor = source !== "profile";
 
 	const handleCancel = () => {
 		onCancelEditing();
 	};
 
-	// Shared props for every Field, so we don't repeat isEditing/editUser/onFieldChange each time
 	const fieldProps = { isEditing, editUser, handleEditChange: onFieldChange };
 
 	return (
@@ -105,12 +163,14 @@ export default function EditUserModal({
 							required
 							{...fieldProps}
 						/>
-						<Field
+						<SupervisorField
 							label="Supervisor"
 							id="edit-supervisor"
 							name="supervisor"
 							required
 							{...fieldProps}
+							isEditing={isEditing && canEditSupervisor}
+							users={canEditSupervisor ? users : undefined}
 						/>
 					</div>
 					<div className="form-row">

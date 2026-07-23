@@ -1,7 +1,7 @@
 import Layout from "../components/Layout.jsx";
 import "../styles/theme.css";
 import "../css/PersonnelDashboard.css";
-import "../styles/Profile.css";
+// import "../styles/Profile.css";
 import { useContext, useState, useEffect } from "react";
 import UserContext from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -331,31 +331,33 @@ export default function PersonnelDashboard() {
 										onChange={handleChange}
 										required
 									/>
-									<div className="form-field">
-										<label htmlFor="address">Address</label>
-										<input
-											type="text"
-											id="address"
-											name="address"
-											placeholder="Address"
-											value={form.address}
-											onChange={handleChange}
-											required
-										/>
-									</div>
-									<div className="form-field">
-										<label htmlFor="phone">Phone</label>
-										<input
-											type="text"
-											id="phone"
-											name="phone"
-											placeholder="Phone"
-											value={form.phone}
-											onChange={handleChange}
-											required
-										/>
-									</div>
 								</div>
+								<div className="form-field">
+									<label htmlFor="address">Address</label>
+									<input
+										type="text"
+										id="address"
+										name="address"
+										placeholder="Address"
+										value={form.address}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+								<div className="form-field">
+									<label htmlFor="phone">Phone</label>
+									<input
+										type="text"
+										id="phone"
+										name="phone"
+										placeholder="Phone"
+										value={form.phone}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+							</div>
+							<div className="form-row">
 								<div className="form-field">
 									<label htmlFor="duty_title">Duty Title</label>
 									<input
@@ -454,7 +456,8 @@ export default function PersonnelDashboard() {
 							<h3>Avatar</h3>
 							<h3>Rank</h3>
 							<h3>Name</h3>
-							<h3>Contact Information</h3>
+							<h3>Phone</h3>
+							<h3>Actions</h3>
 						</div>
 						<ul className="personnel-info-card">
 							{filteredUsers.map((usr) => (
@@ -577,13 +580,15 @@ export default function PersonnelDashboard() {
 				onCancelEditing={cancelEditing}
 				onFieldChange={handleEditChange}
 				onSubmit={handleEditSubmit}
+				source="personneldashboard"
+				users={users}
 			/>
 
 			{confirmDeleteId && (
 				<div className="modal-overlay" onClick={() => setConfirmDeleteId(null)}>
 					<div className="modal" onClick={(e) => e.stopPropagation()}>
 						<h2>Delete Personnel</h2>
-						<p>
+						<p className="modal-text">
 							Are you sure you want to delete{" "}
 							<strong>
 								{confirmDeleteId.first_name} {confirmDeleteId.last_name}
@@ -591,11 +596,10 @@ export default function PersonnelDashboard() {
 							? This action cannot be undone.
 						</p>
 						{deleteError && <div className="error-text">{deleteError}</div>}
-						<div style={{ display: "flex", gap: "8px" }}>
+						<div className="modal-actions">
 							<button
 								type="button"
-								className="btn btn-primary"
-								style={{ backgroundColor: "#dc2626", borderColor: "#dc2626" }}
+								className="personnel-delete-btn"
 								onClick={confirmDelete}
 								disabled={deleteId === confirmDeleteId.id}
 							>
@@ -619,7 +623,7 @@ export default function PersonnelDashboard() {
 				<div className="modal-overlay" onClick={closeAssignManager}>
 					<div className="modal" onClick={(e) => e.stopPropagation()}>
 						<h2>Assign Manager</h2>
-						<p>
+						<p className="modal-text">
 							Choose a supervisor for{" "}
 							<strong>
 								{assignUser.first_name} {assignUser.last_name}
@@ -694,25 +698,30 @@ function PersonnelRow({ usr, deleteId, onDelete, onEdit, onAssignManager }) {
 				{usr.first_name} {usr.last_name}
 			</span>
 			<span>{usr.phone}</span>
-			<button
-				type="button"
-				className="btn btn-outline btn-sm"
-				onClick={() => onEdit(usr)}
-			>
-				Edit
-			</button>
-			<button
-				type="button"
-				className="btn btn-outline btn-sm"
-				style={{ color: "#dc2626", borderColor: "#dc2626" }}
-				onClick={() => onDelete(usr)}
-				disabled={deleteId === usr.id}
-			>
-				{deleteId === usr.id ? "Deleting..." : "Delete"}
-			</button>
-			<button type="button" onClick={() => onAssignManager(usr)}>
-				Assign Manager
-			</button>
+			<div className="personnel-item-actions">
+				<button
+					type="button"
+					className="btn btn-outline btn-sm"
+					onClick={() => onEdit(usr)}
+				>
+					Edit
+				</button>
+				<button
+					type="button"
+					className="personnel-delete-btn"
+					onClick={() => onDelete(usr)}
+					disabled={deleteId === usr.id}
+				>
+					{deleteId === usr.id ? "Deleting..." : "Delete"}
+				</button>
+				<button
+					type="button"
+					className="btn-outline"
+					onClick={() => onAssignManager(usr)}
+				>
+					Assign Manager
+				</button>
+			</div>
 		</li>
 	);
 }
