@@ -1,16 +1,76 @@
 import "../styles/theme.css";
 import "./Header.css";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useMemo } from "react";
 import UserIcon from "../components/UserIcon";
 import LoginButton from "./LoginButton";
 import UserContext from "../context/UserContext";
-import NotificationContext from "../context/NotificationContext";
+import {
+	getDueStatus,
+	formatDueMessage,
+	DEFAULT_DUE_SOON_DAYS,
+} from "../components/Notifications.jsx";
 
 function Header() {
 	const { LoggedIn, logout } = useContext(UserContext);
 
-	const { pings, dismissPings, alertCount } = useContext(NotificationContext);
+	const [userTasks, setUserTasks] = useState([]);
+	const [dismissedIds, setDismissedIds] = useState([]);
 	const [showAlertModal, setShowAlertModal] = useState(false);
+
+	useEffect(() => {
+		function load() {
+			fetch("http://localhost:8000/user_tasks")
+				.then((r) => r.json())
+				.then((data) => setUserTasks(data || []))
+				.catch(console.error);
+		}
+		load();
+		const id = setInterval(load, 5 * 60 * 1000); // re-check periodically
+		return () => clearInterval(id);
+	}, []);
+
+	const pings = useMemo(() => {
+		if (!LoggedIn) return [];
+		return userTasks
+			.filter((ut) => !ut.is_complete)
+			.filter((ut) =>
+				ut.user_id
+					? ut.user_id === LoggedIn.id
+					: ut.first_name === LoggedIn.first_name &&
+						ut.last_name === LoggedIn.last_name,
+			)
+			.map((ut) => {
+				const { status, daysRemaining } = getDueStatus(
+					ut.due_date,
+					DEFAULT_DUE_SOON_DAYS,
+				);
+				return {
+					toastId: `${ut.id}:${status}:${daysRemaining}`,
+					taskId: ut.id,
+					status,
+					message: formatDueMessage(
+						ut.title,
+						ut.due_date,
+						DEFAULT_DUE_SOON_DAYS,
+					),
+				};
+			})
+			.filter(
+				(p) =>
+					(p.status === "overdue" || p.status === "due-soon") &&
+					!dismissedIds.includes(p.toastId),
+			)
+			.sort(
+				(a, b) =>
+					(a.status === "overdue" ? 0 : 1) - (b.status === "overdue" ? 0 : 1),
+			);
+	}, [userTasks, LoggedIn, dismissedIds]);
+
+	function dismissPings(toastId) {
+		setDismissedIds((prev) => [...prev, toastId]);
+	}
+
+	const alertCount = pings.length;
 
 	const today = new Date().toLocaleDateString("en-US", {
 		weekday: "long",

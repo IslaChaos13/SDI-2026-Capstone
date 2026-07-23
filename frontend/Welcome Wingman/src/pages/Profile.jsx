@@ -1,11 +1,10 @@
 import Layout from "../components/Layout.jsx";
 import "../styles/theme.css";
 import "../styles/Profile.css";
-import { useParams } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import UserContext from "../context/UserContext";
-import { EditUserProvider, useEditUser } from "../context/EditUserContext";
 import EditUserModal from "../components/EditUserModal";
+import { useEditUser } from "../components/UseEditUser.js";
 
 //TODO REWORK PAGE
 
@@ -16,15 +15,18 @@ function Profile() {
 		setLoggedIn((prev) => ({ ...prev, ...updated }));
 	}
 
-	return (
-		<EditUserProvider onUserUpdated={handleUserUpdated}>
-			<ProfileContent LoggedIn={LoggedIn} />
-		</EditUserProvider>
-	);
-}
-
-function ProfileContent({ LoggedIn }) {
-	const { openEditModal } = useEditUser();
+	const {
+		editUser,
+		editStatus,
+		editError,
+		isEditing,
+		openEditModal,
+		closeEditModal,
+		startEditing,
+		cancelEditing,
+		handleEditChange,
+		handleEditSubmit,
+	} = useEditUser(handleUserUpdated);
 
 	return (
 		<Layout>
@@ -37,8 +39,11 @@ function ProfileContent({ LoggedIn }) {
 				<div className="card profile-header-card">
 					<div className="avatar avatar-xl">
 						<img
-							src={LoggedIn.avatar || "/default-avatar.png"}
-							alt={`${LoggedIn.first_name} ${LoggedIn.last_name}`}
+							src={LoggedIn?.avatar || "/default-avatar.png"}
+							alt={
+								`${LoggedIn?.first_name ?? ""} ${LoggedIn?.last_name ?? ""}`.trim() ||
+								"User avatar"
+							}
 							style={{ width: "115px", height: "115px", borderradius: "50%" }}
 						/>
 					</div>
@@ -48,9 +53,7 @@ function ProfileContent({ LoggedIn }) {
 								? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 								: "Guest"}
 						</h1>
-						<p>
-							{LoggedIn?.rank} · {LoggedIn?.unit} · Systems Analyst
-						</p>
+						<p>{LoggedIn?.unit} · Systems Analyst</p>
 						<div className="profile-header-tags">
 							<span className="tag">{LoggedIn?.rank}</span>
 							<span className="badge badge-complete">Active</span>
@@ -81,7 +84,7 @@ function ProfileContent({ LoggedIn }) {
 						</div>
 						<div className="info-row">
 							<span className="label">Duty Title</span>
-							<span className="value">Systems Analyst</span>
+							<span className="value">{LoggedIn?.duty_title}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Email</span>
@@ -99,7 +102,7 @@ function ProfileContent({ LoggedIn }) {
 						</div>
 						<div className="info-row">
 							<span className="label">Unit</span>
-							<span className="value">{LoggedIn.unit}</span>
+							<span className="value">{LoggedIn?.unit}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Address</span>
@@ -122,7 +125,7 @@ function ProfileContent({ LoggedIn }) {
 						</div>
 						<div className="info-row">
 							<span className="label">Supervisor</span>
-							<span className="value">TSgt. R. Martinez</span>
+							<span className="value">{LoggedIn?.supervisor}</span>
 						</div>
 					</div>
 
@@ -243,7 +246,18 @@ function ProfileContent({ LoggedIn }) {
 				</div>
 			</div>
 
-			<EditUserModal />
+			<EditUserModal
+				editUser={editUser}
+				isEditing={isEditing}
+				editStatus={editStatus}
+				editError={editError}
+				onClose={closeEditModal}
+				onStartEditing={startEditing}
+				onCancelEditing={cancelEditing}
+				onFieldChange={handleEditChange}
+				onSubmit={handleEditSubmit}
+				source="profile"
+			/>
 		</Layout>
 	);
 }

@@ -149,8 +149,10 @@ app.post("/login", async (req, res) => {
 
 	if (!user) return res.status(401).json({ error: "User not found!" });
 
-	const validPassword = await bcrypt.compare(password, user.password);
+	console.log("Stored hash:", user.password, "length:", user.password?.length); //TJF
 
+	const validPassword = await bcrypt.compare(password, user.password);
+	console.log("Compare result:", validPassword); //TJF
 	if (!validPassword)
 		return res.status(401).json({ error: "Incorrect password!" });
 
@@ -284,10 +286,19 @@ app.post("/directory", async (req, res) => {
 	}
 });
 
+//BELOW ARE SOME CHANGES TO MAKE IT WORK ON TJ COMPUTER//
 app.post("/user_tasks", async (req, res) => {
 	const { id, ...rest } = req.body;
 
 	if (id) {
+		const updates = {};
+		if (rest.note !== undefined) updates.note = rest.note || null;
+		if (rest.is_complete !== undefined) updates.is_complete = rest.is_complete;
+
+		if (Object.keys(updates).length === 0) {
+			return res.status(400).json({ error: "Nothing to update" });
+		}
+
 		const updates = {};
 		if (rest.note !== undefined) updates.note = rest.note || null;
 		if (rest.is_complete !== undefined) updates.is_complete = rest.is_complete;
@@ -386,6 +397,7 @@ app.delete("/directory_poc/:id", async (req, res) => {
 
 // PUT Routes
 app.put("/users/:id", async (req, res) => {
+	console.log("PUT /users/:id called with body: ", req.body);
 	try {
 		const {
 			is_admin,
