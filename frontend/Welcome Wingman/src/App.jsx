@@ -11,17 +11,20 @@ import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import TaskManagement from "./pages/TaskManagement";
 import UserContext from "./context/UserContext";
+import RequireAuth from "./components/RequireAuth";
 
 // const SESSION_DURATION_MS = 30 * 60 * 1000;
 // const SESSION_DURATION_MS = 10 * 1000; // 10 seconds, for testing
 function App() {
 	const [LoggedIn, setLoggedIn] = useState(null)
+	const [authChecked, setAuthChecked] = useState(false)
 
 	useEffect(() => {
 		fetch("http://localhost:8000/userAuth", {credentials: "include"})
 		.then((res) => res.json())
 		.then((data) => data.user && setLoggedIn(data.user))
 		.catch(() => {})
+		.finally(() => setAuthChecked(true))
 	}, [])
 
 	const logout = () => {
@@ -30,7 +33,7 @@ function App() {
 			credentials: "include",
 		}).finally(() => setLoggedIn(null))
 	};
-	const value = { LoggedIn, setLoggedIn, logout};
+	const value = { LoggedIn, setLoggedIn, logout, authChecked };
 
 
 	// 	try {
@@ -74,14 +77,39 @@ function App() {
 						path="/directory"
 						element={<BaseDirectory LoggedIn={LoggedIn} />}
 					/>
-					<Route path="/:UserID/tasks" element={<TaskManagement />} />
+					<Route
+						path="/:UserID/tasks"
+						element={
+							<RequireAuth>
+								<TaskManagement />
+							</RequireAuth>
+						}
+					/>
 					<Route path="/admin" element={<AdminDashboard />} />
-					<Route path="/:UserID/Checklist" element={<MyChecklist />} />
+					<Route
+						path="/:UserID/Checklist"
+						element={
+							<RequireAuth>
+								<MyChecklist />
+							</RequireAuth>
+						}
+					/>
 					<Route
 						path="/:UserID/profile"
-						element={<Profile LoggedIn={LoggedIn} />}
+						element={
+							<RequireAuth>
+								<Profile LoggedIn={LoggedIn} />
+							</RequireAuth>
+						}
 					/>
-					<Route path="/:UserID/dashboard" element={<Dashboard />} />
+					<Route
+						path="/:UserID/dashboard"
+						element={
+							<RequireAuth>
+								<Dashboard />
+							</RequireAuth>
+						}
+					/>
 					<Route
 						path="/:UserID/pdashboard"
 						element={<PersonnelDashboard LoggedI={LoggedIn} />}
