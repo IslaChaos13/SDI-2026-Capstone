@@ -59,29 +59,27 @@ function App() {
 
 	return (
 		<UserContext.Provider value={value}>
-			<NotificationProvider>
-				<div>
-					<Routes>
-						<Route path="/" element={<BaseDirectory LoggedIn={LoggedIn} />} />
-						<Route
-							path="/login"
-							element={<Logon LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} />}
-						/>
-						<Route path="/directory" element={<BaseDirectory />} />
-						<Route path="/:UserID/tasks" element={<TaskManagement />} />
-						<Route path="/admin" element={<AdminDashboard />} />
-						<Route path="/:UserID/Checklist" element={<MyChecklist />} />
-						<Route path="/:UserID/profile" element={<Profile />} />
-						<Route path="/:UserID/dashboard" element={<Dashboard />} />
-						<Route
-							path="/:UserID/pdashboard"
-							element={<PersonnelDashboard />}
-						/>
-						<Route path="/reports" element={<ReportsPage />} />
-						<Route path="/*" element={<ErrorPage />} />
-					</Routes>
-				</div>
-			</NotificationProvider>
+			<div>
+				<Routes>
+					<Route path="/" element={<BaseDirectory LoggedIn={LoggedIn} />} />
+					<Route
+						path="/login"
+						element={<Logon LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} />}
+					/>
+					<Route path="/directory" element={<BaseDirectory />} />
+					<Route path="/:UserID/tasks" element={<TaskManagement />} />
+					<Route path="/admin" element={<AdminDashboard />} />
+					<Route path="/:UserID/Checklist" element={<MyChecklist />} />
+					<Route path="/:UserID/profile" element={<Profile />} />
+					<Route path="/:UserID/dashboard" element={<Dashboard />} />
+					<Route
+						path="/:UserID/pdashboard"
+						element={<PersonnelDashboard />}
+					/>
+					<Route path="/reports" element={<ReportsPage />} />
+					<Route path="/*" element={<ErrorPage />} />
+				</Routes>
+			</div>
 		</UserContext.Provider>
 	);
 }

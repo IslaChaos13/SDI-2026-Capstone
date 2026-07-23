@@ -198,7 +198,7 @@ function Dashboard() {
 						<div className="card stat-card">
 							<div className="stat-icon">🟢</div>
 							<div>
-								<div className="stat-value">{priorityCounts.low}%</div>
+								<div className="stat-value">{priorityCounts.low}</div>
 								<div className="stat-label">Low Priority</div>
 							</div>
 						</div>
