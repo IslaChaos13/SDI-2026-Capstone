@@ -3,22 +3,8 @@ import { useContext } from "react";
 import UserContext from "../context/UserContext";
 import "../styles/theme.css";
 import "./Sidebar.css";
-import { useNavigate, useParams } from "react-router-dom";
-import { useContext } from "react";
-import UserContext from "../context/UserContext";
-import "../styles/theme.css";
-import "./Sidebar.css";
 
 function Sidebar() {
-	const navigate = useNavigate();
-	const { LoggedIn, logout } = useContext(UserContext);
-	const userId = LoggedIn?.id;
-	const isAdmin = LoggedIn?.is_admin;
-
-	const handleLogout = () => {
-		logout();
-		navigate("/");
-	};
 	const navigate = useNavigate();
 	const { LoggedIn, logout } = useContext(UserContext);
 	const userId = LoggedIn?.id;
@@ -55,9 +41,7 @@ function Sidebar() {
 			</div>
 
 			{isAdmin && (
-				<>
-					<hr className="sidebar-divider" />
-					<div className="sidebar-section-label">Admin</div>
+				<aside>
 					{isAdmin && (
 						<>
 							<hr className="sidebar-divider" />
@@ -87,29 +71,18 @@ function Sidebar() {
 							</div>
 						</>
 					)}
-
-					<div className="sidebar-footer">
-						<hr className="sidebar-divider" />
-						<div className="nav-item" onClick={handleLogout}>
-							<span className="nav-icon">🚪</span>
-							<span className="nav-label">Logout</span>
-
-							{/* onClick={()=>setLoggedIn(null)} */}
-						</div>
-					</div>
 				</aside>
-			);
+			)};
 			<div className="sidebar-footer">
 				<hr className="sidebar-divider" />
 				<div className="nav-item" onClick={handleLogout}>
 					<span className="nav-icon">🚪</span>
-					<span className="nav-label">Logout</span>
-
-					{/* onClick={()=>setLoggedIn(null)} */}
+					<span className="nav-label" onClick={() => setLoggedIn(null)}>Logout</span>
 				</div>
 			</div>
 		</aside>
-	);
+	)
 }
+
 
 export default Sidebar;

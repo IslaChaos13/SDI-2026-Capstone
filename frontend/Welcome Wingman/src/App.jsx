@@ -12,15 +12,18 @@ import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import TaskManagement from "./pages/TaskManagement";
 import UserContext from "./context/UserContext";
+import RequireAuth from "./components/RequireAuth"
 
 function App() {
 	const [LoggedIn, setLoggedIn] = useState(null);
+	const [authChecked, setAuthChecked] = useState(false)
 
 	useEffect(() => {
 		fetch("http://localhost:8000/userAuth", { credentials: "include" })
 			.then((res) => res.json())
 			.then((data) => data.user && setLoggedIn(data.user))
-			.catch(() => { });
+			.catch(() => { })
+			.finally(() => setAuthChecked(true))
 	}, []);
 
 	const logout = () => {
@@ -29,33 +32,7 @@ function App() {
 			credentials: "include",
 		}).finally(() => setLoggedIn(null));
 	};
-	const value = { LoggedIn, setLoggedIn, logout };
-
-	// 	try {
-	// 		const saved = localStorage.getItem("user");
-	// 		if (!saved) return null;
-
-	// 		const session = JSON.parse(saved);
-	// 		if (!session.expiresAt || Date.now() > session.expiresAt) {
-	// 			localStorage.removeItem("user");
-	// 			return null;
-	// 		}
-	// 		return session.user;
-	// 		// return saved ? JSON.parse(saved) : null
-	// 	} catch {
-	// 		localStorage.removeItem("user");
-	// 		return null;
-	// 	}
-	// });
-
-	// const loginWithSession = (userData) => {
-	// 	const session = {
-	// 		user: userData,
-	// 		expiresAt: Date.now() + SESSION_DURATION_MS,
-	// 	};
-	// 	localStorage.setItem("user", JSON.stringify(session));
-	// 	setLoggedIn(userData);
-	// };
+	const value = { LoggedIn, setLoggedIn, logout, authChecked };
 
 	return (
 		<UserContext.Provider value={value}>
@@ -66,22 +43,52 @@ function App() {
 						path="/login"
 						element={<Logon LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} />}
 					/>
-					<Route path="/directory" element={<BaseDirectory />} />
-					<Route path="/:UserID/tasks" element={<TaskManagement />} />
+					<Route
+						path="/directory"
+						element={<BaseDirectory LoggedIn={LoggedIn} />}
+					/>
+					<Route
+						path="/:UserID/tasks"
+						element={
+							<RequireAuth>
+								<TaskManagement />
+							</RequireAuth>
+						}
+					/>
 					<Route path="/admin" element={<AdminDashboard />} />
-					<Route path="/:UserID/Checklist" element={<MyChecklist />} />
-					<Route path="/:UserID/profile" element={<Profile />} />
-					<Route path="/:UserID/dashboard" element={<Dashboard />} />
+					<Route
+						path="/:UserID/Checklist"
+						element={
+							<RequireAuth>
+								<MyChecklist />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/:UserID/profile"
+						element={
+							<RequireAuth>
+								<Profile LoggedIn={LoggedIn} />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/:UserID/dashboard"
+						element={
+							<RequireAuth>
+								<Dashboard />
+							</RequireAuth>
+						}
+					/>
 					<Route
 						path="/:UserID/pdashboard"
-						element={<PersonnelDashboard />}
+						element={<PersonnelDashboard LoggedI={LoggedIn} />}
 					/>
-					<Route path="/reports" element={<ReportsPage />} />
 					<Route path="/*" element={<ErrorPage />} />
+					<Route path="/reports" element={<ReportsPage />} />
 				</Routes>
 			</div>
 		</UserContext.Provider>
 	);
 }
-export default App;
 export default App;

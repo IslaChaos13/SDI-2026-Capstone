@@ -8,21 +8,13 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
 const app = express();
 const PORT = 8000;
-const knex = require("knex")(require("./knexfile.js")["development"]);
+
 const knex = require("knex")(require("./knexfile.js")["development"]);
 
 app.use(cookieParser());
-app.use(cookieParser());
 // change the port here once the front end is up
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 
@@ -74,27 +66,27 @@ app.get("/tasks", async (req, res) => {
 			message: "Failed to fetch data",
 		});
 	}
-		res.status(200).json({
-			tasks: tasks,
-		});
+	res.status(200).json({
+		tasks: tasks,
 	});
-
-app.get("/directory", async (req, res) => {
-	try {
-		const [directory] = await Promise.all([knex("directory").select("*")]);
-app.get("/directory", async (req, res) => {
-	try {
-		const [directory] = await Promise.all([knex("directory").select("*")]);
-
-		res.status(200).json({
-			directory: directory,
-		});
-	} catch (err) {
-		res.status(500).json({
-			message: "Failed to fetch data",
-		});
-	}
 });
+
+app.get("/directory", async (req, res) => {
+	try {
+		const [directory] = await Promise.all([knex("directory").select("*")]);
+		app.get("/directory", async (req, res) => {
+			try {
+				const [directory] = await Promise.all([knex("directory").select("*")]);
+
+				res.status(200).json({
+					directory: directory,
+				});
+			} catch (err) {
+				res.status(500).json({
+					message: "Failed to fetch data",
+				});
+			}
+		});
 		res.status(200).json({
 			directory: directory,
 		});
@@ -525,7 +517,6 @@ app.put("/users/:id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log(`Server running at http://localhost:${PORT}`);
 	console.log(`Server running at http://localhost:${PORT}`);
 });
 

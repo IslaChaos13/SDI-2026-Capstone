@@ -2,7 +2,6 @@ import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/AdminDashboard.css'
 import { useState, useEffect } from 'react'
-import { useState, useEffect } from 'react'
 
 function AdminDashboard() {
   const [users, setUsers] = useState([])

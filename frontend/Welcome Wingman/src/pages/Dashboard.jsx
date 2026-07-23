@@ -108,11 +108,6 @@ function Dashboard() {
 						<h1>Dashboard</h1>
 						<p>Overview of current status.</p>
 					</div>
-				<div className="dashboard-content">
-					<div className="page-header">
-						<h1>Dashboard</h1>
-						<p>Overview of current status.</p>
-					</div>
 
 					<div
 						className="card hero-panel"
@@ -208,39 +203,6 @@ function Dashboard() {
 							</div>
 						</div>
 					</div>
-
-					<div className="dashboard-row row-3">
-						<div className="card" style={{ textAlign: "center" }}>
-							<div className="card-header" style={{ justifyContent: "center" }}>
-								<h2>Readiness</h2>
-							</div>
-							<div className="donut-chart">
-								<div className="donut-chart-inner">
-									<span className="value">70%</span>
-									<span className="label">Ready</span>
-								</div>
-							</div>
-							<div className="chart-legend">
-								<div className="chart-legend-item">
-									<span className="swatch-label">
-										<span className="swatch accent"></span>Ready
-									</span>
-									<span>70%</span>
-								</div>
-								<div className="chart-legend-item">
-									<span className="swatch-label">
-										<span className="swatch primary"></span>In Progress
-									</span>
-									<span>20%</span>
-								</div>
-								<div className="chart-legend-item">
-									<span className="swatch-label">
-										<span className="swatch muted"></span>Not Started
-									</span>
-									<span>10%</span>
-								</div>
-							</div>
-						</div>
 					<div className="dashboard-row row-3">
 						<div className="card" style={{ textAlign: "center" }}>
 							<div className="card-header" style={{ justifyContent: "center" }}>
@@ -274,20 +236,6 @@ function Dashboard() {
 							</div>
 						</div>
 
-						<div className="card">
-							<div className="card-header">
-								<h2>Progress</h2>
-							</div>
-							<div className="progress-track progress-track-lg">
-								<div
-									className="progress-fill"
-									style={{ width: `${completionPercent}%` }}
-								></div>
-							</div>
-							<p className="progress-caption">
-								{tasksCompleted} of {myTasks.length} tasks complete
-							</p>
-						</div>
 						<div className="card">
 							<div className="card-header">
 								<h2>Progress</h2>
@@ -411,278 +359,197 @@ function Dashboard() {
 							</div>
 						</div>
 					</div>
-						<div className="card">
-							<div className="card-header">
-								<h2>Monthly Activity</h2>
-							</div>
-							<div className="line-chart-wrapper">
-								<svg
-									className="line-chart"
-									viewBox="0 0 420 150"
-									preserveAspectRatio="none"
-								>
-									<line
-										className="line-chart-grid"
-										x1="0"
-										y1="30"
-										x2="420"
-										y2="30"
-									/>
-									<line
-										className="line-chart-grid"
-										x1="0"
-										y1="65"
-										x2="420"
-										y2="65"
-									/>
-									<line
-										className="line-chart-grid"
-										x1="0"
-										y1="100"
-										x2="420"
-										y2="100"
-									/>
-									<polygon
-										className="line-chart-fill"
-										points="10,110 130,90 250,70 370,50 370,120 10,120"
-									/>
-									<polyline
-										className="line-chart-line"
-										points="10,110 130,90 250,70 370,50"
-									/>
-									<circle className="line-chart-dot" cx="10" cy="110" r="3" />
-									<circle className="line-chart-dot" cx="130" cy="90" r="3" />
-									<circle className="line-chart-dot" cx="250" cy="70" r="3" />
-									<circle className="line-chart-dot" cx="370" cy="50" r="3" />
-									<text className="line-chart-axis" x="10" y="138">
-										1
-									</text>
-									<text className="line-chart-axis" x="126" y="138">
-										2
-									</text>
-									<text className="line-chart-axis" x="246" y="138">
-										3
-									</text>
-									<text className="line-chart-axis" x="362" y="138">
-										4
-									</text>
-								</svg>
-							</div>
+				</div>
+
+				<div className="dashboard-row row-2-1">
+					<div className="card">
+						<div className="card-header">
+							<h2>Upcoming Tasks</h2>
+							<span
+								className="link"
+								onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}
+							>
+								View All
+							</span>
 						</div>
-					</div>
-
-					<div className="dashboard-row row-2-1">
-						<div className="card">
-							<div className="card-header">
-								<h2>Upcoming Tasks</h2>
-								<span
-									className="link"
-									onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}
-								>
-									View All
-								</span>
-							</div>
-							{myTasks
-								.filter((t) => !t.is_complete)
-								.map((t) => (
-									<div className="list-row" key={t.id}>
-										<div>
-											<h3>{t.title}</h3>
-											<div className="meta">
-												<span
-													className={`priority ${priorityClass(t.priority)}`}
-												>
-													{t.priority}
-												</span>
-												<span>{formatDate(t.due_date)}</span>
-											</div>
-										</div>
-										<span className="badge badge-pending">Pending</span>
-									</div>
-								))}
-						</div>
-
-						<div className="card">
-							<div className="card-header">
-								<h2>Quick Actions</h2>
-							</div>
-							<div className="quick-actions-grid">
-								<div
-									className="quick-action-tile"
-									onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}
-								>
-									<span className="icon">✅</span>
-									View Checklist
-								</div>
-
-								<div
-									className="quick-action-tile"
-									onClick={() => navigate("/")}
-								>
-									<span className="icon">📇</span>
-									Find Office
-								</div>
-
-								<div
-									className="quick-action-tile"
-									onClick={() => navigate(`/${LoggedIn.id}/profile`)}
-								>
-									<span className="icon">👤</span>
-									Update Profile
-								</div>
-
-								<div
-									className="quick-action-tile"
-									onClick={() => setShowSupport((prev) => !prev)}
-								>
-									<span className="icon">💬</span>
-									{showSupport ? "Close" : "Contact Support"}
-								</div>
-
-								{showSupport && (
+						{myTasks
+							.filter((t) => !t.is_complete)
+							.map((t) => (
+								<div className="list-row" key={t.id}>
 									<div>
-										<p>Support Contact:</p>
-										<p>WelcomeWingman@us.af.mil</p>
+										<h3>{t.title}</h3>
+										<div className="meta">
+											<span
+												className={`priority ${priorityClass(t.priority)}`}
+											>
+												{t.priority}
+											</span>
+											<span>{formatDate(t.due_date)}</span>
+										</div>
 									</div>
-								)}
-							</div>
-						</div>
-					</div>
-
-					<div className="dashboard-row row-3">
-						<div className="card">
-							<div className="card-header">
-								<h2>Recent Activity</h2>
-							</div>
-							<div className="activity-item">
-								<span className="dot"></span>
-								<div>
-									<p>Task Name marked complete</p>
-									<span>Recently</span>
-								</div>
-							</div>
-							<div className="activity-item">
-								<span className="dot"></span>
-								<div>
-									<p>Profile updated</p>
-									<span>Recently</span>
-								</div>
-							</div>
-						</div>
-					<div className="dashboard-row row-3">
-						<div className="card">
-							<div className="card-header">
-								<h2>Recent Activity</h2>
-							</div>
-							<div className="activity-item">
-								<span className="dot"></span>
-								<div>
-									<p>Task Name marked complete</p>
-									<span>Recently</span>
-								</div>
-							</div>
-							<div className="activity-item">
-								<span className="dot"></span>
-								<div>
-									<p>Profile updated</p>
-									<span>Recently</span>
-								</div>
-							</div>
-						</div>
-
-						<div className="card">
-							<div className="card-header">
-								<h2>Announcements</h2>
-							</div>
-							{announcements.map((a, i) => (
-								<div className="announcement-item" key={i}>
-									<span className="tag">{a.tag}</span>
-									<h3>{a.text}</h3>
+									<span className="badge badge-pending">Pending</span>
 								</div>
 							))}
-						</div>
+					</div>
 
-						<div className="card weather-panel">
-							<div className="card-header" style={{ justifyContent: "center" }}>
-								<h2>Weather</h2>
+					<div className="card">
+						<div className="card-header">
+							<h2>Quick Actions</h2>
+						</div>
+						<div className="quick-actions-grid">
+							<div
+								className="quick-action-tile"
+								onClick={() => navigate(`/${LoggedIn.id}/Checklist`)}
+							>
+								<span className="icon">✅</span>
+								View Checklist
 							</div>
-							<div className="weather">Current Temperature</div>
-							<div className="weather-temp">
-								{weather
-									? `${weather.current.temperature_2m} °F`
-									: "Loading..."}
+
+							<div
+								className="quick-action-tile"
+								onClick={() => navigate("/")}
+							>
+								<span className="icon">📇</span>
+								Find Office
 							</div>
-							<div className="weather-forecast">
-								<div className="weather-day">
-									<span className="day-icon">Rain 🌧️</span>
-									<p className="rain-wind">
-										{weather
-											? `${weather.daily.precipitation_probability_max[0]}%`
-											: "Loading..."}
-									</p>
+
+							<div
+								className="quick-action-tile"
+								onClick={() => navigate(`/${LoggedIn.id}/profile`)}
+							>
+								<span className="icon">👤</span>
+								Update Profile
+							</div>
+
+							<div
+								className="quick-action-tile"
+								onClick={() => setShowSupport((prev) => !prev)}
+							>
+								<span className="icon">💬</span>
+								{showSupport ? "Close" : "Contact Support"}
+							</div>
+
+							{showSupport && (
+								<div>
+									<p>Support Contact:</p>
+									<p>WelcomeWingman@us.af.mil</p>
 								</div>
-								<div className="weather-day">
-									<span className="day-icon">Wind 💨</span>
-									<p className="rain-wind">
-										{weather
-											? `${weather.current.wind_speed_10m} mph`
-											: "Loading..."}
-									</p>
-								</div>
+							)}
+						</div>
+					</div>
+				</div>
+
+				<div className="dashboard-row row-3">
+					<div className="card">
+						<div className="card-header">
+							<h2>Recent Activity</h2>
+						</div>
+						<div className="activity-item">
+							<span className="dot"></span>
+							<div>
+								<p>Task Name marked complete</p>
+								<span>Recently</span>
+							</div>
+						</div>
+						<div className="activity-item">
+							<span className="dot"></span>
+							<div>
+								<p>Profile updated</p>
+								<span>Recently</span>
 							</div>
 						</div>
 					</div>
 
-					<div className="dashboard-row row-1-2">
-						<div className="card">
-							<div className="card-header">
-								<h2>Important Contacts</h2>
+					<div className="card">
+						<div className="card-header">
+							<h2>Announcements</h2>
+						</div>
+						{announcements.map((a, i) => (
+							<div className="announcement-item" key={i}>
+								<span className="tag">{a.tag}</span>
+								<h3>{a.text}</h3>
 							</div>
-							<div className="contact-row">
-								<div>
-									<div className="contact-name">{LoggedIn?.supervisor}</div>
-									<div className="contact-role">Supervisor</div>
-								</div>
-								<button className="btn btn-outline btn-sm" type="button">
-									Call
-								</button>
+						))}
+					</div>
+
+					<div className="card weather-panel">
+						<div className="card-header" style={{ justifyContent: "center" }}>
+							<h2>Weather</h2>
+						</div>
+						<div className="weather">Current Temperature</div>
+						<div className="weather-temp">
+							{weather
+								? `${weather.current.temperature_2m} °F`
+								: "Loading..."}
+						</div>
+						<div className="weather-forecast">
+							<div className="weather-day">
+								<span className="day-icon">Rain 🌧️</span>
+								<p className="rain-wind">
+									{weather
+										? `${weather.daily.precipitation_probability_max[0]}%`
+										: "Loading..."}
+								</p>
 							</div>
-							<div className="contact-row">
-								<div>
-									<div className="contact-name"></div>
-									<div className="contact-role">Office Name</div>
-								</div>
-								<button className="btn btn-outline btn-sm" type="button">
-									Call
-								</button>
+							<div className="weather-day">
+								<span className="day-icon">Wind 💨</span>
+								<p className="rain-wind">
+									{weather
+										? `${weather.current.wind_speed_10m} mph`
+										: "Loading..."}
+								</p>
 							</div>
 						</div>
+					</div>
+				</div>
 
-						<div className="card">
-							<div className="card-header">
-								<h2>Notifications</h2>
+				<div className="dashboard-row row-1-2">
+					<div className="card">
+						<div className="card-header">
+							<h2>Important Contacts</h2>
+						</div>
+						<div className="contact-row">
+							<div>
+								<div className="contact-name">{LoggedIn?.supervisor}</div>
+								<div className="contact-role">Supervisor</div>
 							</div>
-							<div className="notification-item unread">
-								<div className="notification-icon">📄</div>
-								<div>
-									<p>Notification message</p>
-									<span>Recently</span>
-								</div>
+							<button className="btn btn-outline btn-sm" type="button">
+								Call
+							</button>
+						</div>
+						<div className="contact-row">
+							<div>
+								<div className="contact-name"></div>
+								<div className="contact-role">Office Name</div>
 							</div>
-							<div className="notification-item">
-								<div className="notification-icon">✅</div>
-								<div>
-									<p>Task Name marked complete</p>
-									<span>Recently</span>
-								</div>
+							<button className="btn btn-outline btn-sm" type="button">
+								Call
+							</button>
+						</div>
+					</div>
+
+					<div className="card">
+						<div className="card-header">
+							<h2>Notifications</h2>
+						</div>
+						<div className="notification-item unread">
+							<div className="notification-icon">📄</div>
+							<div>
+								<p>Notification message</p>
+								<span>Recently</span>
+							</div>
+						</div>
+						<div className="notification-item">
+							<div className="notification-icon">✅</div>
+							<div>
+								<p>Task Name marked complete</p>
+								<span>Recently</span>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		</div>
-		</Layout>
+		</Layout >
 	);
 }
 
