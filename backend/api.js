@@ -299,7 +299,6 @@ app.post("/user_tasks", async (req, res) => {
 			return res.status(400).json({ error: "Nothing to update" });
 		}
 
-		const updates = {};
 		if (rest.note !== undefined) updates.note = rest.note || null;
 		if (rest.is_complete !== undefined) updates.is_complete = rest.is_complete;
 
