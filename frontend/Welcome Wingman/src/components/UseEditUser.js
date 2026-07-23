@@ -1,22 +1,40 @@
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 
 const API = "http://localhost:8000";
 
-const EditUserContext = createContext(null);
-
-export function EditUserProvider({ children, onUserUpdated }) {
+/**
+ * Local (non-context) hook for managing the edit-user modal.
+ * Each page that needs the modal calls this independently — no shared
+ * provider, no context. State lives entirely inside whichever component
+ * calls this hook.
+ *
+ * onUserUpdated: optional callback invoked with the updated user after a
+ * successful save (e.g. to update a list, or the logged-in user object).
+ */
+export function useEditUser(onUserUpdated) {
 	const [editUser, setEditUser] = useState(null);
 	const [editStatus, setEditStatus] = useState("idle");
 	const [editError, setEditError] = useState(null);
+	const [isEditing, setIsEditing] = useState(false);
 
 	function openEditModal(usr) {
 		setEditError(null);
+		setIsEditing(false); // always open in read-only view first
 		setEditUser({ ...usr });
 	}
 
 	function closeEditModal() {
 		setEditUser(null);
 		setEditError(null);
+		setIsEditing(false);
+	}
+
+	function startEditing() {
+		setIsEditing(true);
+	}
+
+	function cancelEditing() {
+		setIsEditing(false);
 	}
 
 	function handleEditChange(e) {
@@ -46,7 +64,8 @@ export function EditUserProvider({ children, onUserUpdated }) {
 
 			const updated = data.user || editUser;
 			onUserUpdated?.(updated);
-			setEditUser(null);
+			setEditUser(updated);
+			setIsEditing(false);
 		} catch (err) {
 			setEditError(err.message);
 		} finally {
@@ -54,27 +73,16 @@ export function EditUserProvider({ children, onUserUpdated }) {
 		}
 	}
 
-	return (
-		<EditUserContext.Provider
-			value={{
-				editUser,
-				editStatus,
-				editError,
-				openEditModal,
-				closeEditModal,
-				handleEditChange,
-				handleEditSubmit,
-			}}
-		>
-			{children}
-		</EditUserContext.Provider>
-	);
-}
-
-export function useEditUser() {
-	const ctx = useContext(EditUserContext);
-	if (!ctx) {
-		throw new Error("useEditUser must be used within an EditUserProvider");
-	}
-	return ctx;
+	return {
+		editUser,
+		editStatus,
+		editError,
+		isEditing,
+		openEditModal,
+		closeEditModal,
+		startEditing,
+		cancelEditing,
+		handleEditChange,
+		handleEditSubmit,
+	};
 }
