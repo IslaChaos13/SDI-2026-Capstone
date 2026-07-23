@@ -8,13 +8,17 @@ import { useNavigate } from "react-router-dom";
 import EditUserModal from "../components/EditUserModal";
 import { useEditUser } from "../components/UseEditUser.js";
 import MW from "../assets/MW.png";
+import getRandomAnnouncements from "../components/Announcement";
 
 const EMPTY_FORM = {
 	rank: "",
 	first_name: "",
 	last_name: "",
+	duty_title: "",
 	unit: "",
+	supervisor: "",
 	address: "",
+	phone: "",
 	email: "",
 	password: "",
 };
@@ -30,6 +34,7 @@ export default function PersonnelDashboard() {
 	const [facilities, setFacilities] = useState([]);
 	const [loadingDirectory, setLoadingDirectory] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [announcements] = useState(() => getRandomAnnouncements(5));
 
 	const filteredUsers = users.filter((usr) => {
 		const fullName =
@@ -46,6 +51,12 @@ export default function PersonnelDashboard() {
 	const [deleteId, setDeleteId] = useState(null);
 	const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 	const [deleteError, setDeleteError] = useState(null);
+
+	// ------ ASSIGN MANAGER ------- //
+	const [assignUser, setAssignUser] = useState(null); // the personnel row being edited
+	const [assignValue, setAssignValue] = useState("");
+	const [assignStatus, setAssignStatus] = useState("idle"); // idle | submitting
+	const [assignError, setAssignError] = useState(null);
 
 	function handleChange(e) {
 		const { name, value } = e.target;
@@ -68,6 +79,10 @@ export default function PersonnelDashboard() {
 
 			if (!res.ok) {
 				throw new Error(data.error || "Could not create your account.");
+			}
+
+			if (data.user) {
+				setUsers((prev) => [...prev, data.user]);
 			}
 
 			setForm(EMPTY_FORM);
@@ -156,6 +171,49 @@ export default function PersonnelDashboard() {
 			setDeleteError(err.message);
 		} finally {
 			setDeleteId(null);
+		}
+	}
+
+	//---- Assign Manager (supervisor) ----//
+	function openAssignManager(usr) {
+		setAssignError(null);
+		setAssignValue(usr.supervisor || "");
+		setAssignUser(usr);
+	}
+
+	function closeAssignManager() {
+		setAssignUser(null);
+		setAssignValue("");
+		setAssignError(null);
+	}
+
+	async function handleAssignManagerSubmit(e) {
+		e.preventDefault();
+		if (!assignUser) return;
+
+		setAssignStatus("submitting");
+		setAssignError(null);
+
+		try {
+			const res = await fetch(`${API}/users/${assignUser.id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ supervisor: assignValue }),
+			});
+
+			const data = await res.json().catch(() => ({}));
+
+			if (!res.ok) {
+				throw new Error(data.error || "Could not assign a supervisor.");
+			}
+
+			const updated = data.user || { ...assignUser, supervisor: assignValue };
+			handleUserUpdated(updated);
+			closeAssignManager();
+		} catch (err) {
+			setAssignError(err.message);
+		} finally {
+			setAssignStatus("idle");
 		}
 	}
 
@@ -273,18 +331,65 @@ export default function PersonnelDashboard() {
 										onChange={handleChange}
 										required
 									/>
+									<div className="form-field">
+										<label htmlFor="address">Address</label>
+										<input
+											type="text"
+											id="address"
+											name="address"
+											placeholder="Address"
+											value={form.address}
+											onChange={handleChange}
+											required
+										/>
+									</div>
+									<div className="form-field">
+										<label htmlFor="phone">Phone</label>
+										<input
+											type="text"
+											id="phone"
+											name="phone"
+											placeholder="Phone"
+											value={form.phone}
+											onChange={handleChange}
+											required
+										/>
+									</div>
 								</div>
 								<div className="form-field">
-									<label htmlFor="address">Address</label>
+									<label htmlFor="duty_title">Duty Title</label>
 									<input
 										type="text"
-										id="address"
-										name="address"
-										placeholder="Address"
-										value={form.address}
+										id="duty_title"
+										name="duty_title"
+										placeholder="Duty Title"
+										value={form.duty_title}
 										onChange={handleChange}
 										required
 									/>
+								</div>
+								<div className="form-field">
+									<label htmlFor="supervisor">Supervisor</label>
+									<select
+										id="supervisor"
+										name="supervisor"
+										value={form.supervisor}
+										onChange={handleChange}
+										required
+									>
+										<option value="" disabled>
+											Select a supervisor
+										</option>
+										{users.map((usr) => {
+											const label =
+												`${usr.rank ? usr.rank + " " : ""}${usr.first_name ?? ""} ${usr.last_name ?? ""}`.trim();
+											return (
+												<option key={usr.id ?? usr.email} value={label}>
+													{label}
+												</option>
+											);
+										})}
+									</select>
 								</div>
 							</div>
 							<div className="form-field">
@@ -359,6 +464,7 @@ export default function PersonnelDashboard() {
 									deleteId={deleteId}
 									onDelete={requestDelete}
 									onEdit={openEditModal}
+									onAssignManager={openAssignManager}
 								/>
 							))}
 						</ul>
@@ -450,7 +556,12 @@ export default function PersonnelDashboard() {
 							<div className="card-header">
 								<h2>Announcements</h2>
 							</div>
-							<div className="announcement-item"></div>
+							{announcements.map((a, i) => (
+								<div className="announcement-item" key={i}>
+									<span className="tag">{a.tag}</span>
+									<h3>{a.text}</h3>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
@@ -503,11 +614,72 @@ export default function PersonnelDashboard() {
 					</div>
 				</div>
 			)}
+
+			{assignUser && (
+				<div className="modal-overlay" onClick={closeAssignManager}>
+					<div className="modal" onClick={(e) => e.stopPropagation()}>
+						<h2>Assign Manager</h2>
+						<p>
+							Choose a supervisor for{" "}
+							<strong>
+								{assignUser.first_name} {assignUser.last_name}
+							</strong>
+							.
+						</p>
+						<form onSubmit={handleAssignManagerSubmit} className="form-group">
+							<div className="form-field">
+								<label htmlFor="assign-supervisor">Supervisor</label>
+								<select
+									id="assign-supervisor"
+									name="assign-supervisor"
+									value={assignValue}
+									onChange={(e) => setAssignValue(e.target.value)}
+									required
+								>
+									<option value="" disabled>
+										Select a supervisor
+									</option>
+									{users
+										.filter((usr) => usr.id !== assignUser.id)
+										.map((usr) => {
+											const label =
+												`${usr.rank ? usr.rank + " " : ""}${usr.first_name ?? ""} ${usr.last_name ?? ""}`.trim();
+											return (
+												<option key={usr.id ?? usr.email} value={label}>
+													{label}
+												</option>
+											);
+										})}
+								</select>
+							</div>
+							{assignError && <div className="error-text">{assignError}</div>}
+							<div style={{ display: "flex", gap: "8px" }}>
+								<button
+									type="submit"
+									className="btn btn-primary"
+									disabled={assignStatus === "submitting"}
+								>
+									{assignStatus === "submitting"
+										? "Assigning..."
+										: "Assign Supervisor"}
+								</button>
+								<button
+									type="button"
+									className="btn btn-outline"
+									onClick={closeAssignManager}
+								>
+									Cancel
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			)}
 		</Layout>
 	);
 }
 
-function PersonnelRow({ usr, deleteId, onDelete, onEdit }) {
+function PersonnelRow({ usr, deleteId, onDelete, onEdit, onAssignManager }) {
 	return (
 		<li className="personnel-item">
 			<img
@@ -538,7 +710,9 @@ function PersonnelRow({ usr, deleteId, onDelete, onEdit }) {
 			>
 				{deleteId === usr.id ? "Deleting..." : "Delete"}
 			</button>
-			<button type="button">Assign Manager</button>
+			<button type="button" onClick={() => onAssignManager(usr)}>
+				Assign Manager
+			</button>
 		</li>
 	);
 }

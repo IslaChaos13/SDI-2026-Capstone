@@ -4,6 +4,7 @@ import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import UserContext from "../context/UserContext";
+import getRandomAnnouncements from "../components/Announcement";
 
 function formatDate(dateString) {
 	if (!dateString) return "";
@@ -24,7 +25,7 @@ function Dashboard() {
 	let latitude = 32.50283298104374;
 	let longitude = -93.66312248601946;
 	const [showSupport, setShowSupport] = useState(false);
-
+	const [announcements] = useState(() => getRandomAnnouncements(2));
 	const isAdmin = !!LoggedIn?.is_admin;
 
 	useEffect(() => {
@@ -478,16 +479,12 @@ function Dashboard() {
 							<div className="card-header">
 								<h2>Announcements</h2>
 							</div>
-							<div className="announcement-item">
-								<span className="tag">General</span>
-								<h3>Announcement</h3>
-								<span className="date">Date</span>
-							</div>
-							<div className="announcement-item">
-								<span className="tag">General</span>
-								<h3>Announcement</h3>
-								<span className="date">Date</span>
-							</div>
+							{announcements.map((a, i) => (
+								<div className="announcement-item" key={i}>
+									<span className="tag">{a.tag}</span>
+									<h3>{a.text}</h3>
+								</div>
+							))}
 						</div>
 
 						<div className="card weather-panel">

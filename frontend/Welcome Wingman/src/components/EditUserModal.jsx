@@ -31,20 +31,6 @@ function Field({
 	);
 }
 
-/**
- * Fully controlled modal — all state lives in the parent page.
- *
- * Props:
- * - editUser: the user object being edited, or null (modal hidden when null)
- * - isEditing: whether the fields are in edit mode vs read-only view
- * - editStatus: "idle" | "submitting"
- * - editError: string | null
- * - onClose: () => void — called to close the modal entirely
- * - onStartEditing: () => void — called when "Edit" is clicked
- * - onCancelEditing: () => void — called when "Cancel" is clicked (back to read-only, stay open)
- * - onFieldChange: (e) => void — input onChange handler
- * - onSubmit: (e) => void — form onSubmit handler
- */
 export default function EditUserModal({
 	editUser,
 	isEditing,
@@ -103,30 +89,48 @@ export default function EditUserModal({
 							{...fieldProps}
 						/>
 						<Field
+							label="Address"
+							id="edit-address"
+							name="address"
+							required
+							{...fieldProps}
+						/>
+					</div>
+
+					<div className="form-row">
+						<Field
+							label="Duty Title"
+							id="edit-duty_title"
+							name="duty_title"
+							required
+							{...fieldProps}
+						/>
+						<Field
+							label="Supervisor"
+							id="edit-supervisor"
+							name="supervisor"
+							required
+							{...fieldProps}
+						/>
+					</div>
+					<div className="form-row">
+						<Field
 							label="Phone"
 							id="edit-phone"
 							name="phone"
 							required
 							{...fieldProps}
 						/>
+
+						<Field
+							label="Email"
+							id="edit-email"
+							name="email"
+							type="email"
+							required
+							{...fieldProps}
+						/>
 					</div>
-
-					<Field
-						label="Address"
-						id="edit-address"
-						name="address"
-						required
-						{...fieldProps}
-					/>
-
-					<Field
-						label="Email"
-						id="edit-email"
-						name="email"
-						type="email"
-						required
-						{...fieldProps}
-					/>
 
 					{editError && <div className="error-text">{editError}</div>}
 

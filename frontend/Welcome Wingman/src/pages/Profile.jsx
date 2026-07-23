@@ -53,9 +53,7 @@ function Profile() {
 								? `${LoggedIn.first_name} ${LoggedIn.last_name}`
 								: "Guest"}
 						</h1>
-						<p>
-							{LoggedIn?.rank} · {LoggedIn?.unit} · Systems Analyst
-						</p>
+						<p>{LoggedIn?.unit} · Systems Analyst</p>
 						<div className="profile-header-tags">
 							<span className="tag">{LoggedIn?.rank}</span>
 							<span className="badge badge-complete">Active</span>
@@ -86,7 +84,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Duty Title</span>
-							<span className="value">Systems Analyst</span>
+							<span className="value">{LoggedIn?.duty_title}</span>
 						</div>
 						<div className="info-row">
 							<span className="label">Email</span>
@@ -127,7 +125,7 @@ function Profile() {
 						</div>
 						<div className="info-row">
 							<span className="label">Supervisor</span>
-							<span className="value">TSgt. R. Martinez</span>
+							<span className="value">{LoggedIn?.supervisor}</span>
 						</div>
 					</div>
 

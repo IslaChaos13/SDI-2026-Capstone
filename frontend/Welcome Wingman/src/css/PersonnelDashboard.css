@@ -141,17 +141,18 @@ form.form-group .form-field {
 }
 
 /* .modal {
-	max-width: 520px;
 	width: 90%;
-	color: var(--text); */
-/* } */
-
-/* .form-field-readonly-info,
-.form-field-readonly-info label {
-	font-size: 12px;
-	font-weight: 600;
-	color: var(--text-secondary);
-} */
+	max-width: 720px; /* was 520px */
+	border-radius: 1rem;
+	border: 1px solid rgba(7, 89, 133, 0.6);
+	background: #0b1526;
+	box-shadow: 0 0 40px -10px rgba(56, 189, 248, 0.25);
+	padding: 2.5rem; /* slightly more breathing room */
+}
+.modal {
+	max-height: 90vh;
+	overflow-y: auto;
+}
 .modal-overlay {
 	position: fixed;
 	inset: 0;
@@ -163,16 +164,6 @@ form.form-group .form-field {
 	z-index: 50;
 }
 
-.modal {
-	width: 90%;
-	max-width: 520px;
-	border-radius: 1rem;
-	border: 1px solid rgba(7, 89, 133, 0.6);
-	background: #0b1526;
-	box-shadow: 0 0 40px -10px rgba(56, 189, 248, 0.25);
-	padding: 2rem;
-}
-
 .modal h2 {
 	text-align: center;
 	font-size: 2rem;
@@ -180,7 +171,7 @@ form.form-group .form-field {
 	margin: 0 0 2rem;
 	color: #22d3ee;
 	font-family: Georgia, "Times New Roman", serif;
-}
+} */
 
 .form-group {
 	display: flex;
