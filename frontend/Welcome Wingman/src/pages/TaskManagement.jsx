@@ -509,59 +509,59 @@ function TaskManagement() {
 										);
 									})
 									.map((ut) => (
-									<tr key={ut.id}>
-										<td>
-											{ut.first_name} {ut.last_name}
-										</td>
-										<td>{ut.title}</td>
-										<td>
-											<span className={`priority priority-${ut.priority.toLowerCase()}`}>
-												{ut.priority}
-											</span>
-										</td>
-										<td>{formatDate(ut.due_date)}</td>
-										<td>
-											{getStatus(ut) === "Completed" && (
-												<span className="badge badge-complete">Completed</span>
-											)}
-											{getStatus(ut) === "Overdue" && (
-												<span className="badge badge-overdue">Overdue</span>
-											)}
-											{getStatus(ut) === "Pending" && (
-												<span className="badge badge-pending">Pending</span>
-											)}
-										</td>
-										<td>
-											<span className="assigned-name">Admin User</span>
-											<span className="assigned-date">Assigned: Date</span>
-										</td>
-										<td>
-											<div className="assignment-actions">
-												<button
-													className="btn btn-outline btn-sm"
-													type="button"
-													onClick={() => setViewingTask(ut)}
-												>
-													View
-												</button>
-												<button
-													className="btn btn-outline btn-sm"
-													type="button"
-													onClick={() => setEditingTask({ ...ut })}
-												>
-													Edit
-												</button>
-												<button
-													className="btn btn-outline btn-sm"
-													type="button"
-													onClick={() => handleRemoveAssignment(ut.id)}
-												>
-													Remove
-												</button>
-											</div>
-										</td>
-									</tr>
-								))}
+										<tr key={ut.id}>
+											<td>
+												{ut.first_name} {ut.last_name}
+											</td>
+											<td>{ut.title}</td>
+											<td>
+												<span className={`priority priority-${ut.priority.toLowerCase()}`}>
+													{ut.priority}
+												</span>
+											</td>
+											<td>{formatDate(ut.due_date)}</td>
+											<td>
+												{getStatus(ut) === "Completed" && (
+													<span className="badge badge-complete">Completed</span>
+												)}
+												{getStatus(ut) === "Overdue" && (
+													<span className="badge badge-overdue">Overdue</span>
+												)}
+												{getStatus(ut) === "Pending" && (
+													<span className="badge badge-pending">Pending</span>
+												)}
+											</td>
+											<td>
+												<span className="assigned-name">Admin User</span>
+												<span className="assigned-date">Assigned: Date</span>
+											</td>
+											<td>
+												<div className="assignment-actions">
+													<button
+														className="btn btn-outline btn-sm"
+														type="button"
+														onClick={() => setViewingTask(ut)}
+													>
+														View
+													</button>
+													<button
+														className="btn btn-outline btn-sm"
+														type="button"
+														onClick={() => setEditingTask({ ...ut })}
+													>
+														Edit
+													</button>
+													<button
+														className="btn btn-outline btn-sm"
+														type="button"
+														onClick={() => handleRemoveAssignment(ut.id)}
+													>
+														Remove
+													</button>
+												</div>
+											</td>
+										</tr>
+									))}
 							</tbody>
 						</table>
 					</div>
@@ -575,46 +575,46 @@ function TaskManagement() {
 						{[...tasks]
 							.sort((a, b) => archivedTaskIds.includes(a.id) - archivedTaskIds.includes(b.id))
 							.map((t) => (
-							<div
-								className={
-									archivedTaskIds.includes(t.id)
-										? "card library-card archived"
-										: "card library-card"
-								}
-								key={t.id}
-							>
-								<div className="library-card-top">
-									<h3>{t.title}</h3>
+								<div
+									className={
+										archivedTaskIds.includes(t.id)
+											? "card library-card archived"
+											: "card library-card"
+									}
+									key={t.id}
+								>
+									<div className="library-card-top">
+										<h3>{t.title}</h3>
+									</div>
+									<div className="library-card-meta">{t.action_item}</div>
+									<div className="library-card-footer">
+										<button
+											className="btn btn-primary btn-sm"
+											type="button"
+											onClick={() => {
+												setAssignTaskId(t.id);
+												setMode("existing");
+											}}
+										>
+											Assign
+										</button>
+										<button
+											className="btn btn-outline btn-sm"
+											type="button"
+											onClick={() => setEditingLibraryTask({ ...t })}
+										>
+											Edit
+										</button>
+										<button
+											className="btn btn-outline btn-sm"
+											type="button"
+											onClick={() => toggleArchive(t.id)}
+										>
+											{archivedTaskIds.includes(t.id) ? "Unarchive" : "Archive"}
+										</button>
+									</div>
 								</div>
-								<div className="library-card-meta">{t.action_item}</div>
-								<div className="library-card-footer">
-									<button
-										className="btn btn-primary btn-sm"
-										type="button"
-										onClick={() => {
-											setAssignTaskId(t.id);
-											setMode("existing");
-										}}
-									>
-										Assign
-									</button>
-									<button
-										className="btn btn-outline btn-sm"
-										type="button"
-										onClick={() => setEditingLibraryTask({ ...t })}
-									>
-										Edit
-									</button>
-									<button
-										className="btn btn-outline btn-sm"
-										type="button"
-										onClick={() => toggleArchive(t.id)}
-									>
-										{archivedTaskIds.includes(t.id) ? "Unarchive" : "Archive"}
-									</button>
-								</div>
-							</div>
-						))}
+							))}
 					</div>
 				</div>
 

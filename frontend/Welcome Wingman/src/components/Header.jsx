@@ -37,7 +37,7 @@ function Header() {
 				ut.user_id
 					? ut.user_id === LoggedIn.id
 					: ut.first_name === LoggedIn.first_name &&
-						ut.last_name === LoggedIn.last_name,
+					ut.last_name === LoggedIn.last_name,
 			)
 			.map((ut) => {
 				const { status, daysRemaining } = getDueStatus(
@@ -163,4 +163,5 @@ function Header() {
 	);
 }
 
+export default Header;
 export default Header;

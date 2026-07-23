@@ -9,7 +9,7 @@ import { useEditUser } from "../components/UseEditUser.js";
 //TODO REWORK PAGE
 
 function Profile() {
-	const { LoggedIn, setLoggedIn } = useContext(UserContext);
+	const { LoggedIn } = useContext(UserContext);
 
 	function handleUserUpdated(updated) {
 		setLoggedIn((prev) => ({ ...prev, ...updated }));
@@ -49,8 +49,8 @@ function Profile() {
 					</div>
 					<div className="profile-header-info">
 						<h1>
-							{LoggedIn?.first_name && LoggedIn?.last_name
-								? `${LoggedIn.first_name} ${LoggedIn.last_name}`
+							{user?.first_name && user?.last_name
+								? `${user.first_name} ${user.last_name}`
 								: "Guest"}
 						</h1>
 						<p>{LoggedIn?.unit} · Systems Analyst</p>

@@ -3,6 +3,7 @@
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
 }
+
 .mode-tab {
   padding: 8px 16px;
   border-radius: var(--radius-sm);
@@ -13,6 +14,7 @@
   font-family: var(--font-base);
   cursor: pointer;
 }
+
 .mode-tab.active {
   background: var(--primary);
   color: var(--bg);
@@ -32,6 +34,7 @@
   font-size: 13px;
   color: var(--text);
 }
+
 .assigned-date {
   display: block;
   font-size: 11px;
@@ -43,9 +46,11 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
 }
+
 .assign-panel-grid .form-group.full {
   grid-column: 1 / -1;
 }
+
 @media (max-width: 700px) {
   .assign-panel-grid {
     grid-template-columns: 1fr;
@@ -59,10 +64,12 @@
   align-items: center;
   margin-bottom: var(--space-lg);
 }
+
 .filter-toolbar .search-bar {
   flex: 1;
   min-width: 220px;
 }
+
 .filter-toolbar select {
   background: var(--bg);
   border: 1px solid var(--border-strong);
@@ -86,9 +93,11 @@
 .assignments-scroll .priority-high {
   color: var(--danger);
 }
+
 .assignments-scroll .priority-medium {
   color: var(--warning);
 }
+
 .assignments-scroll .priority-low {
   color: var(--success);
 }
@@ -106,6 +115,7 @@
   gap: var(--space-sm);
   flex: 0 0 240px;
 }
+
 .library-card.archived {
   opacity: 0.5;
 }
@@ -114,15 +124,18 @@
   color: var(--danger);
   font-size: 13px;
 }
+
 .library-card-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
+
 .library-card h3 {
   margin: 0 0 4px;
   font-size: 15px;
 }
+
 .library-card-meta {
   display: flex;
   align-items: center;
@@ -130,6 +143,7 @@
   font-size: 12px;
   color: var(--text-secondary);
 }
+
 .library-card-footer {
   display: flex;
   gap: 6px;
@@ -145,22 +159,26 @@
   padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--border);
 }
+
 .user-summary-row:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
+
 .user-summary-name {
   width: 100px;
   flex-shrink: 0;
   font-size: 13px;
   font-weight: 600;
 }
+
 .user-summary-counts {
   width: 100px;
   flex-shrink: 0;
   font-size: 12px;
   color: var(--text-secondary);
 }
+
 .user-summary-row .progress-track {
   flex: 1;
 }

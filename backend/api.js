@@ -8,16 +8,34 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = 8000;
 const knex = require("knex")(require("./knexfile.js")["development"]);
+const knex = require("knex")(require("./knexfile.js")["development"]);
 
+app.use(cookieParser());
 app.use(cookieParser());
 // change the port here once the front end is up
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 
+app.get("/db_status", async (req, res) => {
+	try {
+		await knex.raw("SELECT 1");
+		res.json({ status: "ok" });
+	} catch (err) {
+		res
+			.status(500)
+			.json({ error: "DB connection failed", details: err.message });
+	}
+});
 app.get("/db_status", async (req, res) => {
 	try {
 		await knex.raw("SELECT 1");
@@ -43,6 +61,7 @@ app.get("/users", async (req, res) => {
 	}
 });
 
+
 app.get("/tasks", async (req, res) => {
 	try {
 		const [tasks] = await Promise.all([knex("tasks").select("*")]);
@@ -55,12 +74,27 @@ app.get("/tasks", async (req, res) => {
 			message: "Failed to fetch data",
 		});
 	}
-});
+		res.status(200).json({
+			tasks: tasks,
+		});
+	});
 
 app.get("/directory", async (req, res) => {
 	try {
 		const [directory] = await Promise.all([knex("directory").select("*")]);
+app.get("/directory", async (req, res) => {
+	try {
+		const [directory] = await Promise.all([knex("directory").select("*")]);
 
+		res.status(200).json({
+			directory: directory,
+		});
+	} catch (err) {
+		res.status(500).json({
+			message: "Failed to fetch data",
+		});
+	}
+});
 		res.status(200).json({
 			directory: directory,
 		});
@@ -347,7 +381,28 @@ app.delete("/tasks/:id", async (req, res) => {
 		res.status(500).json({ message: "failed to delete" });
 	}
 });
+app.delete("/tasks/:id", async (req, res) => {
+	console.log("params:", req.params);
+	try {
+		await knex("user_tasks").where({ task_id: req.params.id }).del();
+		await knex("tasks").where({ id: req.params.id }).del();
+		res.json({ message: "task deleted!" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "failed to delete" });
+	}
+});
 
+app.delete("/user_tasks/:id", async (req, res) => {
+	console.log("params:", req.params);
+	try {
+		await knex("user_tasks").where({ id: req.params.id }).del();
+		res.json({ message: "user_task deleted" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "failed to delete" });
+	}
+});
 app.delete("/user_tasks/:id", async (req, res) => {
 	console.log("params:", req.params);
 	try {
@@ -370,7 +425,29 @@ app.delete("/users/:id", async (req, res) => {
 		res.status(500).json({ message: "failed to delete" });
 	}
 });
+app.delete("/users/:id", async (req, res) => {
+	console.log("params:", req.params);
+	try {
+		await knex("user_tasks").where({ user_id: req.params.id }).del();
+		await knex("users").where({ id: req.params.id }).del();
+		res.json({ message: "user deleted" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "failed to delete" });
+	}
+});
 
+app.delete("/directory/:id", async (req, res) => {
+	console.log("params:", req.params);
+	try {
+		await knex("directory_poc").where({ id_users: req.params.id }).del();
+		await knex("directory").where({ id: req.params.id }).del();
+		res.json({ message: "directory deleted" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "failed to delete" });
+	}
+});
 app.delete("/directory/:id", async (req, res) => {
 	console.log("params:", req.params);
 	try {
@@ -449,4 +526,6 @@ app.put("/users/:id", async (req, res) => {
 
 app.listen(PORT, () => {
 	console.log(`Server running at http://localhost:${PORT}`);
+	console.log(`Server running at http://localhost:${PORT}`);
 });
+

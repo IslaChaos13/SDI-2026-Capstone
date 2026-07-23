@@ -2,6 +2,7 @@ import Layout from '../components/Layout.jsx'
 import '../styles/theme.css'
 import '../styles/AdminDashboard.css'
 import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 function AdminDashboard() {
   const [users, setUsers] = useState([])
@@ -65,6 +66,7 @@ function AdminDashboard() {
               <div className="stat-icon">👥</div>
               <div>
                 <div className="stat-value">{totalPersonnel}</div>
+                <div className="stat-value">{totalPersonnel}</div>
                 <div className="stat-label">Total Personnel</div>
               </div>
             </div>
@@ -79,6 +81,7 @@ function AdminDashboard() {
               <div className="stat-icon">⏳</div>
               <div>
                 <div className="stat-value">{inProcessingPersonnel}</div>
+                <div className="stat-value">{inProcessingPersonnel}</div>
                 <div className="stat-label">In-Processing</div>
               </div>
             </div>
@@ -86,12 +89,14 @@ function AdminDashboard() {
               <div className="stat-icon">✅</div>
               <div>
                 <div className="stat-value">{completedPersonnel}</div>
+                <div className="stat-value">{completedPersonnel}</div>
                 <div className="stat-label">Completed</div>
               </div>
             </div>
             <div className="card stat-card">
               <div className="stat-icon">⚠</div>
               <div>
+                <div className="stat-value">{overdueTasks}</div>
                 <div className="stat-value">{overdueTasks}</div>
                 <div className="stat-label">Overdue Tasks</div>
               </div>
@@ -117,9 +122,11 @@ function AdminDashboard() {
                     width: '150px',
                     height: '150px',
                     background: `conic-gradient(var(--accent) 0% ${completionPercent}%, rgba(184, 199, 217, 0.18) ${completionPercent}% 100%)`,
+                    background: `conic-gradient(var(--accent) 0% ${completionPercent}%, rgba(184, 199, 217, 0.18) ${completionPercent}% 100%)`,
                   }}
                 >
                   <div className="donut-chart-inner" style={{ width: '106px', height: '106px' }}>
+                    <span className="value">{completionPercent}%</span>
                     <span className="value">{completionPercent}%</span>
                     <span className="label">Complete</span>
                   </div>
@@ -127,13 +134,16 @@ function AdminDashboard() {
                 <div className="readiness-figures">
                   <div className="readiness-figure">
                     <span className="figure-value">{totalPersonnel}</span>
+                    <span className="figure-value">{totalPersonnel}</span>
                     <span className="figure-label">Total Personnel</span>
                   </div>
                   <div className="readiness-figure">
                     <span className="figure-value">{completedPersonnel}</span>
+                    <span className="figure-value">{completedPersonnel}</span>
                     <span className="figure-label">Completed</span>
                   </div>
                   <div className="readiness-figure">
+                    <span className="figure-value">{inProcessingPersonnel}</span>
                     <span className="figure-value">{inProcessingPersonnel}</span>
                     <span className="figure-label">In-Processing</span>
                   </div>
@@ -269,27 +279,27 @@ function AdminDashboard() {
                         .includes(searchTerm.toLowerCase()),
                     )
                     .map((u) => {
-                    const tasks = userTasks.filter(
-                      (ut) => ut.first_name === u.first_name && ut.last_name === u.last_name,
-                    )
-                    const done = tasks.filter((t) => t.is_complete).length
-                    const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0
-                    const status = pct === 100 ? 'complete' : 'pending'
-                    return (
-                      <tr key={u.id}>
-                        <td>{u.first_name} {u.last_name}</td>
-                        <td>{u.rank}</td>
-                        <td>Unit A</td>
-                        <td>
-                          <div className="table-progress">
-                            <div className="track"><div className="fill" style={{ width: `${pct}%` }}></div></div>
-                            <span>{pct}%</span>
-                          </div>
-                        </td>
-                        <td><span className={`badge badge-${status}`}>{pct === 100 ? 'Completed' : 'In-Processing'}</span></td>
-                      </tr>
-                    )
-                  })}
+                      const tasks = userTasks.filter(
+                        (ut) => ut.first_name === u.first_name && ut.last_name === u.last_name,
+                      )
+                      const done = tasks.filter((t) => t.is_complete).length
+                      const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0
+                      const status = pct === 100 ? 'complete' : 'pending'
+                      return (
+                        <tr key={u.id}>
+                          <td>{u.first_name} {u.last_name}</td>
+                          <td>{u.rank}</td>
+                          <td>Unit A</td>
+                          <td>
+                            <div className="table-progress">
+                              <div className="track"><div className="fill" style={{ width: `${pct}%` }}></div></div>
+                              <span>{pct}%</span>
+                            </div>
+                          </td>
+                          <td><span className={`badge badge-${status}`}>{pct === 100 ? 'Completed' : 'In-Processing'}</span></td>
+                        </tr>
+                      )
+                    })}
                 </tbody>
               </table>
             </div>
