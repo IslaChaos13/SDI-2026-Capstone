@@ -6,6 +6,7 @@ import PersonnelDashboard from "./pages/PersonnelDashboard";
 import Dashboard from "./pages/Dashboard";
 import BaseDirectory from "./pages/BaseDirectory";
 import ErrorPage from "./pages/ErrorPage";
+import ReportsPage from "./pages/ReportsPage";
 import Navbar from "./components/Navbar";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
@@ -70,6 +71,7 @@ function App() {
 							path="/:UserID/pdashboard"
 							element={<PersonnelDashboard />}
 						/>
+						<Route path="/reports" element={<ReportsPage />} />
 						<Route path="/*" element={<ErrorPage />} />
 					</Routes>
 				</div>
