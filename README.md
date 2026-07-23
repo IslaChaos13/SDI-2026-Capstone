@@ -1,5 +1,80 @@
 # SDI-2026-Capstone
 
+## Welcome Wingman
+Welcome Wingman is a full stack web application designed to simplify the military in-processing experience. The application provides Airmen with a centralized platform to complete required tasks, access important base resources, and monitor their progress, while giving administrators tools to manage personnel and assignments.
+
+## Features
+
+## User Dashboard
+
+Provides users with an overview of their in-processing progress.
+
+- Personalized greeting based on logged in user
+- Progress and readiness metrics
+- Upcoming tasks
+- Today's schedule
+- Quick actions
+- Notifications
+- Important contacts
+- Current weather
+
+## Checklist
+
+Track all required in-processing tasks.
+
+- View assigned tasks
+- Filter by All, Completed, and Incomplete
+- Mark tasks complete
+- Track overall progress
+
+## Base Directory
+
+Find important offices and resources around the installation.
+
+- Interactive base map
+- Office search
+- Important phone numbers
+- Frequently used contacts
+- Quick resource links
+
+## Profile
+
+Manage personal information and monitor activity.
+
+- User information
+- Supervisor information
+- Recent activity
+- Achievements
+
+## Personnel Dashboard (Admin)
+
+Manage assigned personnel.
+
+- View personnel
+- Search personnel
+- Add personnel
+- Monitor member status
+
+## Assignment Management
+
+Manage tasks assigned to personnel.
+
+- View all assignments
+- Search assignments
+- Create assignments
+- Edit assignment details
+
+## Authentication
+
+Secure authentication using JWT and encrypted passwords.
+
+- Login
+- Logout
+- Protected routes
+- Cookie-based authentication
+
+
+
 ## DOCKER COMMANDS
 # INITIAL SETUP
 The backend team is awesome and Dockerized the database. This means that if you do a `git pull` you should get a `docker-compose.yml` and a `Dockerfile` in the backend directory.
@@ -40,11 +115,22 @@ docker start wingman-db
 ### CONNECT TO WINGMAN DATABASE IN CONTAINER
 docker exec -it wingman-db psql -U postgres -d WingmanDatabase
 
+## Built With
 
-# VITEST 
-### Commands
-cd backend
-Run npm run runServer
-make sure container is running
-npm test
-q (quits test)
+### Frontend
+- React
+- Vite
+
+### Backend
+- Node.js
+- Express.js
+- PostgreSQL
+- Knex.js
+
+### Authentication
+- JSON Web Tokens
+- bcrypt
+
+### APIs
+- Open-Meteo
+

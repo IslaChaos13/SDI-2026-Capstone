@@ -377,6 +377,7 @@
 .quick-action-tile:hover {
   border-color: var(--accent);
   color: var(--accent);
+  cursor: pointer;
 }
 .quick-action-tile .icon {
   font-size: 20px;
@@ -499,10 +500,14 @@
   font-size: 11px;
   color: var(--text-secondary);
 }
-.weather-day .day-icon {
+.weather-day {
   font-size: 16px;
   display: block;
   margin-bottom: 4px;
+}
+
+.rain-wind {
+  font-size: 20px;
 }
 
 .activity-item {

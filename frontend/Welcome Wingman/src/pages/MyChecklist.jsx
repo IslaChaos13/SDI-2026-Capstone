@@ -1,123 +1,103 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import { CheckCircle2, Circle, ListChecks } from "lucide-react";
 
+import UserContext from "../context/UserContext";
+import UserIcon from "../components/UserIcon";
+import LoginButton from "../components/LoginButton";
 import Layout from "../components/Layout";
 import "../css/theme.css";
-import "../styles/MyChecklist.css"
-
-// ---------------- Permissions ----------------
-
-const PERMISSIONS = {
-	admin: ["manage_users", "assign_tasks", "manage_tasks", "view_own_tasks"],
-	task_manager: ["manage_tasks", "assign_tasks", "view_own_tasks"],
-	user: ["view_own_tasks"],
-};
-
-const hasPermission = (user, permission) =>
-	user?.roles?.some((role) => PERMISSIONS[role]?.includes(permission));
+import "../styles/MyChecklist.css";
 
 // ---------------- Component ----------------
 
 export default function MyChecklist() {
+	const { LoggedIn } = useContext(UserContext);
+
 	const API = "http://localhost:8000";
 
 	const [tasks, setTasks] = useState([]);
-	const [users, setUsers] = useState([]);
 	const [userTasks, setUserTasks] = useState([]);
 	const [taskItem, setTaskItem] = useState(null);
-
-  const [notes, setNotes] = useState("")
-
-	const [currentUserId, setCurrentUserId] = useState("");
+	const [notes, setNotes] = useState("");
 	const [filter, setFilter] = useState("all");
-  //----------------Save Notes ---------------
+	//----------------Save Notes ---------------
 
-  const saveNotes = async () => {
-  try {
-    const response = await fetch(`${API}/notes`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        task_id: taskItem.id,
-        notes: notes,
-      }),
-    });
+	const saveNotes = async () => {
+		if (!taskItem) return;
 
-    if (!response.ok) {
-      throw new Error("Failed to save notes");
-    }
+		try {
+			const response = await fetch(`${API}/user_tasks`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					id: taskItem.id,
+					note: notes,
+					is_complete: taskItem.is_complete,
+				}),
+			});
 
-    const data = await response.json();
-    console.log("Saved:", data);
+			if (!response.ok) {
+				throw new Error("Failed to save notes");
+			}
 
-    setTaskItem(null);
-    setNotes("");
+			// Update the page state so the new note appears immediately
+			setUserTasks((prev) =>
+				prev.map((ut) => (ut.id === taskItem.id ? { ...ut, note: notes } : ut)),
+			);
 
-  } catch (error) {
-    console.error("Error saving notes:", error);
-  }
-};
-
+			// Clear modal
+			setTaskItem(null);
+			setNotes("");
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	// ---------------- Fetch ----------------
 
 	useEffect(() => {
 		Promise.all([
 			fetch(`${API}/tasks`).then((r) => r.json()),
-			fetch(`${API}/users`).then((r) => r.json()),
 			fetch(`${API}/user_tasks`).then((r) => r.json()),
 		])
-			.then(([taskData, userData, userTaskData]) => {
+			.then(([taskData, userTaskData]) => {
 				setTasks(taskData.tasks || []);
-				setUsers(userData.users || []);
 				setUserTasks(userTaskData || []);
-
-				if (userData.users?.length) {
-					setCurrentUserId(userData.users[0].id);
-				}
 			})
 			.catch(console.error);
 	}, []);
 
-	// ---------------- Current User ----------------
-
-	const currentUser = users.find((u) => u.id === currentUserId);
-
-	const isAdmin = hasPermission(currentUser, "manage_users");
-	const canManage = hasPermission(currentUser, "manage_tasks");
-
 	// ---------------- Visible Tasks ----------------
 
 	const visibleTasks = useMemo(() => {
-		if (!currentUser) return [];
+		if (!LoggedIn) return [];
 
-		let results = tasks;
+		let results = userTasks
+			.filter(
+				(ut) =>
+					ut.first_name === LoggedIn.first_name &&
+					ut.last_name === LoggedIn.last_name,
+			)
 
-		// Normal users only see assigned tasks
-		if (!isAdmin && !canManage) {
-			const assignedTitles = userTasks
-				.filter(
-					(ut) =>
-						ut.first_name === currentUser.first_name &&
-						ut.last_name === currentUser.last_name,
-				)
-				.map((ut) => ut.title);
+			// .map((ut) => {
+			// 	const task = tasks.find((t) => t.id === ut.task_id);
+			// 	return { ...ut, ...task, note: ut.note };
+			// })
+			.filter((task) => task.id);
 
-			results = tasks.filter((task) => assignedTitles.includes(task.title));
-		}
-
-		if (filter === "complete") {
-			results = results.filter((t) => t.is_complete);
-		}
-
-		if (filter === "incomplete") {
+		if (filter === "complete") results = results.filter((t) => t.is_complete);
+		if (filter === "incomplete")
 			results = results.filter((t) => !t.is_complete);
-		}
 
 		return results;
-	}, [tasks, currentUser, userTasks, filter, isAdmin, canManage]);
+	}, [userTasks, tasks, LoggedIn, filter]);
+
+	// console.log("LoggedIn:", LoggedIn);
+	// console.log("userTasks:", userTasks);
+	// console.log("tasks:", tasks);
+	// console.log("visibleTasks:", visibleTasks);
 
 	// ---------------- Progress ----------------
 
@@ -129,15 +109,43 @@ export default function MyChecklist() {
 
 	// ---------------- Toggle ----------------
 
-	const toggleTask = (id) => {
-		setTasks((prev) =>
-			prev.map((t) =>
-				t.id === id ? { ...t, is_complete: !t.is_complete } : t,
+	const toggleTask = async (taskId) => {
+		const target = userTasks.find((ut) => ut.id === taskId);
+		if (!target) return;
+
+		const updated = { ...target, is_complete: !target.is_complete };
+
+		setUserTasks((prev) =>
+			prev.map((ut) =>
+				ut.id === taskId ? { ...ut, is_complete: !ut.is_complete } : ut,
 			),
 		);
-	};
 
-	// ------------------- Format Date --------
+		setTaskItem((prev) =>
+			prev && prev.id === taskId
+				? { ...prev, is_complete: !prev.is_complete }
+				: prev,
+		);
+
+		try {
+			const response = await fetch(`${API}/user_tasks`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					id: updated.id,
+					note: updated.note,
+					is_complete: updated.is_complete,
+				}),
+			});
+			if (!response.ok) throw new Error("Failed to update task status");
+		} catch (error) {
+			console.error(error);
+			setUserTasks((prev) =>
+				prev.map((ut) => (ut.id === taskId ? target : ut)),
+			);
+		}
+	};
+	// ------------------ Format Date --------
 
 	const formatDate = (isoString) =>
 		new Date(isoString).toLocaleDateString("en-US", {
@@ -153,7 +161,11 @@ export default function MyChecklist() {
 			<div className="page">
 				<div className="page-header">
 					<h1>My Checklist</h1>
-					<p>Track your in-processing tasks.</p>
+					<p>
+						{LoggedIn?.first_name
+							? `Track ${LoggedIn.first_name}'s in-processing tasks.`
+							: "Track your in-processing tasks."}
+					</p>
 				</div>
 
 				<div className="card checklist-progress-card">
@@ -173,17 +185,6 @@ export default function MyChecklist() {
 				</div>
 
 				<div className="filter-bar">
-					<select
-						value={currentUserId}
-						onChange={(e) => setCurrentUserId(Number(e.target.value))}
-					>
-						{users.map((u) => (
-							<option key={u.id} value={u.id}>
-								{u.first_name} {u.last_name}
-							</option>
-						))}
-					</select>
-
 					<button
 						className={filter === "all" ? "filter-chip active" : "filter-chip"}
 						onClick={() => setFilter("all")}
@@ -210,33 +211,45 @@ export default function MyChecklist() {
 					</button>
 				</div>
 
-				<div className="card">
-					<h2>
-						<ListChecks size={18} /> Tasks ({visibleTasks.length})
-					</h2>
+				<div className="checklist-table">
+					<div className="task-row task-row-header">
+						<h2>
+							<ListChecks size={18} /> Tasks ({visibleTasks.length})
+						</h2>
+						<h3>Priority</h3>
+						<h3>Due Date</h3>
+					</div>
 
 					<ul className="task-list">
 						{visibleTasks.map((task) => (
 							<li
 								key={task.id}
-								className="task-item"
-								onClick={() => setTaskItem(task)}
+								className="task-item task-row"
+								onClick={() => {
+									setTaskItem(task);
+									setNotes(task.note || "");
+								}}
 							>
-								<button
-									onClick={(e) => {
-										e.stopPropagation();
-										toggleTask(task.id);
-									}}
-								>
-									{task.is_complete ? (
-										<CheckCircle2 size={10} />
-									) : (
-										<Circle size={10} />
-									)}
-								</button>
+								<div className="task-title-cell">
+									<button
+										onClick={(e) => {
+											e.stopPropagation();
+											toggleTask(task.id);
+										}}
+									>
+										{task.is_complete ? (
+											<CheckCircle2 size={10} />
+										) : (
+											<Circle size={10} />
+										)}
+									</button>
 
-								<span className={task.is_complete ? "completed-task" : ""}>
-									{task.title}
+									<span className={task.is_complete ? "completed-task" : ""}>
+										{task.title}
+									</span>
+								</div>
+								<span className="task-priority">{task.priority}</span>
+								<span className="task-priority">
 									{formatDate(task.due_date)}
 								</span>
 							</li>
@@ -247,25 +260,45 @@ export default function MyChecklist() {
 						<div className="modal-overlay" onClick={() => setTaskItem(null)}>
 							<div className="modal" onClick={(e) => e.stopPropagation()}>
 								<h2>{taskItem.title}</h2>
-								<p>Due: {formatDate(taskItem.due_date)}</p>
 								<p>Details: {taskItem.action_item}</p>
+								<p>Due Date: {formatDate(taskItem.due_date)}</p>
+
 								<div className="modal-notes-group">
-									<label htmlFor="tasks-notes" classname="modal-notes-label">
+									<label htmlFor="tasks-notes" className="modal-notes-label">
 										Notes
 									</label>
 									<textarea
 										id="task-notes"
 										className="input"
-										placehodler="Add any notes about this task..."
+										placeholder="Add any notes about this task..."
 										rows={3}
-
+										value={notes}
+										onChange={(e) => setNotes(e.target.value)}
 									/>
 								</div>
-                <button button onClick={() => {
-                    setTaskItem(task);
-                    setNotes(task.notes || "");
-                    }}>Save </button>
-
+								<button onClick={() => saveNotes()}>Save</button>
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										toggleTask(taskItem.id);
+									}}
+									style={{
+										color: taskItem.is_complete ? "#ffffff" : "#333333",
+										backgroundColor: taskItem.is_complete
+											? "#22c55e"
+											: "#e5e7eb",
+									}}
+								>
+									{taskItem.is_complete ? (
+										<>
+											<CheckCircle2 size={10} /> <span>Completed</span>
+										</>
+									) : (
+										<>
+											<Circle size={10} /> <span>Incomplete</span>
+										</>
+									)}
+								</button>
 								<button onClick={() => setTaskItem(null)}>Close</button>
 							</div>
 						</div>
