@@ -1,0 +1,12 @@
+.card {
+    margin-bottom: 'var(--space-lg)'
+}
+
+.progress-track {
+    width: '120px';
+}
+
+td {
+    text-align: 'center';
+    color: 'var(--text-secondary)';
+}
