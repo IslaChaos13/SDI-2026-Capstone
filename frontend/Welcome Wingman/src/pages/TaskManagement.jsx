@@ -251,7 +251,7 @@ function TaskManagement() {
 					</div>
 				</div>
 
-				<div className="card" style={{ marginBottom: "var(--space-lg)" }}>
+				<div className="card" id="Assign Task" style={{ marginBottom: "var(--space-lg)" }}>
 					<div className="card-header">
 						<h2>Assign Task</h2>
 					</div>
@@ -591,10 +591,11 @@ function TaskManagement() {
 										<button
 											className="btn btn-primary btn-sm"
 											type="button"
-											onClick={() => {
-												setAssignTaskId(t.id);
-												setMode("existing");
-											}}
+											onClick={() =>
+										document
+											.getElementById("Assign Task")
+											?.scrollIntoView({ behavior: "smooth", block: "start" })
+									}
 										>
 											Assign
 										</button>

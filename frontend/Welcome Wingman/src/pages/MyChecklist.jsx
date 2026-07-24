@@ -110,7 +110,6 @@ export default function MyChecklist() {
 	}, []);
 
 	// ---------------- Visible Tasks ----------------
-
 	const visibleTasks = useMemo(() => {
 		if (!LoggedIn) return [];
 
@@ -129,19 +128,35 @@ export default function MyChecklist() {
 
 		if (filter === "complete") results = results.filter((t) => t.is_complete);
 		if (filter === "incomplete")
-			if (filter === "complete") results = results.filter((t) => t.is_complete);
-		if (filter === "incomplete")
 			results = results.filter((t) => !t.is_complete);
 
 		return results;
 	}, [userTasks, tasks, LoggedIn, filter]);
+	//----------------------------------------------
+	const allTasks = useMemo(() => {
+		if (!LoggedIn) return [];
+
+		let results = userTasks
+			.filter(
+				(ut) =>
+					ut.first_name === LoggedIn.first_name &&
+					ut.last_name === LoggedIn.last_name,
+			)
+			.filter((task) => task.id);
+
+		return results;
+	})
 
 	// ---------------- Progress ----------------
-
+	const completed2 = allTasks.length - visibleTasks.filter((t) => !t.is_complete).length;
 	const completed = visibleTasks.filter((t) => t.is_complete).length;
 
-	const completionRate = visibleTasks.length
-		? Math.round((completed / visibleTasks.length) * 100)
+	const completionRate = allTasks.length
+		? Math.round((completed / allTasks.length) * 100)
+		: 0;
+
+	const completionRate2 = allTasks.length
+		? Math.round((completed2 / allTasks.length) * 100)
 		: 0;
 
 	// ---------------- Toggle ----------------
@@ -205,16 +220,18 @@ export default function MyChecklist() {
 
 				<div className="card checklist-progress-card">
 					<div className="progress-label">
-						<span className="percent">{completionRate}%</span>
+						<span className="percent">
+							{filter === 'incomplete' ? completionRate2 : completionRate}
+							%</span>
 						<span>
-							{completed} of {visibleTasks.length} tasks complete
+							{filter === 'incomplete' ? completed2 : completed} of {allTasks.length} tasks complete
 						</span>
 					</div>
 
 					<div className="progress-track progress-track-lg">
 						<div
 							className="progress-fill"
-							style={{ width: `${completionRate}%` }}
+							style={{ width: `${filter === 'incomplete' ? completionRate2 : completionRate}%` }}
 						/>
 					</div>
 				</div>
@@ -302,8 +319,6 @@ export default function MyChecklist() {
 							<div className="modal" onClick={(e) => e.stopPropagation()}>
 								<h2>{taskItem.title}</h2>
 								<p>Details: {taskItem.action_item}</p>
-								<p>Due Date: {formatDate(taskItem.due_date)}</p>
-
 								<p>Due Date: {formatDate(taskItem.due_date)}</p>
 
 								<div className="modal-notes-group">
